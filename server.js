@@ -5,6 +5,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const { Telegraf } = require('telegraf');
+
+// ТОКЕН БОТА ДЛЯ УВЕДОМЛЕНИЙ (создали в ШАГЕ 1)
+const NOTIFY_BOT_TOKEN = '8917717243:AAGa2gUGpPXHuEE-ZDhpNdfHOZ0k_a9zSUA';
+
+// ID чата, куда отправлять уведомления (твой Telegram ID)
+// Узнать можно у бота @userinfobot
+const CHAT_ID = '8395485499'; // Например: 123456789
+
+// Создаём бота для уведомлений
+const notifyBot = new Telegraf(NOTIFY_BOT_TOKEN);
+
 console.log('🚀 Запуск Piff&Puff Shop сервера...');
 
 // ========== НАСТРОЙКИ ==========
@@ -190,7 +202,7 @@ app.post('/api/cashback/add', async (req, res) => {
     res.json({ success: true, newBalance: cashbackCache[userId].balance });
 });
 
-// Принять заказ (с новой структурой)
+// Принять заказ и отправить уведомление в Telegram
 app.post('/api/order', async (req, res) => {
     const { 
         items, 
@@ -205,21 +217,44 @@ app.post('/api/order', async (req, res) => {
         username 
     } = req.body;
     
+    // Формируем текст заказа для уведомления
+    let itemsText = '';
+    items.forEach(item => {
+        const optionText = item.option ? `: ${item.option}` : '';
+        itemsText += `${item.name}${optionText} (1 шт. x ${item.price} тг)\n`;
+    });
+    
+    const deliveryText = delivery === 0 ? 'Бесплатно' : `${delivery} тг`;
+    const changeText = change && change !== 'Не требуется' ? change : 'Не требуется';
+    const notesText = notes && notes !== 'Нет' ? notes : 'Нет';
+    
+    // Текст для уведомления в Telegram
+    const message = 
+        `🛒 Оформлен новый заказ!\n\n` +
+        `👤 Клиент: @${username || userId}\n` +
+        `📍 Адрес доставки: ${address}\n` +
+        `📞 Контактный телефон: ${phone}\n` +
+        `🔄 Сдача с: ${changeText}\n` +
+        `📝 Дополнительные пожелания: ${notesText}\n\n` +
+        `💰 Сумма заказа: ${subtotal} тг\n` +
+        `🚚 Доставка: ${deliveryText}\n` +
+        `📦 Итого: ${total} тг\n\n` +
+        `📦 Товары:\n${itemsText}\n` +
+        `🕐 ${new Date().toLocaleString()}`;
+    
+    // Логируем в консоль
     console.log('🛒 НОВЫЙ ЗАКАЗ!');
-    console.log('👤 Пользователь:', username || userId);
-    console.log('📦 Товары:', items);
-    console.log('💰 Сумма:', subtotal, 'тг');
-    console.log('🚚 Доставка:', delivery === 0 ? 'Бесплатно' : delivery + ' тг');
-    console.log('📦 Итого:', total, 'тг');
-    console.log('📞 Телефон:', phone);
-    console.log('📍 Адрес:', address);
-    console.log('🔄 Сдача:', change || 'Не требуется');
-    console.log('📝 Пожелания:', notes || 'Нет');
-    console.log('📅 Время:', new Date().toLocaleString());
+    console.log(message);
     console.log('-------------------');
     
-    // ⚠️ КЭШБЭК ПОКА НЕ НАЧИСЛЯЕМ АВТОМАТИЧЕСКИ
-    // Позже можно добавить ручное начисление
+    // Отправляем уведомление в Telegram
+    try {
+        await notifyBot.telegram.sendMessage(CHAT_ID, message);
+        console.log('✅ Уведомление отправлено в Telegram');
+    } catch (error) {
+        console.error('❌ Ошибка отправки уведомления:', error.message);
+        // Не прерываем выполнение, если уведомление не отправилось
+    }
     
     res.json({ 
         success: true, 
