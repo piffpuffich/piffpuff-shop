@@ -901,6 +901,10 @@ document.getElementById('orderModal')?.addEventListener('click', function(e) {
 
 // Отправить заказ
 async function submitOrder() {
+    // Блокируем кнопку, чтобы нельзя было нажать дважды
+    const submitBtn = document.querySelector('.order-submit-btn');
+    if (submitBtn.disabled) return; // Если уже заблокирована — выходим
+    
     // Проверяем обязательные поля
     const phone = document.getElementById('orderPhone').value.trim();
     const address = document.getElementById('orderAddress').value.trim();
@@ -922,6 +926,10 @@ async function submitOrder() {
     }
     
     if (!isValid) return;
+    
+    // Блокируем кнопку и показываем, что идёт отправка
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ Отправка...';
     
     // Собираем данные
     const change = document.getElementById('orderChange').value.trim();
@@ -986,9 +994,15 @@ async function submitOrder() {
         closeOrderModal();
         renderProducts();
         
+        // Проверяем, не осталось ли товаров в корзине на случай ошибки
+        
     } catch (error) {
         showToast('❌ Ошибка при оформлении заказа');
         console.error(error);
+    } finally {
+        // ВСЕГДА разблокируем кнопку (даже при ошибке)
+        submitBtn.disabled = false;
+        submitBtn.textContent = '✅ Оформить заказ';
     }
 }
 

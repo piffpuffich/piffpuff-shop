@@ -221,7 +221,7 @@ app.post('/api/order', async (req, res) => {
     let itemsText = '';
     items.forEach(item => {
         const optionText = item.option ? `: ${item.option}` : '';
-        itemsText += `${item.name}${optionText} (1 шт. x ${item.price} тг)\n`;
+        itemsText += `${item.name}${optionText}\n`;
     });
     
     const deliveryText = delivery === 0 ? 'Бесплатно' : `${delivery} тг`;
@@ -236,11 +236,8 @@ app.post('/api/order', async (req, res) => {
         `📞 Контактный телефон: ${phone}\n` +
         `🔄 Сдача с: ${changeText}\n` +
         `📝 Дополнительные пожелания: ${notesText}\n\n` +
-        `💰 Сумма заказа: ${subtotal} тг\n` +
-        `🚚 Доставка: ${deliveryText}\n` +
-        `📦 Итого: ${total} тг\n\n` +
-        `📦 Товары:\n${itemsText}\n` +
-        `🕐 ${new Date().toLocaleString()}`;
+        `📦 Сумма заказа: ${total} тг\n\n` +
+        `📦 Товары:\n${itemsText}\n`;
     
     // Логируем в консоль
     console.log('🛒 НОВЫЙ ЗАКАЗ!');
