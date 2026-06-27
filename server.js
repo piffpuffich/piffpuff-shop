@@ -190,40 +190,41 @@ app.post('/api/cashback/add', async (req, res) => {
     res.json({ success: true, newBalance: cashbackCache[userId].balance });
 });
 
-// Принять заказ (добавляем начисление кэшбэка)
+// Принять заказ (с новой структурой)
 app.post('/api/order', async (req, res) => {
-    const { items, total, userId, username } = req.body;
+    const { 
+        items, 
+        subtotal, 
+        delivery, 
+        total, 
+        phone, 
+        address, 
+        change, 
+        notes, 
+        userId, 
+        username 
+    } = req.body;
     
     console.log('🛒 НОВЫЙ ЗАКАЗ!');
-    console.log('📦 Товары:', items);
-    console.log('💰 Итого:', total, '₽');
     console.log('👤 Пользователь:', username || userId);
+    console.log('📦 Товары:', items);
+    console.log('💰 Сумма:', subtotal, 'тг');
+    console.log('🚚 Доставка:', delivery === 0 ? 'Бесплатно' : delivery + ' тг');
+    console.log('📦 Итого:', total, 'тг');
+    console.log('📞 Телефон:', phone);
+    console.log('📍 Адрес:', address);
+    console.log('🔄 Сдача:', change || 'Не требуется');
+    console.log('📝 Пожелания:', notes || 'Нет');
     console.log('📅 Время:', new Date().toLocaleString());
     console.log('-------------------');
     
-    // Начисляем кэшбэк 10%
-    const cashbackAmount = Math.floor(total * 0.1);
-    console.log(`💰 Начислен кэшбэк: ${cashbackAmount} ₽`);
-    
-    // Обновляем кэшбэк
-    if (userId) {
-        const now = Date.now();
-        if (now - lastUpdateCashback > CACHE_TIME || Object.keys(cashbackCache).length === 0) {
-            cashbackCache = await loadCashbackFromGoogle();
-            lastUpdateCashback = now;
-        }
-        
-        if (!cashbackCache[userId]) {
-            cashbackCache[userId] = { username: username || 'user', balance: 0 };
-        }
-        cashbackCache[userId].balance = (cashbackCache[userId].balance || 0) + cashbackAmount;
-        cashbackCache[userId].username = username || cashbackCache[userId].username;
-    }
+    // ⚠️ КЭШБЭК ПОКА НЕ НАЧИСЛЯЕМ АВТОМАТИЧЕСКИ
+    // Позже можно добавить ручное начисление
     
     res.json({ 
         success: true, 
         message: 'Заказ принят!',
-        cashbackEarned: cashbackAmount
+        order: { total, phone, address }
     });
 });
 

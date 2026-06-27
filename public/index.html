@@ -377,6 +377,137 @@
     padding: 10px;
     border-radius: 10px;
 }
+/* ===== МОДАЛКА ОФОРМЛЕНИЯ ЗАКАЗА ===== */
+.order-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
+    padding: 16px;
+}
+.order-modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 24px 20px;
+    max-width: 420px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.order-header h2 {
+    font-size: 20px;
+    color: #1a1a1a;
+}
+.order-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    padding: 0 8px;
+}
+.order-field {
+    margin-bottom: 16px;
+}
+.order-field label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 4px;
+}
+.order-field .required {
+    color: #ff3d6b;
+}
+.order-field input,
+.order-field textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #e0d0e8;
+    border-radius: 10px;
+    font-size: 14px;
+    background: #faf5ff;
+    transition: border-color 0.2s;
+    font-family: inherit;
+}
+.order-field input:focus,
+.order-field textarea:focus {
+    outline: none;
+    border-color: #ff3d6b;
+}
+.order-field textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+.field-error {
+    color: #ff3d6b;
+    font-size: 12px;
+    margin-top: 4px;
+}
+.field-error.hidden {
+    display: none;
+}
+
+.order-summary {
+    background: #f8f0ff;
+    padding: 16px;
+    border-radius: 12px;
+    margin: 16px 0;
+}
+.order-total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+    font-weight: bold;
+    color: #1a1a1a;
+}
+.order-total-price {
+    color: #ff3d6b;
+}
+.order-delivery-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #555;
+    margin-top: 4px;
+}
+
+.order-submit-btn {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ff6b8a, #ff3d6b);
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 15px rgba(255, 61, 107, 0.3);
+}
+.order-submit-btn:active {
+    transform: scale(0.96);
+}
+.order-submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
     </style>
 </head>
 <body>
@@ -429,6 +560,58 @@
     <div id="cartItems"></div>
     <div class="cart-total" id="cartTotal">Итого: 0 ₸</div>
     <button class="checkout-btn" onclick="checkout()">✅ Оформить заказ</button>
+</div>
+
+<!-- Модалка оформления заказа -->
+<div class="order-modal hidden" id="orderModal">
+    <div class="order-modal-content">
+        <div class="order-header">
+            <h2>📋 Оформление заказа</h2>
+            <button class="order-close" onclick="closeOrderModal()">✕</button>
+        </div>
+        
+        <div class="order-form">
+            <!-- Контактный телефон -->
+            <div class="order-field">
+                <label>Контактный телефон <span class="required">*</span></label>
+                <input type="tel" id="orderPhone" placeholder="+7 777 123 45 67" required>
+                <div class="field-error hidden" id="phoneError">Пожалуйста, укажите контактный телефон</div>
+            </div>
+            
+            <!-- Адрес доставки -->
+            <div class="order-field">
+                <label>Адрес доставки <span class="required">*</span></label>
+                <input type="text" id="orderAddress" placeholder="Город, улица, дом, квартира" required>
+                <div class="field-error hidden" id="addressError">Пожалуйста, укажите адрес доставки</div>
+            </div>
+            
+            <!-- Сдача -->
+            <div class="order-field">
+                <label>Если сумма не равная - укажите, с какой суммы нужна сдача:</label>
+                <input type="text" id="orderChange" placeholder="Например: с 2000 тг">
+            </div>
+            
+            <!-- Дополнительные пожелания -->
+            <div class="order-field">
+                <label>Дополнительные пожелания:</label>
+                <textarea id="orderNotes" rows="2" placeholder="Время доставки, домофон, etc."></textarea>
+            </div>
+        </div>
+        
+        <!-- Итог -->
+        <div class="order-summary">
+            <div class="order-total-row">
+                <span>Итого с доставкой:</span>
+                <span class="order-total-price" id="orderTotalDisplay">0 тг</span>
+            </div>
+            <div class="order-delivery-row">
+                <span>Доставка:</span>
+                <span id="orderDeliveryDisplay">Бесплатно</span>
+            </div>
+        </div>
+        
+        <button class="order-submit-btn" onclick="submitOrder()">✅ Оформить заказ</button>
+    </div>
 </div>
 
 <div class="toast" id="toast">✅ Товар добавлен</div>
@@ -612,38 +795,9 @@
         }
     }
 
-   async function checkout() {
-    const total = cart.reduce((sum, item) => sum + item.price, 0);
-    const userId = getUserId();
-    const username = getUsername();
-    
-    try {
-        const response = await fetch('/api/order', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                items: cart.map(item => ({
-                    name: item.name,
-                    price: item.price,
-                    option: item.selectedOption || ''
-                })),
-                total: total,
-                userId: userId,
-                username: username
-            })
-        });
-        
-        const result = await response.json();
-        showToast(`✅ Заказ оформлен! Начислено ${result.cashbackEarned || 0} ₸ кэшбэка`);
-        cart = [];
-        updateCartCount();
-        closeCart();
-        renderProducts();
-        loadCashback(); // Обновляем баланс
-    } catch (error) {
-        showToast('❌ Ошибка при оформлении');
-        console.error(error);
-    }
+ // Оформление заказа — открывает форму
+async function checkout() {
+    openOrderModal();
 }
 
     loadProducts();
@@ -701,6 +855,143 @@ document.getElementById('cashbackModal')?.addEventListener('click', function(e) 
 
 // Загружаем кэшбэк при старте
 loadCashback();
+
+// ===== ОФОРМЛЕНИЕ ЗАКАЗА =====
+let currentCartTotal = 0;
+
+// Открыть модалку оформления
+function openOrderModal() {
+    if (cart.length === 0) {
+        showToast('🛒 Корзина пуста');
+        return;
+    }
+    
+    // Рассчитываем сумму
+    const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+    const delivery = subtotal < 9000 ? 1000 : 0;
+    currentCartTotal = subtotal + delivery;
+    
+    // Обновляем отображение
+    document.getElementById('orderTotalDisplay').textContent = currentCartTotal + ' тг';
+    document.getElementById('orderDeliveryDisplay').textContent = delivery === 0 ? 'Бесплатно' : delivery + ' тг';
+    
+    // Очищаем поля
+    document.getElementById('orderPhone').value = '';
+    document.getElementById('orderAddress').value = '';
+    document.getElementById('orderChange').value = '';
+    document.getElementById('orderNotes').value = '';
+    
+    // Убираем ошибки
+    document.getElementById('phoneError').classList.add('hidden');
+    document.getElementById('addressError').classList.add('hidden');
+    
+    // Открываем модалку
+    document.getElementById('orderModal').classList.remove('hidden');
+}
+
+// Закрыть модалку
+function closeOrderModal() {
+    document.getElementById('orderModal').classList.add('hidden');
+}
+
+// Закрыть по клику на фон
+document.getElementById('orderModal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeOrderModal();
+});
+
+// Отправить заказ
+async function submitOrder() {
+    // Проверяем обязательные поля
+    const phone = document.getElementById('orderPhone').value.trim();
+    const address = document.getElementById('orderAddress').value.trim();
+    
+    let isValid = true;
+    
+    if (!phone) {
+        document.getElementById('phoneError').classList.remove('hidden');
+        isValid = false;
+    } else {
+        document.getElementById('phoneError').classList.add('hidden');
+    }
+    
+    if (!address) {
+        document.getElementById('addressError').classList.remove('hidden');
+        isValid = false;
+    } else {
+        document.getElementById('addressError').classList.add('hidden');
+    }
+    
+    if (!isValid) return;
+    
+    // Собираем данные
+    const change = document.getElementById('orderChange').value.trim();
+    const notes = document.getElementById('orderNotes').value.trim();
+    
+    const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+    const delivery = subtotal < 9000 ? 1000 : 0;
+    const total = subtotal + delivery;
+    
+    const userId = getUserId();
+    const username = getUsername();
+    
+    // Формируем текст заказа
+    const itemsText = cart.map(item => 
+        `${item.name}${item.selectedOption ? ' (' + item.selectedOption + ')' : ''} x1`
+    ).join('\n');
+    
+    const orderData = {
+        items: cart.map(item => ({
+            name: item.name,
+            price: item.price,
+            option: item.selectedOption || ''
+        })),
+        subtotal: subtotal,
+        delivery: delivery,
+        total: total,
+        phone: phone,
+        address: address,
+        change: change || 'Не требуется',
+        notes: notes || 'Нет',
+        userId: userId,
+        username: username
+    };
+    
+    // Отправляем на сервер
+    try {
+        const response = await fetch('/api/order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        });
+        
+        const result = await response.json();
+        
+        // Показываем уведомление с деталями заказа
+        const message = `✅ Заказ оформлен!\n\n` +
+            `📦 Товары:\n${itemsText}\n\n` +
+            `💰 Сумма: ${subtotal} тг\n` +
+            `🚚 Доставка: ${delivery === 0 ? 'Бесплатно' : delivery + ' тг'}\n` +
+            `📦 Итого: ${total} тг\n\n` +
+            `📞 Телефон: ${phone}\n` +
+            `📍 Адрес: ${address}\n` +
+            `${change ? `🔄 Сдача: ${change}\n` : ''}` +
+            `${notes ? `📝 Пожелания: ${notes}` : ''}`;
+        
+        showToast(message);
+        
+        // Очищаем корзину
+        cart = [];
+        updateCartCount();
+        closeCart();
+        closeOrderModal();
+        renderProducts();
+        
+    } catch (error) {
+        showToast('❌ Ошибка при оформлении заказа');
+        console.error(error);
+    }
+}
+
 </script>
 
 </body>

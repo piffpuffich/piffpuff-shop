@@ -1,7 +1,7 @@
 const { Telegraf } = require('telegraf');
 
-// ВСТАВЬ СВОЙ ТОКЕН
-const BOT_TOKEN = '8704731828:AAFHE2Ar-frTsJ0lyPWGP29r22ZInCpAatY';
+// ВСТАВЬ НОВЫЙ ТОКЕН
+const BOT_TOKEN = '8704731828:AAHc8SWFVq0o8GIjovL4HjlPOZJ91rBuN0w';
 
 const bot = new Telegraf(BOT_TOKEN);
 
@@ -31,14 +31,8 @@ bot.command('help', (ctx) => {
     ctx.reply(
         '📖 Помощь:\n\n' +
         '/start - Открыть магазин\n' +
-        '/help - Эта справка\n' +
-        '/contact - Связаться с нами'
+        '/help - Эта справка'
     );
-});
-
-// Команда /contact
-bot.command('contact', (ctx) => {
-    ctx.reply('📞 Наш менеджер: @piffpuffich');
 });
 
 // Запуск
