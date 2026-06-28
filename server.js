@@ -190,7 +190,7 @@ app.post('/api/order', async (req, res) => {
 
     const message =
         `🛒 Оформлен новый заказ!\n\n` +
-        `👤 Клиент: @${username || userId}\n` +
+        `👤 Клиент: @${username || userId}\n\n` +
         `📍 Адрес доставки: ${address}\n` +
         `📞 Контактный телефон: ${phone}\n` +
         `🔄 Сдача с: ${changeText}\n` +

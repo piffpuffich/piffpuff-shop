@@ -631,14 +631,14 @@
 
                 <!-- ===== БОНУСЫ ===== -->
                 <div class="order-field bonus-field">
-                    <label class="bonus-checkbox">
-                        <input type="checkbox" id="useBonuses" onchange="toggleBonusInfo()">
-                        Потратить бонусы (<span id="bonusBalanceDisplay">0</span> доступно)
-                    </label>
-                    <div id="bonusInfo" class="bonus-info hidden">
-                        <span class="bonus-hint">Будет списано максимальное количество бонусов, кратное 500</span>
-                    </div>
-                </div>
+    <label class="bonus-checkbox">
+        <input type="checkbox" id="useBonuses" onchange="toggleBonusInfo()">
+        Потратить бонусы (<span id="bonusBalanceDisplay">0</span> доступно)
+    </label>
+    <div id="bonusInfo" class="bonus-info hidden">
+        <span class="bonus-hint">Будет списано: <strong id="bonusWillSpend">0</strong> бонусов</span>
+    </div>
+</div>
             </div>
             
             <!-- Итог -->
@@ -895,14 +895,46 @@
         }
 
         function toggleBonusInfo() {
-            const checkbox = document.getElementById('useBonuses');
-            const info = document.getElementById('bonusInfo');
-            if (checkbox.checked) {
-                info.classList.remove('hidden');
-            } else {
-                info.classList.add('hidden');
-            }
-        }
+    const checkbox = document.getElementById('useBonuses');
+    const info = document.getElementById('bonusInfo');
+    if (checkbox.checked) {
+        info.classList.remove('hidden');
+        calculateBonusSpend(); // ← рассчитываем при показе
+    } else {
+        info.classList.add('hidden');
+    }
+}
+
+        // Рассчитать, сколько бонусов будет списано
+function calculateBonusSpend() {
+    const checkbox = document.getElementById('useBonuses');
+    const bonusDisplay = document.getElementById('bonusWillSpend');
+    
+    if (!checkbox.checked) {
+        bonusDisplay.textContent = '0';
+        return;
+    }
+    
+    // Сумма заказа
+    const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+    const delivery = subtotal < 9000 ? 1000 : 0;
+    const total = subtotal + delivery;
+    
+    // Доступные бонусы
+    const available = userBonusBalance || 0;
+    
+    // Рассчитываем, сколько можно списать (кратно 500, но не больше суммы заказа)
+    let canSpend = Math.floor(available / 500) * 500;
+    if (canSpend > total) {
+        canSpend = Math.floor(total / 500) * 500;
+    }
+    
+    if (canSpend >= 500) {
+        bonusDisplay.textContent = canSpend;
+    } else {
+        bonusDisplay.textContent = '0 (недостаточно для списания)';
+    }
+}
 
         // ===== ОТКРЫТИЕ МОДАЛКИ =====
         let currentCartTotal = 0;
@@ -931,9 +963,10 @@
             // Загружаем баланс бонусов
             loadBonusBalance();
             
-            // Сбрасываем галочку
-            document.getElementById('useBonuses').checked = false;
-            document.getElementById('bonusInfo').classList.add('hidden');
+         // Сбрасываем галочку и скрываем инфо
+document.getElementById('useBonuses').checked = false;
+document.getElementById('bonusInfo').classList.add('hidden');
+document.getElementById('bonusWillSpend').textContent = '0';
             
             document.getElementById('orderModal').classList.remove('hidden');
         }
