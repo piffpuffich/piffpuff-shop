@@ -7,12 +7,11 @@ app.use(express.json());
 
 const { Telegraf } = require('telegraf');
 
-// ТОКЕН БОТА ДЛЯ УВЕДОМЛЕНИЙ (создали в ШАГЕ 1)
+// ТОКЕН БОТА ДЛЯ УВЕДОМЛЕНИЙ
 const NOTIFY_BOT_TOKEN = '8917717243:AAGa2gUGpPXHuEE-ZDhpNdfHOZ0k_a9zSUA';
 
-// ID чата, куда отправлять уведомления (твой Telegram ID)
-// Узнать можно у бота @userinfobot
-const CHAT_ID = '8395485499'; // Например: 123456789
+// ID чата (твой Telegram ID)
+const CHAT_ID = '8395485499';
 
 // Создаём бота для уведомлений
 const notifyBot = new Telegraf(NOTIFY_BOT_TOKEN);
@@ -20,10 +19,7 @@ const notifyBot = new Telegraf(NOTIFY_BOT_TOKEN);
 console.log('🚀 Запуск Piff&Puff Shop сервера...');
 
 // ========== НАСТРОЙКИ ==========
-// ТОВАРЫ
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ4NasjkziFFrgdzsm-KeYrgnfB_--B5zYwZQPvKvThqsk-w6b_NrTkKvvVF27JT8Cyl9I-DLTcSDG4/pub?gid=0&single=true&output=csv';
-
-// КЭШБЭК (URL твоей таблицы с балансами)
 const CASHBACK_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSiOF1m5JwHgEL3ygZSk0r2jJaIU0KW6eu0Z9PckSpRudtN22PnDZWFal7zBV72ZfBy7GMnIt_GStGY/pub?gid=0&single=true&output=csv';
 
 // ========== КЭШ ==========
@@ -31,7 +27,7 @@ let productsCache = [];
 let cashbackCache = {};
 let lastUpdateProducts = 0;
 let lastUpdateCashback = 0;
-const CACHE_TIME = 60000; // 1 минута
+const CACHE_TIME = 60000;
 
 // ========== ЗАГРУЗКА ТОВАРОВ ==========
 async function loadProductsFromGoogle() {
@@ -104,20 +100,6 @@ async function loadCashbackFromGoogle() {
     }
 }
 
-// ========== СОХРАНЕНИЕ КЭШБЭКА В ТАБЛИЦУ ==========
-async function saveCashbackToGoogle(userId, username, balance) {
-    // ВНИМАНИЕ: Это заглушка. Google Sheets API для записи требует авторизации.
-    // Для простоты мы будем обновлять кэш, а вручную раз в день обновлять таблицу.
-    // Позже я покажу, как подключить Google Sheets API для автоматической записи.
-    console.log(`💾 Сохраняем кэшбэк: ${username} (${userId}) → ${balance} ₽`);
-    // Пока просто обновляем кэш
-    if (!cashbackCache[userId]) {
-        cashbackCache[userId] = { username, balance: 0 };
-    }
-    cashbackCache[userId].balance = balance;
-    return true;
-}
-
 // ========== API ==========
 
 // Получить товары
@@ -134,129 +116,106 @@ app.get('/api/products', async (req, res) => {
 app.get('/api/cashback/:userId', async (req, res) => {
     const userId = req.params.userId;
     const now = Date.now();
-    
     if (now - lastUpdateCashback > CACHE_TIME || Object.keys(cashbackCache).length === 0) {
         cashbackCache = await loadCashbackFromGoogle();
         lastUpdateCashback = now;
     }
-    
     const userData = cashbackCache[userId] || { balance: 0, username: '' };
-    const balance = userData.balance || 0;
-    const canSpend = Math.floor(balance / 500) * 500;
-    
     res.json({
-        balance: balance,
-        canSpend: canSpend,
+        balance: userData.balance || 0,
         username: userData.username || ''
     });
 });
 
-// Списать кэшбэк (при использовании)
-app.post('/api/cashback/spend', async (req, res) => {
-    const { userId, amount } = req.body;
-    const now = Date.now();
-    
-    if (now - lastUpdateCashback > CACHE_TIME || Object.keys(cashbackCache).length === 0) {
-        cashbackCache = await loadCashbackFromGoogle();
-        lastUpdateCashback = now;
-    }
-    
-    if (!cashbackCache[userId]) {
-        return res.status(404).json({ error: 'Пользователь не найден' });
-    }
-    
-    const currentBalance = cashbackCache[userId].balance || 0;
-    if (amount > currentBalance) {
-        return res.status(400).json({ error: 'Недостаточно средств' });
-    }
-    
-    const newBalance = currentBalance - amount;
-    cashbackCache[userId].balance = newBalance;
-    
-    // Здесь нужно записать в Google Таблицу (пока просто логируем)
-    console.log(`💰 Списано ${amount} ₽ у ${cashbackCache[userId].username}. Остаток: ${newBalance} ₽`);
-    
-    res.json({ success: true, newBalance: newBalance });
-});
-
-// Начислить кэшбэк (после заказа)
-app.post('/api/cashback/add', async (req, res) => {
-    const { userId, username, orderTotal } = req.body;
-    const cashbackAmount = Math.floor(orderTotal * 0.1); // 10%
-    
-    const now = Date.now();
-    if (now - lastUpdateCashback > CACHE_TIME || Object.keys(cashbackCache).length === 0) {
-        cashbackCache = await loadCashbackFromGoogle();
-        lastUpdateCashback = now;
-    }
-    
-    if (!cashbackCache[userId]) {
-        cashbackCache[userId] = { username: username || 'user', balance: 0 };
-    }
-    
-    cashbackCache[userId].balance = (cashbackCache[userId].balance || 0) + cashbackAmount;
-    cashbackCache[userId].username = username || cashbackCache[userId].username;
-    
-    console.log(`💰 Начислено ${cashbackAmount} ₽ пользователю ${cashbackCache[userId].username}. Баланс: ${cashbackCache[userId].balance} ₽`);
-    
-    res.json({ success: true, newBalance: cashbackCache[userId].balance });
-});
-
-// Принять заказ и отправить уведомление в Telegram
+// ========== ПРИНЯТЬ ЗАКАЗ (С БОНУСАМИ) ==========
 app.post('/api/order', async (req, res) => {
-    const { 
-        items, 
-        subtotal, 
-        delivery, 
-        total, 
-        phone, 
-        address, 
-        change, 
-        notes, 
-        userId, 
-        username 
+    const {
+        items,
+        subtotal,
+        delivery,
+        total,
+        phone,
+        address,
+        change,
+        notes,
+        userId,
+        username,
+        useBonuses
     } = req.body;
-    
-    // Формируем текст заказа для уведомления
+
+    let finalTotal = total;
+    let bonusSpent = 0;
+    let bonusText = 'Нет';
+
+    // ==== ЕСЛИ КЛИЕНТ ХОЧЕТ ПОТРАТИТЬ БОНУСЫ ====
+    if (useBonuses) {
+        const now = Date.now();
+        if (now - lastUpdateCashback > CACHE_TIME || Object.keys(cashbackCache).length === 0) {
+            cashbackCache = await loadCashbackFromGoogle();
+            lastUpdateCashback = now;
+        }
+
+        const userData = cashbackCache[userId];
+        if (userData && userData.balance > 0) {
+            let available = userData.balance;
+            let canSpend = Math.floor(available / 500) * 500;
+            if (canSpend > total) {
+                canSpend = Math.floor(total / 500) * 500;
+            }
+
+            if (canSpend >= 500) {
+                userData.balance -= canSpend;
+                bonusSpent = canSpend;
+                finalTotal = total - canSpend;
+                if (finalTotal < 0) finalTotal = 0;
+                bonusText = `Да (${canSpend} бонусов)`;
+            } else {
+                bonusText = 'Нет (недостаточно для списания)';
+            }
+        } else {
+            bonusText = 'Нет (недостаточно бонусов)';
+        }
+    }
+
+    // ==== ФОРМИРУЕМ УВЕДОМЛЕНИЕ ====
     let itemsText = '';
     items.forEach(item => {
         const optionText = item.option ? `: ${item.option}` : '';
         itemsText += `${item.name}${optionText}\n`;
     });
-    
+
     const deliveryText = delivery === 0 ? 'Бесплатно' : `${delivery} тг`;
     const changeText = change && change !== 'Не требуется' ? change : 'Не требуется';
     const notesText = notes && notes !== 'Нет' ? notes : 'Нет';
-    
-    // Текст для уведомления в Telegram
-    const message = 
+
+    const message =
         `🛒 Оформлен новый заказ!\n\n` +
         `👤 Клиент: @${username || userId}\n` +
         `📍 Адрес доставки: ${address}\n` +
         `📞 Контактный телефон: ${phone}\n` +
         `🔄 Сдача с: ${changeText}\n` +
-        `📝 Дополнительные пожелания: ${notesText}\n\n` +
-        `📦 Сумма заказа: ${total} тг\n\n` +
-        `📦 Товары:\n${itemsText}\n`;
-    
-    // Логируем в консоль
+        `📝 Дополнительные пожелания: ${notesText}\n` +
+        `🎯 Оплата бонусами: ${bonusText}\n\n` +
+        `📦 Товары:\n${itemsText}\n` +
+        `📦 Итого: ${finalTotal} тг`;
+
+    // ==== ЛОГ ====
     console.log('🛒 НОВЫЙ ЗАКАЗ!');
     console.log(message);
     console.log('-------------------');
-    
-    // Отправляем уведомление в Telegram
+
+    // ==== ОТПРАВКА В TELEGRAM ====
     try {
         await notifyBot.telegram.sendMessage(CHAT_ID, message);
         console.log('✅ Уведомление отправлено в Telegram');
     } catch (error) {
         console.error('❌ Ошибка отправки уведомления:', error.message);
-        // Не прерываем выполнение, если уведомление не отправилось
     }
-    
-    res.json({ 
-        success: true, 
+
+    res.json({
+        success: true,
         message: 'Заказ принят!',
-        order: { total, phone, address }
+        order: { total: finalTotal, phone, address }
     });
 });
 

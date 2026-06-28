@@ -281,732 +281,774 @@
             margin-bottom: 12px;
         }
         /* ===== КЭШБЭК КНОПКА ===== */
-.cashback-btn {
-    position: fixed;
-    top: 16px;
-    left: 16px;
-    background: linear-gradient(135deg, #ffd700, #f5a623);
-    color: #1a1a1a;
-    border: none;
-    border-radius: 30px;
-    padding: 10px 16px;
-    font-weight: bold;
-    font-size: 14px;
-    box-shadow: 0 4px 15px rgba(245, 166, 35, 0.4);
-    cursor: pointer;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: transform 0.2s;
-}
-.cashback-btn:active {
-    transform: scale(0.95);
-}
-.cashback-btn span {
-    background: rgba(0,0,0,0.1);
-    padding: 0 8px;
-    border-radius: 12px;
-}
+        .cashback-btn {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            background: linear-gradient(135deg, #ffd700, #f5a623);
+            color: #1a1a1a;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 16px;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.4);
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: transform 0.2s;
+        }
+        .cashback-btn:active {
+            transform: scale(0.95);
+        }
+        .cashback-btn span {
+            background: rgba(0,0,0,0.1);
+            padding: 0 8px;
+            border-radius: 12px;
+        }
 
-/* ===== МОДАЛКА КЭШБЭКА ===== */
-.cashback-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    animation: fadeIn 0.3s ease;
-}
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-.cashback-modal-content {
-    background: white;
-    border-radius: 20px;
-    padding: 30px 24px;
-    max-width: 340px;
-    width: 90%;
-    position: relative;
-    animation: slideUp 0.3s ease;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-}
-.cashback-close {
-    position: absolute;
-    top: 12px;
-    right: 16px;
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #999;
-}
-.cashback-modal-content h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #1a1a1a;
-    font-size: 22px;
-}
-.cashback-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 12px 0;
-    border-bottom: 1px solid #f0f0f0;
-    font-size: 16px;
-    color: #333;
-}
-.cashback-row:last-of-type {
-    border-bottom: 2px solid #ffd700;
-}
-.cashback-value {
-    font-weight: bold;
-    color: #1a1a1a;
-}
-.cashback-hint {
-    margin-top: 16px;
-    text-align: center;
-    font-size: 13px;
-    color: #888;
-    background: #f8f8f8;
-    padding: 10px;
-    border-radius: 10px;
-}
-/* ===== МОДАЛКА ОФОРМЛЕНИЯ ЗАКАЗА ===== */
-.order-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    animation: fadeIn 0.3s ease;
-    padding: 16px;
-}
-.order-modal-content {
-    background: white;
-    border-radius: 20px;
-    padding: 24px 20px;
-    max-width: 420px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-    animation: slideUp 0.3s ease;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-}
-.order-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-.order-header h2 {
-    font-size: 20px;
-    color: #1a1a1a;
-}
-.order-close {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #999;
-    padding: 0 8px;
-}
-.order-field {
-    margin-bottom: 16px;
-}
-.order-field label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    color: #333;
-    margin-bottom: 4px;
-}
-.order-field .required {
-    color: #ff3d6b;
-}
-.order-field input,
-.order-field textarea {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1.5px solid #e0d0e8;
-    border-radius: 10px;
-    font-size: 14px;
-    background: #faf5ff;
-    transition: border-color 0.2s;
-    font-family: inherit;
-}
-.order-field input:focus,
-.order-field textarea:focus {
-    outline: none;
-    border-color: #ff3d6b;
-}
-.order-field textarea {
-    resize: vertical;
-    min-height: 60px;
-}
-.field-error {
-    color: #ff3d6b;
-    font-size: 12px;
-    margin-top: 4px;
-}
-.field-error.hidden {
-    display: none;
-}
+        /* ===== МОДАЛКА КЭШБЭКА ===== */
+        .cashback-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .cashback-modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 24px;
+            max-width: 340px;
+            width: 90%;
+            position: relative;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .cashback-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .cashback-modal-content h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+            font-size: 22px;
+        }
+        .cashback-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 16px;
+            color: #333;
+        }
+        .cashback-row:last-of-type {
+            border-bottom: 2px solid #ffd700;
+        }
+        .cashback-value {
+            font-weight: bold;
+            color: #1a1a1a;
+        }
+        .cashback-hint {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 13px;
+            color: #888;
+            background: #f8f8f8;
+            padding: 10px;
+            border-radius: 10px;
+        }
 
-.order-summary {
-    background: #f8f0ff;
-    padding: 16px;
-    border-radius: 12px;
-    margin: 16px 0;
-}
-.order-total-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 18px;
-    font-weight: bold;
-    color: #1a1a1a;
-}
-.order-total-price {
-    color: #ff3d6b;
-}
-.order-delivery-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-    color: #555;
-    margin-top: 4px;
-}
+        /* ===== МОДАЛКА ОФОРМЛЕНИЯ ЗАКАЗА ===== */
+        .order-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+            padding: 16px;
+        }
+        .order-modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 24px 20px;
+            max-width: 420px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .order-header h2 {
+            font-size: 20px;
+            color: #1a1a1a;
+        }
+        .order-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            padding: 0 8px;
+        }
+        .order-field {
+            margin-bottom: 16px;
+        }
+        .order-field label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .order-field .required {
+            color: #ff3d6b;
+        }
+        .order-field input,
+        .order-field textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #e0d0e8;
+            border-radius: 10px;
+            font-size: 14px;
+            background: #faf5ff;
+            transition: border-color 0.2s;
+            font-family: inherit;
+        }
+        .order-field input:focus,
+        .order-field textarea:focus {
+            outline: none;
+            border-color: #ff3d6b;
+        }
+        .order-field textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .field-error {
+            color: #ff3d6b;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        .field-error.hidden {
+            display: none;
+        }
 
-.order-submit-btn {
-    width: 100%;
-    padding: 16px;
-    border: none;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #ff6b8a, #ff3d6b);
-    color: white;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 4px 15px rgba(255, 61, 107, 0.3);
-}
-.order-submit-btn:active {
-    transform: scale(0.96);
-}
-.order-submit-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
+        /* ===== БОНУСЫ ===== */
+        .bonus-field {
+            margin-top: 8px;
+        }
+        .bonus-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+        }
+        .bonus-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #ff3d6b;
+            cursor: pointer;
+        }
+        .bonus-info {
+            margin-top: 6px;
+            padding-left: 26px;
+        }
+        .bonus-hint {
+            font-size: 12px;
+            color: #888;
+            background: #f5f0f8;
+            padding: 4px 12px;
+            border-radius: 8px;
+        }
+
+        .order-summary {
+            background: #f8f0ff;
+            padding: 16px;
+            border-radius: 12px;
+            margin: 16px 0;
+        }
+        .order-total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: bold;
+            color: #1a1a1a;
+        }
+        .order-total-price {
+            color: #ff3d6b;
+        }
+        .order-delivery-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #555;
+            margin-top: 4px;
+        }
+
+        .order-submit-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #ff6b8a, #ff3d6b);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(255, 61, 107, 0.3);
+        }
+        .order-submit-btn:active {
+            transform: scale(0.96);
+        }
+        .order-submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
 
     <!-- Кнопка кэшбэка (плавающая) -->
-<button id="cashbackBtn" class="cashback-btn" onclick="openCashback()">
-    💰 <span id="cashbackBalance">0</span> ₸
-</button>
-
-<!-- Модальное окно кэшбэка -->
-<div class="cashback-modal hidden" id="cashbackModal">
-    <div class="cashback-modal-content">
-        <button class="cashback-close" onclick="closeCashback()">✕</button>
-        <h2>💰 Ваш кэшбэк</h2>
-        <div class="cashback-row">
-            <span>Всего:</span>
-            <span class="cashback-value" id="cbTotal">0 ₸</span>
-        </div>
-        <div class="cashback-row">
-            <span>Можно потратить:</span>
-            <span class="cashback-value" id="cbCanSpend">0 ₸</span>
-        </div>
-        <div class="cashback-hint">
-            Получай кэшбэк 10% с каждого заказа!
-        </div>
-    </div>
-</div>
-
-<div class="header">
-    <h1>💨 Piff&Puff</h1>
-    <p>Магазин Piff&Puff</p>
-</div>
-
-<div class="category-tabs" id="categoryTabs">
-    <button class="active" data-category="all">🔥 Популярное</button>
-    <button data-category="Одноразки">💨 Одноразки</button>
-    <button data-category="Жидкость">🧪 Жидкость</button>
-    <button class="cart-btn" onclick="openCart()">
-        🛒 Корзина <span class="cart-badge" id="cartCount">0</span>
+    <button id="cashbackBtn" class="cashback-btn" onclick="openCashback()">
+        💰 <span id="cashbackBalance">0</span> ₸
     </button>
-</div>
 
-<div class="products" id="productList"></div>
-
-<div class="cart-modal hidden" id="cartModal">
-    <div class="header-cart">
-        <h2>🛒 Корзина</h2>
-        <button class="close-cart" onclick="closeCart()">✕</button>
+    <!-- Модальное окно кэшбэка -->
+    <div class="cashback-modal hidden" id="cashbackModal">
+        <div class="cashback-modal-content">
+            <button class="cashback-close" onclick="closeCashback()">✕</button>
+            <h2>💰 Ваш кэшбэк</h2>
+            <div class="cashback-row">
+                <span>Всего:</span>
+                <span class="cashback-value" id="cbTotal">0 ₸</span>
+            </div>
+            <div class="cashback-row">
+                <span>Можно потратить:</span>
+                <span class="cashback-value" id="cbCanSpend">0 ₸</span>
+            </div>
+            <div class="cashback-hint">
+                Получай кэшбэк 10% с каждого заказа!
+            </div>
+        </div>
     </div>
-    <div id="cartItems"></div>
-    <div class="cart-total" id="cartTotal">Итого: 0 ₸</div>
-    <button class="checkout-btn" onclick="checkout()">✅ Оформить заказ</button>
-</div>
 
-<!-- Модалка оформления заказа -->
-<div class="order-modal hidden" id="orderModal">
-    <div class="order-modal-content">
-        <div class="order-header">
-            <h2>📋 Оформление заказа</h2>
-            <button class="order-close" onclick="closeOrderModal()">✕</button>
-        </div>
-        
-        <div class="order-form">
-            <!-- Контактный телефон -->
-            <div class="order-field">
-                <label>Контактный телефон <span class="required">*</span></label>
-                <input type="tel" id="orderPhone" placeholder="+7 777 123 45 67" required>
-                <div class="field-error hidden" id="phoneError">Пожалуйста, укажите контактный телефон</div>
-            </div>
-            
-            <!-- Адрес доставки -->
-            <div class="order-field">
-                <label>Адрес доставки <span class="required">*</span></label>
-                <input type="text" id="orderAddress" placeholder="Улица, дом, подъезд" required>
-                <div class="field-error hidden" id="addressError">Пожалуйста, укажите адрес доставки</div>
-            </div>
-            
-            <!-- Сдача -->
-            <div class="order-field">
-                <label>Если сумма не ровная - укажите, с какой суммы нужна сдача:</label>
-                <input type="text" id="orderChange" placeholder="Например: с 2000 тг">
-            </div>
-            
-            <!-- Дополнительные пожелания -->
-            <div class="order-field">
-                <label>Дополнительные пожелания:</label>
-                <textarea id="orderNotes" rows="2" placeholder=""></textarea>
-            </div>
-        </div>
-        
-        <!-- Итог -->
-        <div class="order-summary">
-            <div class="order-total-row">
-                <span>Итого с доставкой:</span>
-                <span class="order-total-price" id="orderTotalDisplay">0 тг</span>
-            </div>
-            <div class="order-delivery-row">
-                <span>Доставка:</span>
-                <span id="orderDeliveryDisplay">Бесплатно</span>
-            </div>
-        </div>
-        
-        <button class="order-submit-btn" onclick="submitOrder()">✅ Оформить заказ</button>
+    <div class="header">
+        <h1>💨 Piff&Puff</h1>
+        <p>Магазин Piff&Puff</p>
     </div>
-</div>
 
-<div class="toast" id="toast">✅ Товар добавлен</div>
+    <div class="category-tabs" id="categoryTabs">
+        <button class="active" data-category="all">🔥 Популярное</button>
+        <button data-category="Одноразки">💨 Одноразки</button>
+        <button data-category="Жидкость">🧪 Жидкость</button>
+        <button class="cart-btn" onclick="openCart()">
+            🛒 Корзина <span class="cart-badge" id="cartCount">0</span>
+        </button>
+    </div>
 
-<script>
-    let products = [];
-    let cart = [];
-    let currentFilter = 'all';
+    <div class="products" id="productList"></div>
 
-    async function loadProducts() {
-        try {
-            const response = await fetch('/api/products');
-            products = await response.json();
-            console.log('📦 Загружено товаров:', products.length);
-            renderProducts();
-        } catch (error) {
-            console.error('Ошибка загрузки:', error);
-            document.getElementById('productList').innerHTML = `
-                <div class="empty-state">
-                    <span class="big-emoji">⚠️</span>
-                    <p>Не удалось загрузить товары</p>
+    <!-- Корзина -->
+    <div class="cart-modal hidden" id="cartModal">
+        <div class="header-cart">
+            <h2>🛒 Корзина</h2>
+            <button class="close-cart" onclick="closeCart()">✕</button>
+        </div>
+        <div id="cartItems"></div>
+        <div class="cart-total" id="cartTotal">Итого: 0 ₸</div>
+        <button class="checkout-btn" onclick="checkout()">✅ Оформить заказ</button>
+    </div>
+
+    <!-- Модалка оформления заказа -->
+    <div class="order-modal hidden" id="orderModal">
+        <div class="order-modal-content">
+            <div class="order-header">
+                <h2>📋 Оформление заказа</h2>
+                <button class="order-close" onclick="closeOrderModal()">✕</button>
+            </div>
+            
+            <div class="order-form">
+                <!-- Контактный телефон -->
+                <div class="order-field">
+                    <label>Контактный телефон <span class="required">*</span></label>
+                    <input type="tel" id="orderPhone" placeholder="+7 777 123 45 67" required>
+                    <div class="field-error hidden" id="phoneError">Пожалуйста, укажите контактный телефон</div>
                 </div>
-            `;
-        }
-    }
+                
+                <!-- Адрес доставки -->
+                <div class="order-field">
+                    <label>Адрес доставки <span class="required">*</span></label>
+                    <input type="text" id="orderAddress" placeholder="Улица, дом, подъезд" required>
+                    <div class="field-error hidden" id="addressError">Пожалуйста, укажите адрес доставки</div>
+                </div>
+                
+                <!-- Сдача -->
+                <div class="order-field">
+                    <label>Если сумма не ровная - укажите, с какой суммы нужна сдача:</label>
+                    <input type="text" id="orderChange" placeholder="Например: с 2000 тг">
+                </div>
+                
+                <!-- Дополнительные пожелания -->
+                <div class="order-field">
+                    <label>Дополнительные пожелания:</label>
+                    <textarea id="orderNotes" rows="2" placeholder=""></textarea>
+                </div>
 
-    function renderProducts() {
-        const list = document.getElementById('productList');
-        let filtered = products;
-        if (currentFilter !== 'all') {
-            filtered = products.filter(p => p.category === currentFilter);
-        }
-        
-        if (filtered.length === 0) {
-            list.innerHTML = `<div class="empty-state"><span class="big-emoji">🔍</span><p>Нет товаров в этой категории</p></div>`;
-            return;
-        }
-        
-        list.innerHTML = filtered.map(p => {
-            // Проверяем, есть ли опции и это массив
-            const hasOptions = p.options && Array.isArray(p.options) && p.options.length > 0;
+                <!-- ===== БОНУСЫ ===== -->
+                <div class="order-field bonus-field">
+                    <label class="bonus-checkbox">
+                        <input type="checkbox" id="useBonuses" onchange="toggleBonusInfo()">
+                        Потратить бонусы (<span id="bonusBalanceDisplay">0</span> доступно)
+                    </label>
+                    <div id="bonusInfo" class="bonus-info hidden">
+                        <span class="bonus-hint">Будет списано максимальное количество бонусов, кратное 500</span>
+                    </div>
+                </div>
+            </div>
             
-            // Очищаем опции от кавычек (если есть)
-            let cleanOptions = [];
-            if (hasOptions) {
-                cleanOptions = p.options.map(opt => opt.replace(/^"|"$/g, '').trim());
+            <!-- Итог -->
+            <div class="order-summary">
+                <div class="order-total-row">
+                    <span>Итого с доставкой:</span>
+                    <span class="order-total-price" id="orderTotalDisplay">0 тг</span>
+                </div>
+                <div class="order-delivery-row">
+                    <span>Доставка:</span>
+                    <span id="orderDeliveryDisplay">Бесплатно</span>
+                </div>
+            </div>
+            
+            <button class="order-submit-btn" onclick="submitOrder()">✅ Оформить заказ</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">✅ Товар добавлен</div>
+
+    <script>
+        let products = [];
+        let cart = [];
+        let currentFilter = 'all';
+        let userBonusBalance = 0;
+
+        // ===== ЗАГРУЗКА ТОВАРОВ =====
+        async function loadProducts() {
+            try {
+                const response = await fetch('/api/products');
+                products = await response.json();
+                console.log('📦 Загружено товаров:', products.length);
+                renderProducts();
+            } catch (error) {
+                console.error('Ошибка загрузки:', error);
+                document.getElementById('productList').innerHTML = `
+                    <div class="empty-state">
+                        <span class="big-emoji">⚠️</span>
+                        <p>Не удалось загрузить товары</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderProducts() {
+            const list = document.getElementById('productList');
+            let filtered = products;
+            if (currentFilter !== 'all') {
+                filtered = products.filter(p => p.category === currentFilter);
             }
             
-            const optionsHtml = cleanOptions.length > 0 ? `
-                <select id="select-${p.id}" class="option-select">
-                    <option value="">Выбери вкус</option>
-                    ${cleanOptions.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
-                </select>
-            ` : '';
-            
-            // Кнопка disabled, если есть опции (будет разблокирована через JS)
-            const isDisabled = hasOptions ? 'disabled' : '';
-            
-            return `
-                <div class="product-card">
-                    <span class="emoji">${p.emoji || '📦'}</span>
-                    <h3>${p.name}</h3>
-                    <div class="price">${p.price} ₸</div>
-                    ${optionsHtml}
-                    <button onclick="addToCart(${p.id})" id="btn-${p.id}" ${isDisabled}>
-                        ➕ В корзину
-                    </button>
-                </div>
-            `;
-        }).join('');
-        
-        // Навешиваем обработчики на select (после того, как они созданы)
-        document.querySelectorAll('.option-select').forEach(select => {
-            select.addEventListener('change', function() {
-                const productId = this.id.replace('select-', '');
-                const btn = document.getElementById(`btn-${productId}`);
-                if (btn) {
-                    btn.disabled = this.value === '';
-                }
-            });
-        });
-    }
-
-    function addToCart(productId) {
-        const product = products.find(p => p.id === productId);
-        if (!product) {
-            showToast('❌ Товар не найден');
-            return;
-        }
-        
-        // Проверяем, есть ли опции
-        const hasOptions = product.options && Array.isArray(product.options) && product.options.length > 0;
-        let selectedOption = '';
-        
-        if (hasOptions) {
-            const select = document.getElementById(`select-${productId}`);
-            if (!select || select.value === '') {
-                showToast('⚠️ Выбери вкус!');
+            if (filtered.length === 0) {
+                list.innerHTML = `<div class="empty-state"><span class="big-emoji">🔍</span><p>Нет товаров в этой категории</p></div>`;
                 return;
             }
-            selectedOption = select.value;
-        }
-        
-        // Добавляем в корзину
-        cart.push({
-            ...product,
-            selectedOption: selectedOption
-        });
-        
-        updateCartCount();
-        showToast(`🍓 ${product.name}${selectedOption ? ' (' + selectedOption + ')' : ''} добавлен!`);
-        
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-        }
-    }
-
-    // Фильтр категорий
-    document.querySelectorAll('.category-tabs button[data-category]').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.category-tabs button[data-category]').forEach(b => {
-                b.classList.remove('active');
+            
+            list.innerHTML = filtered.map(p => {
+                const hasOptions = p.options && Array.isArray(p.options) && p.options.length > 0;
+                let cleanOptions = [];
+                if (hasOptions) {
+                    cleanOptions = p.options.map(opt => opt.replace(/^"|"$/g, '').trim());
+                }
+                
+                const optionsHtml = cleanOptions.length > 0 ? `
+                    <select id="select-${p.id}" class="option-select">
+                        <option value="">Выбери вкус</option>
+                        ${cleanOptions.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+                    </select>
+                ` : '';
+                
+                const isDisabled = hasOptions ? 'disabled' : '';
+                
+                return `
+                    <div class="product-card">
+                        <span class="emoji">${p.emoji || '📦'}</span>
+                        <h3>${p.name}</h3>
+                        <div class="price">${p.price} ₸</div>
+                        ${optionsHtml}
+                        <button onclick="addToCart(${p.id})" id="btn-${p.id}" ${isDisabled}>
+                            ➕ В корзину
+                        </button>
+                    </div>
+                `;
+            }).join('');
+            
+            document.querySelectorAll('.option-select').forEach(select => {
+                select.addEventListener('change', function() {
+                    const productId = this.id.replace('select-', '');
+                    const btn = document.getElementById(`btn-${productId}`);
+                    if (btn) {
+                        btn.disabled = this.value === '';
+                    }
+                });
             });
-            this.classList.add('active');
-            currentFilter = this.dataset.category;
-            renderProducts();
-        });
-    });
-
-    function updateCartCount() {
-        document.getElementById('cartCount').textContent = cart.length;
-    }
-
-    function showToast(text) {
-        const toast = document.getElementById('toast');
-        toast.textContent = text;
-        toast.classList.add('show');
-        clearTimeout(toast._timeout);
-        toast._timeout = setTimeout(() => {
-            toast.classList.remove('show');
-        }, 1500);
-    }
-
-    function openCart() {
-        if (cart.length === 0) {
-            showToast('🛒 Корзина пуста');
-            return;
         }
-        const modal = document.getElementById('cartModal');
-        modal.classList.remove('hidden');
-        
-        const itemsDiv = document.getElementById('cartItems');
-        itemsDiv.innerHTML = cart.map((item, index) => `
-            <div class="cart-item">
-                <div class="item-info">
-                    <span class="name">${item.emoji || '📦'} ${item.name}</span>
-                    ${item.selectedOption ? `<span class="option">Вкус: ${item.selectedOption}</span>` : ''}
-                </div>
-                <div class="item-price">
-                    <span>${item.price} ₸</span>
-                    <button class="remove-btn" onclick="removeFromCart(${index})">✕</button>
-                </div>
-            </div>
-        `).join('');
-        
-        const total = cart.reduce((sum, item) => sum + item.price, 0);
-        document.getElementById('cartTotal').textContent = `Итого: ${total} ₸`;
-    }
 
-    function closeCart() {
-        document.getElementById('cartModal').classList.add('hidden');
-    }
-
-    function removeFromCart(index) {
-        cart.splice(index, 1);
-        updateCartCount();
-        if (cart.length === 0) {
-            closeCart();
-        } else {
-            openCart();
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) {
+                showToast('❌ Товар не найден');
+                return;
+            }
+            
+            const hasOptions = product.options && Array.isArray(product.options) && product.options.length > 0;
+            let selectedOption = '';
+            
+            if (hasOptions) {
+                const select = document.getElementById(`select-${productId}`);
+                if (!select || select.value === '') {
+                    showToast('⚠️ Выбери вкус!');
+                    return;
+                }
+                selectedOption = select.value;
+            }
+            
+            cart.push({
+                ...product,
+                selectedOption: selectedOption
+            });
+            
+            updateCartCount();
+            showToast(`🍓 ${product.name}${selectedOption ? ' (' + selectedOption + ')' : ''} добавлен!`);
+            
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+            }
         }
-    }
 
- // Оформление заказа — открывает форму
-async function checkout() {
-    openOrderModal();
-}
-
-    loadProducts();
-    // ===== КЭШБЭК =====
-let userCashback = { balance: 0, canSpend: 0 };
-
-// Получить ID пользователя (из Telegram или тестовый)
-function getUserId() {
-    // В Telegram: window.Telegram.WebApp.initDataUnsafe.user.id
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe?.user) {
-        return window.Telegram.WebApp.initDataUnsafe.user.id;
-    }
-    // Тестовый ID для локальной разработки
-    return 'test_user_' + Date.now();
-}
-
-function getUsername() {
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe?.user) {
-        return window.Telegram.WebApp.initDataUnsafe.user.username || 'user';
-    }
-    return 'test_user';
-}
-
-// Загрузить баланс
-async function loadCashback() {
-    const userId = getUserId();
-    try {
-        const response = await fetch(`/api/cashback/${userId}`);
-        const data = await response.json();
-        userCashback = data;
-        document.getElementById('cashbackBalance').textContent = data.balance || 0;
-        document.getElementById('cbTotal').textContent = (data.balance || 0) + ' ₸';
-        document.getElementById('cbCanSpend').textContent = (data.canSpend || 0) + ' ₸';
-    } catch (error) {
-        console.error('Ошибка загрузки кэшбэка:', error);
-    }
-}
-
-// Открыть модалку
-function openCashback() {
-    document.getElementById('cashbackModal').classList.remove('hidden');
-    // Обновляем данные при открытии
-    loadCashback();
-}
-
-// Закрыть модалку
-function closeCashback() {
-    document.getElementById('cashbackModal').classList.add('hidden');
-}
-
-// Закрыть по клику на фон
-document.getElementById('cashbackModal')?.addEventListener('click', function(e) {
-    if (e.target === this) closeCashback();
-});
-
-// Загружаем кэшбэк при старте
-loadCashback();
-
-// ===== ОФОРМЛЕНИЕ ЗАКАЗА =====
-let currentCartTotal = 0;
-
-// Открыть модалку оформления
-function openOrderModal() {
-    if (cart.length === 0) {
-        showToast('🛒 Корзина пуста');
-        return;
-    }
-    
-    // Рассчитываем сумму
-    const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-    const delivery = subtotal < 9000 ? 1000 : 0;
-    currentCartTotal = subtotal + delivery;
-    
-    // Обновляем отображение
-    document.getElementById('orderTotalDisplay').textContent = currentCartTotal + ' тг';
-    document.getElementById('orderDeliveryDisplay').textContent = delivery === 0 ? 'Бесплатно' : delivery + ' тг';
-    
-    // Очищаем поля
-    document.getElementById('orderPhone').value = '';
-    document.getElementById('orderAddress').value = '';
-    document.getElementById('orderChange').value = '';
-    document.getElementById('orderNotes').value = '';
-    
-    // Убираем ошибки
-    document.getElementById('phoneError').classList.add('hidden');
-    document.getElementById('addressError').classList.add('hidden');
-    
-    // Открываем модалку
-    document.getElementById('orderModal').classList.remove('hidden');
-}
-
-// Закрыть модалку
-function closeOrderModal() {
-    document.getElementById('orderModal').classList.add('hidden');
-}
-
-// Закрыть по клику на фон
-document.getElementById('orderModal')?.addEventListener('click', function(e) {
-    if (e.target === this) closeOrderModal();
-});
-
-// Отправить заказ
-async function submitOrder() {
-    // Блокируем кнопку, чтобы нельзя было нажать дважды
-    const submitBtn = document.querySelector('.order-submit-btn');
-    if (submitBtn.disabled) return; // Если уже заблокирована — выходим
-    
-    // Проверяем обязательные поля
-    const phone = document.getElementById('orderPhone').value.trim();
-    const address = document.getElementById('orderAddress').value.trim();
-    
-    let isValid = true;
-    
-    if (!phone) {
-        document.getElementById('phoneError').classList.remove('hidden');
-        isValid = false;
-    } else {
-        document.getElementById('phoneError').classList.add('hidden');
-    }
-    
-    if (!address) {
-        document.getElementById('addressError').classList.remove('hidden');
-        isValid = false;
-    } else {
-        document.getElementById('addressError').classList.add('hidden');
-    }
-    
-    if (!isValid) return;
-    
-    // Блокируем кнопку и показываем, что идёт отправка
-    submitBtn.disabled = true;
-    submitBtn.textContent = '⏳ Отправка...';
-    
-    // Собираем данные
-    const change = document.getElementById('orderChange').value.trim();
-    const notes = document.getElementById('orderNotes').value.trim();
-    
-    const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-    const delivery = subtotal < 9000 ? 1000 : 0;
-    const total = subtotal + delivery;
-    
-    const userId = getUserId();
-    const username = getUsername();
-    
-    // Формируем текст заказа
-    const itemsText = cart.map(item => 
-        `${item.name}${item.selectedOption ? ' (' + item.selectedOption + ')' : ''} x1`
-    ).join('\n');
-    
-    const orderData = {
-        items: cart.map(item => ({
-            name: item.name,
-            price: item.price,
-            option: item.selectedOption || ''
-        })),
-        subtotal: subtotal,
-        delivery: delivery,
-        total: total,
-        phone: phone,
-        address: address,
-        change: change || 'Не требуется',
-        notes: notes || 'Нет',
-        userId: userId,
-        username: username
-    };
-    
-    // Отправляем на сервер
-    try {
-        const response = await fetch('/api/order', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderData)
+        document.querySelectorAll('.category-tabs button[data-category]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.category-tabs button[data-category]').forEach(b => {
+                    b.classList.remove('active');
+                });
+                this.classList.add('active');
+                currentFilter = this.dataset.category;
+                renderProducts();
+            });
         });
-        
-        const result = await response.json();
-        
-        // Показываем уведомление с деталями заказа
-        const message = `✅ Заказ оформлен!\n\n` +
-            `📦 Товары:\n${itemsText}\n\n` +
-            `💰 Сумма: ${subtotal} тг\n` +
-            `🚚 Доставка: ${delivery === 0 ? 'Бесплатно' : delivery + ' тг'}\n` +
-            `📦 Итого: ${total} тг\n\n` +
-            `📞 Телефон: ${phone}\n` +
-            `📍 Адрес: ${address}\n` +
-            `${change ? `🔄 Сдача: ${change}\n` : ''}` +
-            `${notes ? `📝 Пожелания: ${notes}` : ''}`;
-        
-        showToast(message);
-        
-        // Очищаем корзину
-        cart = [];
-        updateCartCount();
-        closeCart();
-        closeOrderModal();
-        renderProducts();
-        
-        // Проверяем, не осталось ли товаров в корзине на случай ошибки
-        
-    } catch (error) {
-        showToast('❌ Ошибка при оформлении заказа');
-        console.error(error);
-    } finally {
-        // ВСЕГДА разблокируем кнопку (даже при ошибке)
-        submitBtn.disabled = false;
-        submitBtn.textContent = '✅ Оформить заказ';
-    }
-}
 
-</script>
+        function updateCartCount() {
+            document.getElementById('cartCount').textContent = cart.length;
+        }
+
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            toast.textContent = text;
+            toast.classList.add('show');
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 1500);
+        }
+
+        function openCart() {
+            if (cart.length === 0) {
+                showToast('🛒 Корзина пуста');
+                return;
+            }
+            const modal = document.getElementById('cartModal');
+            modal.classList.remove('hidden');
+            
+            const itemsDiv = document.getElementById('cartItems');
+            itemsDiv.innerHTML = cart.map((item, index) => `
+                <div class="cart-item">
+                    <div class="item-info">
+                        <span class="name">${item.emoji || '📦'} ${item.name}</span>
+                        ${item.selectedOption ? `<span class="option">Вкус: ${item.selectedOption}</span>` : ''}
+                    </div>
+                    <div class="item-price">
+                        <span>${item.price} ₸</span>
+                        <button class="remove-btn" onclick="removeFromCart(${index})">✕</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            document.getElementById('cartTotal').textContent = `Итого: ${total} ₸`;
+        }
+
+        function closeCart() {
+            document.getElementById('cartModal').classList.add('hidden');
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartCount();
+            if (cart.length === 0) {
+                closeCart();
+            } else {
+                openCart();
+            }
+        }
+
+        // ===== ОФОРМЛЕНИЕ ЗАКАЗА =====
+        async function checkout() {
+            openOrderModal();
+        }
+
+        // ===== КЭШБЭК =====
+        let userCashback = { balance: 0, canSpend: 0 };
+
+        function getUserId() {
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe?.user) {
+                return window.Telegram.WebApp.initDataUnsafe.user.id;
+            }
+            return 'test_user_' + Date.now();
+        }
+
+        function getUsername() {
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe?.user) {
+                return window.Telegram.WebApp.initDataUnsafe.user.username || 'user';
+            }
+            return 'test_user';
+        }
+
+        async function loadCashback() {
+            const userId = getUserId();
+            try {
+                const response = await fetch(`/api/cashback/${userId}`);
+                const data = await response.json();
+                userCashback = data;
+                document.getElementById('cashbackBalance').textContent = data.balance || 0;
+                document.getElementById('cbTotal').textContent = (data.balance || 0) + ' ₸';
+                document.getElementById('cbCanSpend').textContent = (data.canSpend || 0) + ' ₸';
+            } catch (error) {
+                console.error('Ошибка загрузки кэшбэка:', error);
+            }
+        }
+
+        function openCashback() {
+            document.getElementById('cashbackModal').classList.remove('hidden');
+            loadCashback();
+        }
+
+        function closeCashback() {
+            document.getElementById('cashbackModal').classList.add('hidden');
+        }
+
+        document.getElementById('cashbackModal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeCashback();
+        });
+
+        // ===== БОНУСЫ В ФОРМЕ =====
+        async function loadBonusBalance() {
+            const userId = getUserId();
+            try {
+                const response = await fetch(`/api/cashback/${userId}`);
+                const data = await response.json();
+                userBonusBalance = data.balance || 0;
+                document.getElementById('bonusBalanceDisplay').textContent = userBonusBalance;
+            } catch (error) {
+                console.error('Ошибка загрузки бонусов:', error);
+            }
+        }
+
+        function toggleBonusInfo() {
+            const checkbox = document.getElementById('useBonuses');
+            const info = document.getElementById('bonusInfo');
+            if (checkbox.checked) {
+                info.classList.remove('hidden');
+            } else {
+                info.classList.add('hidden');
+            }
+        }
+
+        // ===== ОТКРЫТИЕ МОДАЛКИ =====
+        let currentCartTotal = 0;
+
+        function openOrderModal() {
+            if (cart.length === 0) {
+                showToast('🛒 Корзина пуста');
+                return;
+            }
+            
+            const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+            const delivery = subtotal < 9000 ? 1000 : 0;
+            currentCartTotal = subtotal + delivery;
+            
+            document.getElementById('orderTotalDisplay').textContent = currentCartTotal + ' тг';
+            document.getElementById('orderDeliveryDisplay').textContent = delivery === 0 ? 'Бесплатно' : delivery + ' тг';
+            
+            document.getElementById('orderPhone').value = '';
+            document.getElementById('orderAddress').value = '';
+            document.getElementById('orderChange').value = '';
+            document.getElementById('orderNotes').value = '';
+            
+            document.getElementById('phoneError').classList.add('hidden');
+            document.getElementById('addressError').classList.add('hidden');
+            
+            // Загружаем баланс бонусов
+            loadBonusBalance();
+            
+            // Сбрасываем галочку
+            document.getElementById('useBonuses').checked = false;
+            document.getElementById('bonusInfo').classList.add('hidden');
+            
+            document.getElementById('orderModal').classList.remove('hidden');
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').classList.add('hidden');
+        }
+
+        document.getElementById('orderModal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeOrderModal();
+        });
+
+        // ===== ОТПРАВКА ЗАКАЗА =====
+        async function submitOrder() {
+            const submitBtn = document.querySelector('.order-submit-btn');
+            if (submitBtn.disabled) return;
+            
+            const phone = document.getElementById('orderPhone').value.trim();
+            const address = document.getElementById('orderAddress').value.trim();
+            
+            let isValid = true;
+            
+            if (!phone) {
+                document.getElementById('phoneError').classList.remove('hidden');
+                isValid = false;
+            } else {
+                document.getElementById('phoneError').classList.add('hidden');
+            }
+            
+            if (!address) {
+                document.getElementById('addressError').classList.remove('hidden');
+                isValid = false;
+            } else {
+                document.getElementById('addressError').classList.add('hidden');
+            }
+            
+            if (!isValid) return;
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Отправка...';
+            
+            const change = document.getElementById('orderChange').value.trim();
+            const notes = document.getElementById('orderNotes').value.trim();
+            const useBonuses = document.getElementById('useBonuses').checked;
+            
+            const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+            const delivery = subtotal < 9000 ? 1000 : 0;
+            const total = subtotal + delivery;
+            
+            const userId = getUserId();
+            const username = getUsername();
+            
+            const itemsText = cart.map(item => 
+                `${item.name}${item.selectedOption ? ' (' + item.selectedOption + ')' : ''} x1`
+            ).join('\n');
+            
+            const orderData = {
+                items: cart.map(item => ({
+                    name: item.name,
+                    price: item.price,
+                    option: item.selectedOption || ''
+                })),
+                subtotal: subtotal,
+                delivery: delivery,
+                total: total,
+                phone: phone,
+                address: address,
+                change: change || 'Не требуется',
+                notes: notes || 'Нет',
+                userId: userId,
+                username: username,
+                useBonuses: useBonuses
+            };
+            
+            try {
+                const response = await fetch('/api/order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+                
+                const result = await response.json();
+                
+                const message = `✅ Заказ оформлен!\n\n` +
+                    `📦 Товары:\n${itemsText}\n\n` +
+                    `💰 Сумма: ${subtotal} тг\n` +
+                    `🚚 Доставка: ${delivery === 0 ? 'Бесплатно' : delivery + ' тг'}\n` +
+                    `📦 Итого: ${total} тг\n\n` +
+                    `📞 Телефон: ${phone}\n` +
+                    `📍 Адрес: ${address}\n` +
+                    `${change ? `🔄 Сдача: ${change}\n` : ''}` +
+                    `${notes ? `📝 Пожелания: ${notes}` : ''}` +
+                    `🎯 Оплата бонусами: ${useBonuses ? 'Да' : 'Нет'}`;
+                
+                showToast(message);
+                
+                cart = [];
+                updateCartCount();
+                closeCart();
+                closeOrderModal();
+                renderProducts();
+                
+            } catch (error) {
+                showToast('❌ Ошибка при оформлении заказа');
+                console.error(error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '✅ Оформить заказ';
+            }
+        }
+
+        // ===== ЗАПУСК =====
+        loadProducts();
+        loadCashback();
+    </script>
 
 </body>
 </html>
