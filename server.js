@@ -79,20 +79,17 @@ async function loadProductsFromGoogle() {
 async function getChannelId() {
     try {
         const response = await fetch(
-            `https://api.telegram.org/bot${MAIN_BOT_TOKEN}/sendMessage?chat_id=@piffpuff_channel&text=Привет! Это тестовое сообщение для получения ID`
+            `https://api.telegram.org/bot${MAIN_BOT_TOKEN}/getChat?chat_id=@piffpuff_channel`
         );
         const data = await response.json();
-        console.log('📡 Ответ от Telegram:', JSON.stringify(data, null, 2));
+        console.log('📡 Ответ:', JSON.stringify(data, null, 2));
         if (data.ok) {
-            console.log('✅ ID канала:', data.result.chat.id);
+            console.log('✅ ID канала:', data.result.id);
         }
     } catch (error) {
         console.error('❌ Ошибка:', error.message);
     }
 }
-
-// Вызовите функцию перед запуском сервера
-getChannelId();
 
 // ========== ЗАГРУЗКА КЭШБЭКА ==========
 async function loadCashbackFromGoogle() {
