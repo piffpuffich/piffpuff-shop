@@ -75,22 +75,6 @@ async function loadProductsFromGoogle() {
     }
 }
 
-// ===== ВРЕМЕННО: УЗНАТЬ ID КАНАЛА =====
-async function getChannelId() {
-    try {
-        const response = await fetch(
-            `https://api.telegram.org/bot${MAIN_BOT_TOKEN}/getChat?chat_id=@piffpuff_channel`
-        );
-        const data = await response.json();
-        console.log('📡 Ответ:', JSON.stringify(data, null, 2));
-        if (data.ok) {
-            console.log('✅ ID канала:', data.result.id);
-        }
-    } catch (error) {
-        console.error('❌ Ошибка:', error.message);
-    }
-}
-
 // ========== ЗАГРУЗКА КЭШБЭКА ==========
 async function loadCashbackFromGoogle() {
     try {
