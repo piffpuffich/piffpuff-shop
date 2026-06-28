@@ -13,6 +13,12 @@ const NOTIFY_BOT_TOKEN = '8917717243:AAGa2gUGpPXHuEE-ZDhpNdfHOZ0k_a9zSUA';
 // ID чата (твой Telegram ID)
 const CHAT_ID = '8395485499';
 
+// ===== НОВОЕ: ТОКЕН БОТА-МАГАЗИНА =====
+const MAIN_BOT_TOKEN = '8704731828:AAHc8SWFVq0o8GIjovL4HjlPOZJ91rBuN0w'; // ← ЗАМЕНИ НА СВОЙ ТОКЕН
+
+// ===== НОВОЕ: ID КАНАЛА =====
+const CHANNEL_ID = '@piffpuff_channel'; // ← ЗАМЕНИ НА СВОЙ КАНАЛ
+
 // Создаём бота для уведомлений
 const notifyBot = new Telegraf(NOTIFY_BOT_TOKEN);
 
@@ -68,6 +74,25 @@ async function loadProductsFromGoogle() {
         return productsCache;
     }
 }
+
+// ===== ВРЕМЕННО: УЗНАТЬ ID КАНАЛА =====
+async function getChannelId() {
+    try {
+        const response = await fetch(
+            `https://api.telegram.org/bot${MAIN_BOT_TOKEN}/sendMessage?chat_id=@piffpuff_channel&text=Привет! Это тестовое сообщение для получения ID`
+        );
+        const data = await response.json();
+        console.log('📡 Ответ от Telegram:', JSON.stringify(data, null, 2));
+        if (data.ok) {
+            console.log('✅ ID канала:', data.result.chat.id);
+        }
+    } catch (error) {
+        console.error('❌ Ошибка:', error.message);
+    }
+}
+
+// Вызовите функцию перед запуском сервера
+getChannelId();
 
 // ========== ЗАГРУЗКА КЭШБЭКА ==========
 async function loadCashbackFromGoogle() {
@@ -125,6 +150,41 @@ app.get('/api/cashback/:userId', async (req, res) => {
         balance: userData.balance || 0,
         username: userData.username || ''
     });
+});
+
+// ===== НОВОЕ: ПРОВЕРКА ПОДПИСКИ =====
+app.get('/api/check-subscription/:userId', async (req, res) => {
+    const userId = req.params.userId;
+    console.log(`🔍 Проверяем подписку пользователя ${userId} на канал ${CHANNEL_ID}`);
+
+    try {
+        const response = await fetch(
+            `https://api.telegram.org/bot${MAIN_BOT_TOKEN}/getChatMember?chat_id=${CHANNEL_ID}&user_id=${userId}`
+        );
+        const data = await response.json();
+
+        if (data.ok) {
+            const status = data.result.status;
+            const isSubscribed = ['member', 'administrator', 'creator'].includes(status);
+            res.json({ 
+                subscribed: isSubscribed, 
+                status: status,
+                channel: CHANNEL_ID
+            });
+        } else {
+            console.error('❌ Ошибка от Telegram API:', data.description);
+            res.status(500).json({ 
+                error: 'Не удалось проверить подписку',
+                details: data.description
+            });
+        }
+    } catch (error) {
+        console.error('❌ Ошибка проверки подписки:', error.message);
+        res.status(500).json({ 
+            error: 'Ошибка сервера при проверке подписки',
+            details: error.message
+        });
+    }
 });
 
 // ========== ПРИНЯТЬ ЗАКАЗ (С БОНУСАМИ) ==========
