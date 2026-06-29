@@ -21,6 +21,61 @@
             min-height: 100vh;
         }
         
+        /* ===== СТИЛИ ДЛЯ БЛОКИРОВКИ ===== */
+        #subscription-required {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 40px;
+        }
+        #subscription-required .lock-icon {
+            font-size: 64px;
+            display: block;
+            margin-bottom: 16px;
+        }
+        #subscription-required h2 {
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            font-size: 22px;
+        }
+        #subscription-required p {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        .subscribe-btn {
+            display: inline-block;
+            padding: 14px 30px;
+            background: linear-gradient(135deg, #ff6b8a, #ff3d6b);
+            color: white;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            transition: transform 0.2s;
+            margin-bottom: 12px;
+        }
+        .subscribe-btn:active {
+            transform: scale(0.95);
+        }
+        .check-subscribe-btn {
+            display: inline-block;
+            padding: 10px 24px;
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 8px;
+        }
+        .check-subscribe-btn:active {
+            background: #e0e0e0;
+        }
+
+        /* ===== ОСТАЛЬНЫЕ СТИЛИ (без изменений) ===== */
         .header {
             background: linear-gradient(135deg, #ff6b8a, #ff3d6b);
             color: white;
@@ -567,93 +622,108 @@
         </div>
     </div>
 
-    <div class="header">
-        <h1>💨 Piff&Puff</h1>
-        <p>Магазин Piff&Puff</p>
+    <!-- ===== СТРАНИЦА БЛОКИРОВКИ (показывается, если не подписан) ===== -->
+    <div id="subscription-required">
+        <span class="lock-icon">🔒</span>
+        <h2>Доступ ограничен</h2>
+        <p>Чтобы открыть магазин, подпишитесь на наш канал:</p>
+        <a href="https://t.me/+qAzFvSAq6ZYzZjhi" target="_blank" class="subscribe-btn" id="subscribeLink">
+            📢 Подписаться
+        </a>
+        <br>
+        <button class="check-subscribe-btn" onclick="checkSubscription()">🔄 Проверить подписку</button>
     </div>
 
-    <div class="category-tabs" id="categoryTabs">
-        <button class="active" data-category="all">🔥 Популярное</button>
-        <button data-category="Одноразки">💨 Одноразки</button>
-        <button data-category="Жидкость">🧪 Жидкость</button>
-        <button class="cart-btn" onclick="openCart()">
-            🛒 Корзина <span class="cart-badge" id="cartCount">0</span>
-        </button>
-    </div>
-
-    <div class="products" id="productList"></div>
-
-    <!-- Корзина -->
-    <div class="cart-modal hidden" id="cartModal">
-        <div class="header-cart">
-            <h2>🛒 Корзина</h2>
-            <button class="close-cart" onclick="closeCart()">✕</button>
+    <!-- ===== КОНТЕНТ МАГАЗИНА (показывается только подписанным) ===== -->
+    <div id="store-content" style="display: none;">
+        <div class="header">
+            <h1>💨 Piff&Puff</h1>
+            <p>Магазин Piff&Puff</p>
         </div>
-        <div id="cartItems"></div>
-        <div class="cart-total" id="cartTotal">Итого: 0 ₸</div>
-        <button class="checkout-btn" onclick="checkout()">✅ Оформить заказ</button>
-    </div>
 
-    <!-- Модалка оформления заказа -->
-    <div class="order-modal hidden" id="orderModal">
-        <div class="order-modal-content">
-            <div class="order-header">
-                <h2>📋 Оформление заказа</h2>
-                <button class="order-close" onclick="closeOrderModal()">✕</button>
-            </div>
-            
-            <div class="order-form">
-                <!-- Контактный телефон -->
-                <div class="order-field">
-                    <label>Контактный телефон <span class="required">*</span></label>
-                    <input type="tel" id="orderPhone" placeholder="+7 777 123 45 67" required>
-                    <div class="field-error hidden" id="phoneError">Пожалуйста, укажите контактный телефон</div>
-                </div>
-                
-                <!-- Адрес доставки -->
-                <div class="order-field">
-                    <label>Адрес доставки <span class="required">*</span></label>
-                    <input type="text" id="orderAddress" placeholder="Улица, дом, подъезд" required>
-                    <div class="field-error hidden" id="addressError">Пожалуйста, укажите адрес доставки</div>
-                </div>
-                
-                <!-- Сдача -->
-                <div class="order-field">
-                    <label>Если сумма не ровная - укажите, с какой суммы нужна сдача:</label>
-                    <input type="text" id="orderChange" placeholder="Например: с 2000 тг">
-                </div>
-                
-                <!-- Дополнительные пожелания -->
-                <div class="order-field">
-                    <label>Дополнительные пожелания:</label>
-                    <textarea id="orderNotes" rows="2" placeholder=""></textarea>
-                </div>
+        <div class="category-tabs" id="categoryTabs">
+            <button class="active" data-category="all">🔥 Популярное</button>
+            <button data-category="Одноразки">💨 Одноразки</button>
+            <button data-category="Жидкость">🧪 Жидкость</button>
+            <button class="cart-btn" onclick="openCart()">
+                🛒 Корзина <span class="cart-badge" id="cartCount">0</span>
+            </button>
+        </div>
 
-                <!-- ===== БОНУСЫ ===== -->
-                <div class="order-field bonus-field">
-    <label class="bonus-checkbox">
-        <input type="checkbox" id="useBonuses" onchange="toggleBonusInfo()">
-        Потратить бонусы (<span id="bonusBalanceDisplay">0</span> доступно)
-    </label>
-    <div id="bonusInfo" class="bonus-info hidden">
-        <span class="bonus-hint">Будет списано: <strong id="bonusWillSpend">0</strong> бонусов</span>
-    </div>
-</div>
+        <div class="products" id="productList"></div>
+
+        <!-- Корзина -->
+        <div class="cart-modal hidden" id="cartModal">
+            <div class="header-cart">
+                <h2>🛒 Корзина</h2>
+                <button class="close-cart" onclick="closeCart()">✕</button>
             </div>
-            
-            <!-- Итог -->
-            <div class="order-summary">
-                <div class="order-total-row">
-                    <span>Итого с доставкой:</span>
-                    <span class="order-total-price" id="orderTotalDisplay">0 тг</span>
+            <div id="cartItems"></div>
+            <div class="cart-total" id="cartTotal">Итого: 0 ₸</div>
+            <button class="checkout-btn" onclick="checkout()">✅ Оформить заказ</button>
+        </div>
+
+        <!-- Модалка оформления заказа -->
+        <div class="order-modal hidden" id="orderModal">
+            <div class="order-modal-content">
+                <div class="order-header">
+                    <h2>📋 Оформление заказа</h2>
+                    <button class="order-close" onclick="closeOrderModal()">✕</button>
                 </div>
-                <div class="order-delivery-row">
-                    <span>Доставка:</span>
-                    <span id="orderDeliveryDisplay">Бесплатно</span>
+                
+                <div class="order-form">
+                    <!-- Контактный телефон -->
+                    <div class="order-field">
+                        <label>Контактный телефон <span class="required">*</span></label>
+                        <input type="tel" id="orderPhone" placeholder="+7 777 123 45 67" required>
+                        <div class="field-error hidden" id="phoneError">Пожалуйста, укажите контактный телефон</div>
+                    </div>
+                    
+                    <!-- Адрес доставки -->
+                    <div class="order-field">
+                        <label>Адрес доставки <span class="required">*</span></label>
+                        <input type="text" id="orderAddress" placeholder="Улица, дом, подъезд" required>
+                        <div class="field-error hidden" id="addressError">Пожалуйста, укажите адрес доставки</div>
+                    </div>
+                    
+                    <!-- Сдача -->
+                    <div class="order-field">
+                        <label>Если сумма не ровная - укажите, с какой суммы нужна сдача:</label>
+                        <input type="text" id="orderChange" placeholder="Например: с 2000 тг">
+                    </div>
+                    
+                    <!-- Дополнительные пожелания -->
+                    <div class="order-field">
+                        <label>Дополнительные пожелания:</label>
+                        <textarea id="orderNotes" rows="2" placeholder=""></textarea>
+                    </div>
+
+                    <!-- ===== БОНУСЫ ===== -->
+                    <div class="order-field bonus-field">
+                        <label class="bonus-checkbox">
+                            <input type="checkbox" id="useBonuses" onchange="toggleBonusInfo()">
+                            Потратить бонусы (<span id="bonusBalanceDisplay">0</span> доступно)
+                        </label>
+                        <div id="bonusInfo" class="bonus-info hidden">
+                            <span class="bonus-hint">Будет списано: <strong id="bonusWillSpend">0</strong> бонусов</span>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- Итог -->
+                <div class="order-summary">
+                    <div class="order-total-row">
+                        <span>Итого с доставкой:</span>
+                        <span class="order-total-price" id="orderTotalDisplay">0 тг</span>
+                    </div>
+                    <div class="order-delivery-row">
+                        <span>Доставка:</span>
+                        <span id="orderDeliveryDisplay">Бесплатно</span>
+                    </div>
+                </div>
+                
+                <button class="order-submit-btn" onclick="submitOrder()">✅ Оформить заказ</button>
             </div>
-            
-            <button class="order-submit-btn" onclick="submitOrder()">✅ Оформить заказ</button>
         </div>
     </div>
 
@@ -664,6 +734,47 @@
         let cart = [];
         let currentFilter = 'all';
         let userBonusBalance = 0;
+
+        // ===== ПРОВЕРКА ПОДПИСКИ =====
+        async function checkSubscription() {
+            const userId = getUserId();
+            const storeContent = document.getElementById('store-content');
+            const subscriptionRequired = document.getElementById('subscription-required');
+            
+            try {
+                const response = await fetch(`/api/check-subscription/${userId}`);
+                const data = await response.json();
+                console.log('🔍 Статус подписки:', data);
+                
+                if (data.subscribed) {
+                    // Пользователь подписан — показываем магазин
+                    storeContent.style.display = 'block';
+                    subscriptionRequired.style.display = 'none';
+                    
+                    // Загружаем товары и кэшбэк, если ещё не загружены
+                    if (products.length === 0) {
+                        loadProducts();
+                    }
+                    loadCashback();
+                } else {
+                    // Не подписан — показываем блокировку
+                    storeContent.style.display = 'none';
+                    subscriptionRequired.style.display = 'block';
+                    
+                    // Обновляем ссылку на канал (можно заменить на свой)
+                    const channelLink = document.getElementById('subscribeLink');
+                    // Если у тебя нет юзернейма канала, используй ссылку-приглашение
+                    // channelLink.href = 'https://t.me/joinchat/XXXXXXXXXXXXX';
+                }
+            } catch (error) {
+                console.error('❌ Ошибка проверки подписки:', error);
+                // В случае ошибки показываем магазин, чтобы не блокировать пользователя
+                storeContent.style.display = 'block';
+                subscriptionRequired.style.display = 'none';
+                loadProducts();
+                loadCashback();
+            }
+        }
 
         // ===== ЗАГРУЗКА ТОВАРОВ =====
         async function loadProducts() {
@@ -895,46 +1006,42 @@
         }
 
         function toggleBonusInfo() {
-    const checkbox = document.getElementById('useBonuses');
-    const info = document.getElementById('bonusInfo');
-    if (checkbox.checked) {
-        info.classList.remove('hidden');
-        calculateBonusSpend(); // ← рассчитываем при показе
-    } else {
-        info.classList.add('hidden');
-    }
-}
+            const checkbox = document.getElementById('useBonuses');
+            const info = document.getElementById('bonusInfo');
+            if (checkbox.checked) {
+                info.classList.remove('hidden');
+                calculateBonusSpend();
+            } else {
+                info.classList.add('hidden');
+            }
+        }
 
-        // Рассчитать, сколько бонусов будет списано
-function calculateBonusSpend() {
-    const checkbox = document.getElementById('useBonuses');
-    const bonusDisplay = document.getElementById('bonusWillSpend');
-    
-    if (!checkbox.checked) {
-        bonusDisplay.textContent = '0';
-        return;
-    }
-    
-    // Сумма заказа
-    const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-    const delivery = subtotal < 9000 ? 1000 : 0;
-    const total = subtotal + delivery;
-    
-    // Доступные бонусы
-    const available = userBonusBalance || 0;
-    
-    // Рассчитываем, сколько можно списать (кратно 500, но не больше суммы заказа)
-    let canSpend = Math.floor(available / 500) * 500;
-    if (canSpend > total) {
-        canSpend = Math.floor(total / 500) * 500;
-    }
-    
-    if (canSpend >= 500) {
-        bonusDisplay.textContent = canSpend;
-    } else {
-        bonusDisplay.textContent = '0 (недостаточно для списания)';
-    }
-}
+        function calculateBonusSpend() {
+            const checkbox = document.getElementById('useBonuses');
+            const bonusDisplay = document.getElementById('bonusWillSpend');
+            
+            if (!checkbox.checked) {
+                bonusDisplay.textContent = '0';
+                return;
+            }
+            
+            const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+            const delivery = subtotal < 9000 ? 1000 : 0;
+            const total = subtotal + delivery;
+            
+            const available = userBonusBalance || 0;
+            
+            let canSpend = Math.floor(available / 500) * 500;
+            if (canSpend > total) {
+                canSpend = Math.floor(total / 500) * 500;
+            }
+            
+            if (canSpend >= 500) {
+                bonusDisplay.textContent = canSpend;
+            } else {
+                bonusDisplay.textContent = '0 (недостаточно для списания)';
+            }
+        }
 
         // ===== ОТКРЫТИЕ МОДАЛКИ =====
         let currentCartTotal = 0;
@@ -960,13 +1067,11 @@ function calculateBonusSpend() {
             document.getElementById('phoneError').classList.add('hidden');
             document.getElementById('addressError').classList.add('hidden');
             
-            // Загружаем баланс бонусов
             loadBonusBalance();
             
-         // Сбрасываем галочку и скрываем инфо
-document.getElementById('useBonuses').checked = false;
-document.getElementById('bonusInfo').classList.add('hidden');
-document.getElementById('bonusWillSpend').textContent = '0';
+            document.getElementById('useBonuses').checked = false;
+            document.getElementById('bonusInfo').classList.add('hidden');
+            document.getElementById('bonusWillSpend').textContent = '0';
             
             document.getElementById('orderModal').classList.remove('hidden');
         }
@@ -1079,8 +1184,8 @@ document.getElementById('bonusWillSpend').textContent = '0';
         }
 
         // ===== ЗАПУСК =====
-        loadProducts();
-        loadCashback();
+        // Сначала проверяем подписку, потом загружаем всё остальное
+        checkSubscription();
     </script>
 
 </body>

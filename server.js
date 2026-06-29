@@ -17,7 +17,7 @@ const CHAT_ID = '8395485499';
 const MAIN_BOT_TOKEN = '8704731828:AAHc8SWFVq0o8GIjovL4HjlPOZJ91rBuN0w'; // ← ЗАМЕНИ НА СВОЙ ТОКЕН
 
 // ===== НОВОЕ: ID КАНАЛА =====
-const CHANNEL_ID = '@piffpuff_channel'; // ← ЗАМЕНИ НА СВОЙ КАНАЛ
+const CHANNEL_ID = '-1003640998264'; // ← ЗАМЕНИ НА СВОЙ КАНАЛ
 
 // Создаём бота для уведомлений
 const notifyBot = new Telegraf(NOTIFY_BOT_TOKEN);
