@@ -154,45 +154,80 @@
             transform: scale(1.2);
         }
 
-        /* ===== КАТЕГОРИИ ===== */
-        .categories {
+        /* ===== КАТЕГОРИИ (вертикально, по центру) ===== */
+        .categories-vertical {
             display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 4px 0 16px;
-            scrollbar-width: none;
-            -webkit-overflow-scrolling: touch;
-            margin-top: 4px;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-top: 30px;
+            padding: 0 10px;
         }
-        .categories::-webkit-scrollbar {
-            display: none;
-        }
-        .category-btn {
-            flex: 0 0 auto;
-            padding: 8px 18px;
+        .category-btn-vertical {
+            width: 100%;
+            max-width: 280px;
+            padding: 16px 20px;
             border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 30px;
+            border-radius: 16px;
             background: rgba(255,255,255,0.02);
-            color: rgba(255,255,255,0.4);
-            font-size: 12px;
-            font-weight: 600;
+            color: rgba(255,255,255,0.5);
+            font-size: 16px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.25s;
-            white-space: nowrap;
-            letter-spacing: 0.3px;
+            text-align: center;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
         }
-        .category-btn.active {
-            background: rgba(57, 255, 20, 0.08);
+        .category-btn-vertical:active {
+            transform: scale(0.96);
+        }
+        .category-btn-vertical .icon {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        .category-btn-vertical .arrow {
+            float: right;
+            color: rgba(255,255,255,0.15);
+            font-size: 18px;
+        }
+        .category-btn-vertical.active {
+            background: rgba(57, 255, 20, 0.06);
             border-color: var(--neon-green);
             color: var(--neon-green);
             box-shadow: 0 0 30px rgba(57, 255, 20, 0.05);
         }
-        .category-btn:active {
-            transform: scale(0.95);
+
+        /* ===== СТРАНИЦА ТОВАРОВ ===== */
+        .products-page {
+            display: none;
+            padding: 0 0 20px;
+        }
+        .products-page .back-btn {
+            display: inline-block;
+            color: rgba(255,255,255,0.4);
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 16px;
+            padding: 6px 0;
+            transition: color 0.2s;
+            border: none;
+            background: none;
+        }
+        .products-page .back-btn:active {
+            color: var(--neon-green);
+        }
+        .products-page .category-title {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+        .products-page .category-title span {
+            color: var(--neon-green);
         }
 
-        /* ===== ТОВАРЫ ===== */
         .products {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -317,61 +352,6 @@
             text-align: center;
         }
 
-        /* ===== МОДАЛКИ ===== */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(12px);
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            z-index: 2000;
-            animation: fadeIn 0.3s ease;
-            padding: 16px;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes slideUp {
-            from { transform: translateY(40px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .modal-content {
-            background: #14141e;
-            border: 1px solid rgba(255,255,255,0.04);
-            border-radius: 24px;
-            padding: 24px 20px;
-            max-width: 420px;
-            width: 100%;
-            max-height: 85vh;
-            overflow-y: auto;
-            animation: slideUp 0.3s ease;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .modal-header h2 {
-            font-size: 20px;
-            color: #fff;
-        }
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            color: rgba(255,255,255,0.25);
-            padding: 0 8px;
-        }
-
         .hidden {
             display: none !important;
         }
@@ -463,7 +443,61 @@
             background: rgba(255,255,255,0.08);
         }
 
-        /* ===== СТИЛИ ДЛЯ МОДАЛОК (переиспользуемые) ===== */
+        /* ===== МОДАЛКИ ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+            padding: 16px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-content {
+            background: #14141e;
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 24px;
+            padding: 24px 20px;
+            max-width: 420px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-header h2 {
+            font-size: 20px;
+            color: #fff;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.25);
+            padding: 0 8px;
+        }
+
         .modal-field {
             margin-bottom: 16px;
         }
@@ -621,6 +655,17 @@
             color: var(--neon-green);
             text-align: right;
         }
+
+        /* ===== АНИМАЦИЯ СМЕНЫ СТРАНИЦ ===== */
+        .page-transition {
+            transition: opacity 0.25s ease;
+        }
+        .page-hidden {
+            display: none;
+        }
+        .page-visible {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -647,7 +692,6 @@
                     <div class="brand">Piff<span class="puff">&amp;Puff</span></div>
                     <div class="sub">ВЕЙП ШОП</div>
                 </div>
-                <!-- Кнопка кэшбэка (слева сверху) -->
                 <button class="cashback-btn-top" onclick="openCashback()">
                     <span class="icon">💰</span>
                     КЭШБЭК
@@ -661,18 +705,38 @@
                 <div class="banner-dots" id="bannerDots"></div>
             </div>
 
-            <!-- ===== КАТЕГОРИИ ===== -->
-            <div class="categories" id="categoryTabs">
-                <button class="category-btn active" data-category="all">🔥 Все</button>
-                <button class="category-btn" data-category="Одноразки">💨 Одноразки</button>
-                <button class="category-btn" data-category="Жидкости">🧪 Жидкости</button>
-                <button class="category-btn" data-category="Снюс">🌿 Снюс</button>
-                <button class="category-btn" data-category="Расходники">🔧 Расходники</button>
-                <button class="category-btn" data-category="POD-системы">⚡ POD</button>
+            <!-- ===== ГЛАВНАЯ СТРАНИЦА (категории вертикально) ===== -->
+            <div id="mainPage" class="page-visible page-transition">
+                <div class="categories-vertical">
+                    <button class="category-btn-vertical" onclick="openCategory('Одноразки')">
+                        <span class="icon">💨</span> Одноразки
+                        <span class="arrow">›</span>
+                    </button>
+                    <button class="category-btn-vertical" onclick="openCategory('Жидкости')">
+                        <span class="icon">🧪</span> Жидкости
+                        <span class="arrow">›</span>
+                    </button>
+                    <button class="category-btn-vertical" onclick="openCategory('Снюс')">
+                        <span class="icon">🌿</span> Снюс
+                        <span class="arrow">›</span>
+                    </button>
+                    <button class="category-btn-vertical" onclick="openCategory('Расходники')">
+                        <span class="icon">🔧</span> Расходники
+                        <span class="arrow">›</span>
+                    </button>
+                    <button class="category-btn-vertical" onclick="openCategory('POD-системы')">
+                        <span class="icon">⚡</span> POD-системы
+                        <span class="arrow">›</span>
+                    </button>
+                </div>
             </div>
 
-            <!-- ===== ТОВАРЫ ===== -->
-            <div class="products" id="productList"></div>
+            <!-- ===== СТРАНИЦА ТОВАРОВ КАТЕГОРИИ ===== -->
+            <div id="productsPage" class="page-hidden page-transition">
+                <button class="back-btn" onclick="closeCategory()">← Назад</button>
+                <div class="category-title" id="categoryTitle">Категория: <span id="categoryNameSpan">Все</span></div>
+                <div class="products" id="productList"></div>
+            </div>
 
         </div>
 
@@ -772,7 +836,6 @@
 
     <script>
         // ===== НАСТРОЙКИ =====
-        // Список баннеров (ЗАМЕНИ НА СВОИ КАРТИНКИ)
         const banners = [
             'https://i.ibb.co/7J7VvL3/background.png',
             'https://i.ibb.co/7J7VvL3/background.png',
@@ -782,7 +845,7 @@
         // ===== ПЕРЕМЕННЫЕ =====
         let products = [];
         let cart = [];
-        let currentFilter = 'all';
+        let currentCategory = '';
         let userBonusBalance = 0;
         let currentBanner = 0;
         let bannerInterval = null;
@@ -824,7 +887,6 @@
         function initBanners() {
             const track = document.getElementById('bannerTrack');
             const dots = document.getElementById('bannerDots');
-            
             if (!track || banners.length === 0) return;
             
             track.innerHTML = banners.map(url => `
@@ -835,9 +897,7 @@
                 <span class="banner-dot ${i === 0 ? 'active' : ''}" onclick="goToBanner(${i})"></span>
             `).join('');
             
-            if (banners.length > 1) {
-                startAutoScroll();
-            }
+            if (banners.length > 1) startAutoScroll();
         }
 
         function goToBanner(index) {
@@ -869,8 +929,7 @@
         }
 
         // Свайп для баннера
-        let touchStartX = 0;
-        let touchEndX = 0;
+        let touchStartX = 0, touchEndX = 0;
         document.addEventListener('DOMContentLoaded', () => {
             const section = document.getElementById('bannerSection');
             if (!section) return;
@@ -890,30 +949,38 @@
             }, { passive: true });
         });
 
+        // ===== НАВИГАЦИЯ =====
+        function openCategory(category) {
+            currentCategory = category;
+            document.getElementById('mainPage').classList.remove('page-visible');
+            document.getElementById('mainPage').classList.add('page-hidden');
+            document.getElementById('productsPage').classList.remove('page-hidden');
+            document.getElementById('productsPage').classList.add('page-visible');
+            document.getElementById('categoryNameSpan').textContent = category;
+            renderProducts(category);
+        }
+
+        function closeCategory() {
+            document.getElementById('productsPage').classList.remove('page-visible');
+            document.getElementById('productsPage').classList.add('page-hidden');
+            document.getElementById('mainPage').classList.remove('page-hidden');
+            document.getElementById('mainPage').classList.add('page-visible');
+        }
+
         // ===== ЗАГРУЗКА ТОВАРОВ =====
         async function loadProducts() {
             try {
                 const response = await fetch('/api/products');
                 products = await response.json();
                 console.log('📦 Загружено товаров:', products.length);
-                renderProducts();
             } catch (error) {
                 console.error('Ошибка загрузки:', error);
-                document.getElementById('productList').innerHTML = `
-                    <div class="empty-state">
-                        <span style="font-size:48px;display:block;margin-bottom:8px;">⚠️</span>
-                        <p>Не удалось загрузить товары</p>
-                    </div>
-                `;
             }
         }
 
-        function renderProducts() {
+        function renderProducts(category) {
             const list = document.getElementById('productList');
-            let filtered = products;
-            if (currentFilter !== 'all') {
-                filtered = products.filter(p => p.category === currentFilter);
-            }
+            const filtered = products.filter(p => p.category === category);
             
             if (filtered.length === 0) {
                 list.innerHTML = `<div class="empty-state"><span style="font-size:48px;display:block;margin-bottom:8px;">🔍</span><p>Нет товаров в этой категории</p></div>`;
@@ -959,16 +1026,6 @@
                 });
             });
         }
-
-        // ===== КАТЕГОРИИ =====
-        document.querySelectorAll('.category-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                currentFilter = this.dataset.category;
-                renderProducts();
-            });
-        });
 
         // ===== КОРЗИНА =====
         function addToCart(productId) {
@@ -1053,7 +1110,6 @@
             }
         }
 
-        // ===== ОФОРМЛЕНИЕ ЗАКАЗА =====
         async function checkout() {
             openOrderModal();
         }
@@ -1259,7 +1315,7 @@
                 updateCartCount();
                 closeCart();
                 closeOrderModal();
-                renderProducts();
+                renderProducts(currentCategory);
                 
             } catch (error) {
                 showToast('❌ Ошибка при оформлении заказа');
