@@ -1050,7 +1050,7 @@
             
             cart.push({ ...product, selectedOption });
             updateCartCount();
-            showToast(`🍓 ${product.name}${selectedOption ? ' (' + selectedOption + ')' : ''} добавлен!`);
+            showToast(`${product.name}${selectedOption ? ' (' + selectedOption + ')' : ''} добавлен!`);
             
             if (window.Telegram?.WebApp) {
                 window.Telegram.WebApp.HapticFeedback.impactOccurred('light');

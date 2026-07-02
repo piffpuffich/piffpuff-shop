@@ -13,14 +13,15 @@ const NOTIFY_BOT_TOKEN = '8917717243:AAGa2gUGpPXHuEE-ZDhpNdfHOZ0k_a9zSUA';
 // ID чата (твой Telegram ID)
 const CHAT_ID = '8395485499';
 
-// ===== НОВОЕ: ТОКЕН БОТА-МАГАЗИНА =====
-const MAIN_BOT_TOKEN = '8704731828:AAHc8SWFVq0o8GIjovL4HjlPOZJ91rBuN0w'; // ← ЗАМЕНИ НА СВОЙ ТОКЕН
+// ТОКЕН БОТА-МАГАЗИНА (основного, через который клиент открывает магазин)
+const MAIN_BOT_TOKEN = '8704731828:AAHc8SWFVq0o8GIjovL4HjlPOZJ91rBuN0w';
 
-// ===== НОВОЕ: ID КАНАЛА =====
-const CHANNEL_ID = '-1003640998264'; // ← ЗАМЕНИ НА СВОЙ КАНАЛ
+// ID КАНАЛА
+const CHANNEL_ID = '-1003640998264';
 
-// Создаём бота для уведомлений
+// Создаём ботов
 const notifyBot = new Telegraf(NOTIFY_BOT_TOKEN);
+const mainBot = new Telegraf(MAIN_BOT_TOKEN);
 
 console.log('🚀 Запуск Piff&Puff Shop сервера...');
 
@@ -133,7 +134,7 @@ app.get('/api/cashback/:userId', async (req, res) => {
     });
 });
 
-// ===== НОВОЕ: ПРОВЕРКА ПОДПИСКИ =====
+// ===== ПРОВЕРКА ПОДПИСКИ =====
 app.get('/api/check-subscription/:userId', async (req, res) => {
     const userId = req.params.userId;
     console.log(`🔍 Проверяем подписку пользователя ${userId} на канал ${CHANNEL_ID}`);
@@ -168,7 +169,7 @@ app.get('/api/check-subscription/:userId', async (req, res) => {
     }
 });
 
-// ========== ПРИНЯТЬ ЗАКАЗ (С БОНУСАМИ) ==========
+// ========== ПРИНЯТЬ ЗАКАЗ (С БОНУСАМИ И УВЕДОМЛЕНИЕМ КЛИЕНТУ) ==========
 app.post('/api/order', async (req, res) => {
     const {
         items,
@@ -218,20 +219,22 @@ app.post('/api/order', async (req, res) => {
         }
     }
 
-    // ==== ФОРМИРУЕМ УВЕДОМЛЕНИЕ ====
+    // ==== ФОРМИРУЕМ СПИСОК ТОВАРОВ (с ценой и количеством) ====
     let itemsText = '';
     items.forEach(item => {
         const optionText = item.option ? `: ${item.option}` : '';
-        itemsText += `${item.name}${optionText}\n`;
+        itemsText += `- ${item.name}${optionText} (1 шт. x ${item.price} тг)\n`;
     });
 
     const deliveryText = delivery === 0 ? 'Бесплатно' : `${delivery} тг`;
     const changeText = change && change !== 'Не требуется' ? change : 'Не требуется';
     const notesText = notes && notes !== 'Нет' ? notes : 'Нет';
+    const bonusDisplay = useBonuses ? bonusText : 'Нет';
 
-    const message =
+    // ==== УВЕДОМЛЕНИЕ ВЛАДЕЛЬЦУ (Вам) ====
+    const ownerMessage =
         `🛒 Оформлен новый заказ!\n\n` +
-        `👤 Клиент: @${username || userId} (${userId})\n\n` +
+        `👤 Клиент: ${username ? '@' + username : userId} (${userId})\n` +
         `📍 Адрес доставки: ${address}\n` +
         `📞 Контактный телефон: ${phone}\n` +
         `🔄 Сдача с: ${changeText}\n` +
@@ -240,17 +243,38 @@ app.post('/api/order', async (req, res) => {
         `📦 Товары:\n${itemsText}\n` +
         `📦 Итого: ${finalTotal} тг`;
 
-    // ==== ЛОГ ====
     console.log('🛒 НОВЫЙ ЗАКАЗ!');
-    console.log(message);
+    console.log(ownerMessage);
     console.log('-------------------');
 
-    // ==== ОТПРАВКА В TELEGRAM ====
+    // ==== УВЕДОМЛЕНИЕ КЛИЕНТУ (через основного бота) ====
+    const clientMessage =
+        `🛍 Магазин Piff&Puff - Ваш заказ\n\n` +
+        `📅 ${new Date().toLocaleString()} Вы оформили заказ:\n\n` +
+        `${itemsText}\n` +
+        `💰 Стоимость с учетом доставки: ${finalTotal} тг\n` +
+        `🚚 Доставка: ${deliveryText}\n\n` +
+        `📍 Адрес доставки: ${address}\n` +
+        `📞 Контактный телефон: ${phone}\n` +
+        `🔄 Сдача с: ${changeText}\n` +
+        `📝 Дополнительные пожелания: ${notesText}\n` +
+        `🎯 Оплата бонусами: ${bonusDisplay}`;
+
+    // ==== ОТПРАВКА УВЕДОМЛЕНИЙ ====
     try {
-        await notifyBot.telegram.sendMessage(CHAT_ID, message);
-        console.log('✅ Уведомление отправлено в Telegram');
+        // Владельцу (через notifyBot)
+        await notifyBot.telegram.sendMessage(CHAT_ID, ownerMessage);
+        console.log('✅ Уведомление владельцу отправлено');
+
+        // Клиенту (через основного бота)
+        if (userId) {
+            await mainBot.telegram.sendMessage(userId, clientMessage);
+            console.log(`✅ Подтверждение отправлено пользователю ${userId}`);
+        } else {
+            console.log('⚠️ Нет userId, уведомление клиенту не отправлено');
+        }
     } catch (error) {
-        console.error('❌ Ошибка отправки уведомления:', error.message);
+        console.error('❌ Ошибка отправки уведомлений:', error.message);
     }
 
     res.json({
