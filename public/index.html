@@ -202,27 +202,28 @@
         .products-page .back-btn {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            color: rgba(255,255,255,0.5);
+            gap: 8px;
+            background: transparent;
+            border: 1.5px solid rgba(57, 255, 20, 0.25);
+            border-radius: 30px;
+            padding: 8px 18px;
+            color: var(--neon-green);
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             margin-bottom: 16px;
-            padding: 8px 16px;
             transition: all 0.2s;
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 30px;
-            background: rgba(255,255,255,0.02);
             backdrop-filter: blur(4px);
         }
         .products-page .back-btn:active {
             transform: scale(0.95);
-            color: var(--neon-green);
-            border-color: rgba(57, 255, 20, 0.15);
+            border-color: var(--neon-green);
+            background: rgba(57, 255, 20, 0.05);
         }
         .products-page .back-btn .arrow-icon {
-            font-size: 18px;
+            font-size: 22px;
             line-height: 1;
+            color: var(--neon-green);
         }
         .products-page .category-title {
             color: #fff;
