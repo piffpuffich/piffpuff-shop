@@ -203,22 +203,23 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: transparent;
-            border: 1.5px solid rgba(57, 255, 20, 0.25);
-            border-radius: 30px;
-            padding: 8px 18px;
-            color: var(--neon-green);
+            background: transparent !important;
+            border: 1.5px solid rgba(57, 255, 20, 0.25) !important;
+            border-radius: 30px !important;
+            padding: 8px 18px !important;
+            color: var(--neon-green) !important;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             margin-bottom: 16px;
             transition: all 0.2s;
             backdrop-filter: blur(4px);
+            text-decoration: none;
         }
         .products-page .back-btn:active {
             transform: scale(0.95);
             border-color: var(--neon-green);
-            background: rgba(57, 255, 20, 0.05);
+            background: rgba(57, 255, 20, 0.05) !important;
         }
         .products-page .back-btn .arrow-icon {
             font-size: 22px;
