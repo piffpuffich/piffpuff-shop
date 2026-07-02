@@ -50,7 +50,7 @@
             border-bottom: 1px solid rgba(255,255,255,0.04);
         }
 
-        /* ===== КНОПКА КЭШБЭКА (с обводкой) ===== */
+        /* ===== КНОПКА КЭШБЭКА (с обводкой, текст по центру) ===== */
         .cashback-btn-top {
             background: transparent;
             border: 1.5px solid rgba(57, 255, 20, 0.25);
@@ -58,22 +58,22 @@
             padding: 6px 14px 6px 14px;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            gap: 0px;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
             flex-shrink: 0;
+            min-width: 80px;
         }
         .cashback-btn-top:active {
             transform: scale(0.95);
         }
         .cashback-btn-top .label {
             font-size: 8px;
-            color: #fff;
+            color: rgba(255, 255, 255, 0.85);
             font-weight: 400;
             letter-spacing: 0.3px;
             text-transform: uppercase;
-            opacity: 0.7;
             line-height: 1.2;
         }
         .cashback-btn-top .balance {
@@ -694,7 +694,7 @@
 
             <!-- ===== ВЕРХНЯЯ ПАНЕЛЬ ===== -->
             <div class="top-bar">
-                <!-- Кнопка кэшбэка (с обводкой) -->
+                <!-- Кнопка кэшбэка (с обводкой, текст по центру) -->
                 <button class="cashback-btn-top" onclick="openCashback()">
                     <span class="label">Ваш кэшбэк</span>
                     <span class="balance" id="cashbackBalance">0</span>
