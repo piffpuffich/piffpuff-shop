@@ -50,7 +50,7 @@
             border-bottom: 1px solid rgba(255,255,255,0.04);
         }
 
-        /* ===== КНОПКА КЭШБЭКА (с обводкой, текст по центру) ===== */
+        /* ===== КНОПКА КЭШБЭКА (слева) ===== */
         .cashback-btn-top {
             background: transparent;
             border: 1.5px solid rgba(57, 255, 20, 0.25);
@@ -83,19 +83,18 @@
             line-height: 1.2;
         }
 
-        /* ===== ЛОГОТИП СВЕРХУ ПО ЦЕНТРУ ===== */
-        .top-logo {
-            text-align: center;
-            padding: 4px 0 8px;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
+        /* ===== ЛОГОТИП СПРАВА ===== */
+        .top-logo-right {
+            text-align: right;
+            flex-shrink: 0;
         }
-        .top-logo .brand {
-            font-size: 28px;
+        .top-logo-right .brand {
+            font-size: 20px;
             font-weight: 800;
             color: #fff;
             letter-spacing: -0.5px;
         }
-        .top-logo .brand .puff {
+        .top-logo-right .brand .puff {
             color: var(--neon-green);
         }
 
@@ -687,21 +686,18 @@
     <div id="store-content" style="display: none;">
         <div class="main-screen">
 
-            <!-- ===== ЛОГОТИП СВЕРХУ ПО ЦЕНТРУ ===== -->
-            <div class="top-logo">
-                <div class="brand">Piff<span class="puff">&amp;Puff</span></div>
-            </div>
-
             <!-- ===== ВЕРХНЯЯ ПАНЕЛЬ ===== -->
             <div class="top-bar">
-                <!-- Кнопка кэшбэка (с обводкой, текст по центру) -->
+                <!-- Кнопка кэшбэка (слева) -->
                 <button class="cashback-btn-top" onclick="openCashback()">
                     <span class="label">Ваш кэшбэк</span>
                     <span class="balance" id="cashbackBalance">0</span>
                 </button>
 
-                <!-- Пустой блок для баланса (чтобы кнопка была слева) -->
-                <div style="width: 80px;"></div>
+                <!-- Логотип справа -->
+                <div class="top-logo-right">
+                    <div class="brand">Piff<span class="puff">&amp;Puff</span></div>
+                </div>
             </div>
 
             <!-- ===== БАННЕР ===== -->
