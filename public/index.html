@@ -50,15 +50,16 @@
             border-bottom: 1px solid rgba(255,255,255,0.04);
         }
 
-        /* ===== КНОПКА КЭШБЭКА (уменьшенная) ===== */
+        /* ===== КНОПКА КЭШБЭКА (с обводкой) ===== */
         .cashback-btn-top {
             background: transparent;
-            border: none;
-            padding: 4px 8px;
+            border: 1.5px solid rgba(57, 255, 20, 0.25);
+            border-radius: 30px;
+            padding: 6px 14px 6px 14px;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            gap: 1px;
+            gap: 0px;
             cursor: pointer;
             transition: all 0.2s;
             flex-shrink: 0;
@@ -67,37 +68,34 @@
             transform: scale(0.95);
         }
         .cashback-btn-top .label {
-            font-size: 9px;
-            color: rgba(255,255,255,0.3);
+            font-size: 8px;
+            color: #fff;
             font-weight: 400;
             letter-spacing: 0.3px;
             text-transform: uppercase;
+            opacity: 0.7;
+            line-height: 1.2;
         }
         .cashback-btn-top .balance {
             font-size: 18px;
             font-weight: 700;
-            color: #fff;
-            line-height: 1.1;
+            color: var(--neon-green);
+            line-height: 1.2;
         }
 
-        /* ===== ЛОГОТИП ПО ЦЕНТРУ СТРАНИЦЫ ===== */
-        .center-logo {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        /* ===== ЛОГОТИП СВЕРХУ ПО ЦЕНТРУ ===== */
+        .top-logo {
             text-align: center;
-            pointer-events: none;
-            z-index: 0;
+            padding: 4px 0 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
         }
-        .center-logo .brand {
-            font-size: 42px;
+        .top-logo .brand {
+            font-size: 28px;
             font-weight: 800;
             color: #fff;
-            letter-spacing: -1px;
-            text-shadow: 0 0 60px rgba(57, 255, 20, 0.05);
+            letter-spacing: -0.5px;
         }
-        .center-logo .brand .puff {
+        .top-logo .brand .puff {
             color: var(--neon-green);
         }
 
@@ -689,9 +687,14 @@
     <div id="store-content" style="display: none;">
         <div class="main-screen">
 
+            <!-- ===== ЛОГОТИП СВЕРХУ ПО ЦЕНТРУ ===== -->
+            <div class="top-logo">
+                <div class="brand">Piff<span class="puff">&amp;Puff</span></div>
+            </div>
+
             <!-- ===== ВЕРХНЯЯ ПАНЕЛЬ ===== -->
             <div class="top-bar">
-                <!-- Кнопка кэшбэка (уменьшенная) -->
+                <!-- Кнопка кэшбэка (с обводкой) -->
                 <button class="cashback-btn-top" onclick="openCashback()">
                     <span class="label">Ваш кэшбэк</span>
                     <span class="balance" id="cashbackBalance">0</span>
@@ -699,11 +702,6 @@
 
                 <!-- Пустой блок для баланса (чтобы кнопка была слева) -->
                 <div style="width: 80px;"></div>
-            </div>
-
-            <!-- ===== ЛОГОТИП ПО ЦЕНТРУ СТРАНИЦЫ ===== -->
-            <div class="center-logo">
-                <div class="brand">Piff<span class="puff">&amp;Puff</span></div>
             </div>
 
             <!-- ===== БАННЕР ===== -->
