@@ -50,52 +50,55 @@
             border-bottom: 1px solid rgba(255,255,255,0.04);
         }
 
-        .logo-section {
+        /* ===== КНОПКА КЭШБЭКА (уменьшенная) ===== */
+        .cashback-btn-top {
+            background: transparent;
+            border: none;
+            padding: 4px 8px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-        }
-        .logo-section .brand {
-            font-size: 20px;
-            font-weight: 800;
-            color: #fff;
-            letter-spacing: -0.5px;
-        }
-        .logo-section .brand .puff {
-            color: var(--neon-green);
-        }
-
-        /* ===== КНОПКА КЭШБЭКА (слева) ===== */
-        .cashback-btn-top {
-            background: linear-gradient(135deg, #2a2a3a, #1a1a2a);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 30px;
-            padding: 6px 16px 6px 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #fff;
-            font-size: 13px;
-            font-weight: 600;
+            align-items: flex-start;
+            gap: 1px;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 0 20px rgba(57, 255, 20, 0.05);
             flex-shrink: 0;
         }
         .cashback-btn-top:active {
             transform: scale(0.95);
         }
-        .cashback-btn-top .icon {
-            font-size: 14px;
+        .cashback-btn-top .label {
+            font-size: 9px;
+            color: rgba(255,255,255,0.3);
+            font-weight: 400;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
         }
         .cashback-btn-top .balance {
-            background: rgba(57, 255, 20, 0.12);
-            color: var(--neon-green);
-            padding: 0 10px;
-            border-radius: 20px;
-            font-size: 12px;
+            font-size: 18px;
             font-weight: 700;
-            border: 1px solid rgba(57, 255, 20, 0.15);
+            color: #fff;
+            line-height: 1.1;
+        }
+
+        /* ===== ЛОГОТИП ПО ЦЕНТРУ СТРАНИЦЫ ===== */
+        .center-logo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .center-logo .brand {
+            font-size: 42px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -1px;
+            text-shadow: 0 0 60px rgba(57, 255, 20, 0.05);
+        }
+        .center-logo .brand .puff {
+            color: var(--neon-green);
         }
 
         /* ===== БАННЕР ===== */
@@ -108,6 +111,7 @@
             aspect-ratio: 16 / 6;
             min-height: 110px;
             border: 1px solid rgba(255,255,255,0.03);
+            z-index: 1;
         }
         .banner-track {
             display: flex;
@@ -157,6 +161,8 @@
             gap: 12px;
             margin-top: 30px;
             padding: 0 10px;
+            position: relative;
+            z-index: 1;
         }
         .category-btn-vertical {
             width: 100%;
@@ -197,6 +203,8 @@
         .products-page {
             display: none;
             padding: 0 0 20px;
+            position: relative;
+            z-index: 1;
         }
         .products-page .back-btn {
             display: inline-block;
@@ -683,20 +691,19 @@
 
             <!-- ===== ВЕРХНЯЯ ПАНЕЛЬ ===== -->
             <div class="top-bar">
-                <!-- Кнопка кэшбэка (слева) -->
+                <!-- Кнопка кэшбэка (уменьшенная) -->
                 <button class="cashback-btn-top" onclick="openCashback()">
-                    <span class="icon">💰</span>
-                    КЭШБЭК
+                    <span class="label">Ваш кэшбэк</span>
                     <span class="balance" id="cashbackBalance">0</span>
                 </button>
 
-                <!-- Логотип по центру -->
-                <div class="logo-section">
-                    <div class="brand">Piff<span class="puff">&amp;Puff</span></div>
-                </div>
-
-                <!-- Пустой блок для баланса (чтобы логотип был строго по центру) -->
+                <!-- Пустой блок для баланса (чтобы кнопка была слева) -->
                 <div style="width: 80px;"></div>
+            </div>
+
+            <!-- ===== ЛОГОТИП ПО ЦЕНТРУ СТРАНИЦЫ ===== -->
+            <div class="center-logo">
+                <div class="brand">Piff<span class="puff">&amp;Puff</span></div>
             </div>
 
             <!-- ===== БАННЕР ===== -->
