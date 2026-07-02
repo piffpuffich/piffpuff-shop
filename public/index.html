@@ -200,18 +200,29 @@
             z-index: 1;
         }
         .products-page .back-btn {
-            display: inline-block;
-            color: rgba(255,255,255,0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: rgba(255,255,255,0.5);
             font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
             margin-bottom: 16px;
-            padding: 6px 0;
-            transition: color 0.2s;
-            border: none;
-            background: none;
+            padding: 8px 16px;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 30px;
+            background: rgba(255,255,255,0.02);
+            backdrop-filter: blur(4px);
         }
         .products-page .back-btn:active {
+            transform: scale(0.95);
             color: var(--neon-green);
+            border-color: rgba(57, 255, 20, 0.15);
+        }
+        .products-page .back-btn .arrow-icon {
+            font-size: 18px;
+            line-height: 1;
         }
         .products-page .category-title {
             color: #fff;
@@ -730,7 +741,9 @@
 
             <!-- ===== СТРАНИЦА ТОВАРОВ КАТЕГОРИИ ===== -->
             <div id="productsPage" class="page-hidden page-transition">
-                <button class="back-btn" onclick="closeCategory()">← Назад</button>
+                <button class="back-btn" onclick="closeCategory()">
+                    <span class="arrow-icon">←</span> Назад
+                </button>
                 <div class="category-title" id="categoryTitle">Категория: <span id="categoryNameSpan">Все</span></div>
                 <div class="products" id="productList"></div>
             </div>
