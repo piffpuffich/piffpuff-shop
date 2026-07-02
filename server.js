@@ -250,7 +250,7 @@ app.post('/api/order', async (req, res) => {
     // ==== УВЕДОМЛЕНИЕ КЛИЕНТУ (через основного бота) ====
     const clientMessage =
         `🛍 Магазин Piff&Puff - Ваш заказ\n\n` +
-        `📅 ${new Date().toLocaleString()} Вы оформили заказ:\n\n` +
+        `📅 Вы оформили заказ:\n\n` +
         `${itemsText}\n` +
         `💰 Стоимость с учетом доставки: ${finalTotal} тг\n` +
         `🚚 Доставка: ${deliveryText}\n\n` +
