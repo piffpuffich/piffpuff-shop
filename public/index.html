@@ -53,6 +53,7 @@
         .logo-section {
             display: flex;
             flex-direction: column;
+            align-items: center;
         }
         .logo-section .brand {
             font-size: 20px;
@@ -63,15 +64,8 @@
         .logo-section .brand .puff {
             color: var(--neon-green);
         }
-        .logo-section .sub {
-            font-size: 9px;
-            color: rgba(255,255,255,0.25);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-top: 1px;
-        }
 
-        /* ===== КНОПКА КЭШБЭКА (слева сверху) ===== */
+        /* ===== КНОПКА КЭШБЭКА (слева) ===== */
         .cashback-btn-top {
             background: linear-gradient(135deg, #2a2a3a, #1a1a2a);
             border: 1px solid rgba(255,255,255,0.06);
@@ -86,6 +80,7 @@
             cursor: pointer;
             transition: all 0.2s;
             box-shadow: 0 0 20px rgba(57, 255, 20, 0.05);
+            flex-shrink: 0;
         }
         .cashback-btn-top:active {
             transform: scale(0.95);
@@ -688,15 +683,20 @@
 
             <!-- ===== ВЕРХНЯЯ ПАНЕЛЬ ===== -->
             <div class="top-bar">
-                <div class="logo-section">
-                    <div class="brand">Piff<span class="puff">&amp;Puff</span></div>
-                    <div class="sub">ВЕЙП ШОП</div>
-                </div>
+                <!-- Кнопка кэшбэка (слева) -->
                 <button class="cashback-btn-top" onclick="openCashback()">
                     <span class="icon">💰</span>
                     КЭШБЭК
                     <span class="balance" id="cashbackBalance">0</span>
                 </button>
+
+                <!-- Логотип по центру -->
+                <div class="logo-section">
+                    <div class="brand">Piff<span class="puff">&amp;Puff</span></div>
+                </div>
+
+                <!-- Пустой блок для баланса (чтобы логотип был строго по центру) -->
+                <div style="width: 80px;"></div>
             </div>
 
             <!-- ===== БАННЕР ===== -->
