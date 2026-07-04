@@ -566,6 +566,37 @@
             margin-top: 6px;
             padding-left: 26px;
         }
+
+        /* ===== ПЛАШКА ПОДАРКА ===== */
+        .gift-field {
+            margin-bottom: 12px;
+        }
+        .gift-banner {
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: rgba(57, 255, 20, 0.06);
+            border: 1px solid rgba(57, 255, 20, 0.12);
+            text-align: center;
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.7);
+            transition: all 0.3s;
+            backdrop-filter: blur(4px);
+        }
+        .gift-banner.available {
+            background: rgba(57, 255, 20, 0.10);
+            border-color: rgba(57, 255, 20, 0.25);
+            color: var(--neon-green);
+        }
+        .gift-banner .gift-icon {
+            font-size: 18px;
+            margin-right: 6px;
+        }
+        .gift-banner .highlight {
+            color: var(--neon-green);
+            font-weight: 700;
+        }
+
         .order-summary {
             background: rgba(255,255,255,0.02);
             padding: 16px;
@@ -712,6 +743,13 @@
                 <div class="modal-field"><label>Если сумма не ровная — укажите, с какой суммы нужна сдача:</label><input type="text" id="orderChange" placeholder="Например: с 2000 тг"></div>
                 <div class="modal-field"><label>Дополнительные пожелания:</label><textarea id="orderNotes" rows="2"></textarea></div>
                 
+                <!-- Плашка с подарком -->
+                <div class="modal-field gift-field">
+                    <div class="gift-banner" id="giftBanner">
+                        <span id="giftText">Ещё 0 тг до подарка GORILLA ENERGY 🎁</span>
+                    </div>
+                </div>
+
                 <div class="modal-field bonus-field">
                     <label class="bonus-checkbox"><input type="checkbox" id="useBonuses" onchange="toggleBonusInfo()"> Потратить бонусы (<span id="bonusBalanceDisplay">0</span> доступно)</label>
                     <div id="bonusInfo" class="bonus-info hidden">
@@ -856,6 +894,26 @@
             } catch (error) { console.error('Ошибка загрузки:', error); }
         }
 
+        // ===== ПЛАШКА ПОДАРКА =====
+        function updateGiftBanner() {
+            const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+            const delivery = subtotal < 10000 ? 1000 : 0;
+            const total = subtotal + delivery;
+            const giftThreshold = 10000;
+            
+            const banner = document.getElementById('giftBanner');
+            const text = document.getElementById('giftText');
+            
+            if (total >= giftThreshold) {
+                banner.classList.add('available');
+                text.innerHTML = `<span class="gift-icon">🎁</span> Вам доступен подарок <span class="highlight">GORILLA ENERGY</span>!`;
+            } else {
+                banner.classList.remove('available');
+                const remaining = giftThreshold - total;
+                text.innerHTML = `Закажи ещё <span class="highlight">${remaining} тг</span> до подарка <span class="highlight">GORILLA ENERGY</span> 🎁`;
+            }
+        }
+
         function openProductModal(productId) {
             const product = products.find(p => p.id === productId);
             if (!product) return;
@@ -993,12 +1051,14 @@
                 info.classList.remove('hidden');
                 calculateBonusSpend();
                 updateOrderTotalWithBonus();
+                updateGiftBanner(); // обновляем плашку (без учёта бонусов)
             } else {
                 info.classList.add('hidden');
                 const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
                 const delivery = subtotal < 10000 ? 1000 : 0;
                 const total = subtotal + delivery;
                 document.getElementById('orderTotalDisplay').innerHTML = `<span style="color:var(--neon-green);font-weight:700;font-size:20px;">${total} тг</span>`;
+                updateGiftBanner();
             }
         }
 
@@ -1067,6 +1127,7 @@
             document.getElementById('bonusInfo').classList.add('hidden');
             document.getElementById('bonusWillSpend').textContent = '0';
             document.getElementById('bonusSavingsDisplay').textContent = '0 ₸';
+            updateGiftBanner(); // обновляем плашку при открытии
             document.getElementById('orderModal').classList.remove('hidden');
         }
 
