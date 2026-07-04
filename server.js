@@ -43,20 +43,34 @@ async function loadProductsFromGoogle() {
         const response = await fetch(CSV_URL);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const csvText = await response.text();
+        
+        // Парсим CSV с учётом кавычек
         const lines = csvText.split('\n').filter(line => line.trim() !== '');
         if (lines.length < 2) return [];
         
+        // Парсим заголовки
         const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
         const products = [];
+        
         for (let i = 1; i < lines.length; i++) {
-            const values = lines[i].split(',').map(v => v.trim());
+            // Разбиваем строку с учётом кавычек
+            const values = parseCSVLine(lines[i]);
             const row = {};
-            headers.forEach((h, index) => { row[h] = values[index] || ''; });
+            headers.forEach((h, index) => {
+                row[h] = (values[index] || '').trim();
+            });
+            
             if (row.name && row.name !== '') {
+                // Парсим опции (убираем кавычки, лишние пробелы)
                 let options = [];
                 if (row.options && row.options !== '') {
-                    options = row.options.split(',').map(o => o.trim());
+                    // Разделяем по запятой, убираем кавычки и пробелы
+                    options = row.options
+                        .split(',')
+                        .map(o => o.trim().replace(/^"|"$/g, '').replace(/^'|'$/g, ''))
+                        .filter(o => o !== '');
                 }
+                
                 products.push({
                     id: parseInt(row.id) || i,
                     name: row.name,
@@ -69,11 +83,38 @@ async function loadProductsFromGoogle() {
             }
         }
         console.log(`✅ Загружено ${products.length} товаров`);
+        // Логируем первые 3 товара с опциями для отладки
+        const withOptions = products.filter(p => p.options.length > 0);
+        if (withOptions.length > 0) {
+            console.log(`📋 Товары с опциями: ${withOptions.length}`);
+            console.log('📋 Пример:', withOptions[0].name, '→', withOptions[0].options);
+        }
         return products;
     } catch (error) {
         console.error('❌ Ошибка загрузки товаров:', error.message);
         return productsCache;
     }
+}
+
+// ========== ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ ПАРСИНГА CSV ==========
+function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"' || char === "'") {
+            inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+            result.push(current);
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    result.push(current);
+    return result;
 }
 
 // ========== ЗАГРУЗКА КЭШБЭКА ==========
@@ -262,11 +303,9 @@ app.post('/api/order', async (req, res) => {
 
     // ==== ОТПРАВКА УВЕДОМЛЕНИЙ ====
     try {
-        // Владельцу (через notifyBot)
         await notifyBot.telegram.sendMessage(CHAT_ID, ownerMessage);
         console.log('✅ Уведомление владельцу отправлено');
 
-        // Клиенту (через основного бота)
         if (userId) {
             await mainBot.telegram.sendMessage(userId, clientMessage);
             console.log(`✅ Подтверждение отправлено пользователю ${userId}`);
