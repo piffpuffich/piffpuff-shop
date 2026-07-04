@@ -36,66 +36,6 @@ let lastUpdateProducts = 0;
 let lastUpdateCashback = 0;
 const CACHE_TIME = 60000;
 
-// ========== ЗАГРУЗКА ТОВАРОВ ==========
-async function loadProductsFromGoogle() {
-    try {
-        console.log('📊 Загружаем товары...');
-        const response = await fetch(CSV_URL);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const csvText = await response.text();
-        
-        // Парсим CSV с учётом кавычек
-        const lines = csvText.split('\n').filter(line => line.trim() !== '');
-        if (lines.length < 2) return [];
-        
-        // Парсим заголовки
-        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-        const products = [];
-        
-        for (let i = 1; i < lines.length; i++) {
-            // Разбиваем строку с учётом кавычек
-            const values = parseCSVLine(lines[i]);
-            const row = {};
-            headers.forEach((h, index) => {
-                row[h] = (values[index] || '').trim();
-            });
-            
-            if (row.name && row.name !== '') {
-                // Парсим опции (убираем кавычки, лишние пробелы)
-                let options = [];
-                if (row.options && row.options !== '') {
-                    // Разделяем по запятой, убираем кавычки и пробелы
-                    options = row.options
-                        .split(',')
-                        .map(o => o.trim().replace(/^"|"$/g, '').replace(/^'|'$/g, ''))
-                        .filter(o => o !== '');
-                }
-                
-                products.push({
-                    id: parseInt(row.id) || i,
-                    name: row.name,
-                    price: parseInt(row.price) || 0,
-                    category: row.category || 'Другое',
-                    emoji: row.emoji || '📦',
-                    description: row.description || '',
-                    options: options
-                });
-            }
-        }
-        console.log(`✅ Загружено ${products.length} товаров`);
-        // Логируем первые 3 товара с опциями для отладки
-        const withOptions = products.filter(p => p.options.length > 0);
-        if (withOptions.length > 0) {
-            console.log(`📋 Товары с опциями: ${withOptions.length}`);
-            console.log('📋 Пример:', withOptions[0].name, '→', withOptions[0].options);
-        }
-        return products;
-    } catch (error) {
-        console.error('❌ Ошибка загрузки товаров:', error.message);
-        return productsCache;
-    }
-}
-
 // ========== ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ ПАРСИНГА CSV ==========
 function parseCSVLine(line) {
     const result = [];
@@ -115,6 +55,66 @@ function parseCSVLine(line) {
     }
     result.push(current);
     return result;
+}
+
+// ========== ЗАГРУЗКА ТОВАРОВ ==========
+async function loadProductsFromGoogle() {
+    try {
+        console.log('📊 Загружаем товары...');
+        const response = await fetch(CSV_URL);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const csvText = await response.text();
+        
+        const lines = csvText.split('\n').filter(line => line.trim() !== '');
+        if (lines.length < 2) return [];
+        
+        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+        console.log('📋 Заголовки таблицы:', headers);
+        
+        const products = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+            const values = parseCSVLine(lines[i]);
+            const row = {};
+            headers.forEach((h, index) => {
+                row[h] = (values[index] || '').trim();
+            });
+            
+            if (row.name && row.name !== '') {
+                let options = [];
+                if (row.options && row.options !== '') {
+                    options = row.options
+                        .split(',')
+                        .map(o => o.trim().replace(/^"|"$/g, '').replace(/^'|'$/g, ''))
+                        .filter(o => o !== '');
+                }
+                
+                products.push({
+                    id: parseInt(row.id) || i,
+                    name: row.name,
+                    price: parseInt(row.price) || 0,
+                    category: row.category || 'Другое',
+                    image: row.image || '', // ← вместо emoji
+                    description: row.description || '',
+                    options: options
+                });
+            }
+        }
+        console.log(`✅ Загружено ${products.length} товаров`);
+        
+        const withOptions = products.filter(p => p.options && p.options.length > 0);
+        if (withOptions.length > 0) {
+            console.log(`📋 Товары с опциями: ${withOptions.length}`);
+            console.log('📋 Пример:', withOptions[0].name, '→', withOptions[0].options);
+        }
+        const withImages = products.filter(p => p.image && p.image !== '');
+        console.log(`🖼️ Товаров с картинками: ${withImages.length}`);
+        
+        return products;
+    } catch (error) {
+        console.error('❌ Ошибка загрузки товаров:', error.message);
+        return productsCache;
+    }
 }
 
 // ========== ЗАГРУЗКА КЭШБЭКА ==========
@@ -210,7 +210,7 @@ app.get('/api/check-subscription/:userId', async (req, res) => {
     }
 });
 
-// ========== ПРИНЯТЬ ЗАКАЗ (С БОНУСАМИ И УВЕДОМЛЕНИЕМ КЛИЕНТУ) ==========
+// ========== ПРИНЯТЬ ЗАКАЗ ==========
 app.post('/api/order', async (req, res) => {
     const {
         items,
@@ -260,7 +260,7 @@ app.post('/api/order', async (req, res) => {
         }
     }
 
-    // ==== ФОРМИРУЕМ СПИСОК ТОВАРОВ (с ценой и количеством) ====
+    // ==== ФОРМИРУЕМ СПИСОК ТОВАРОВ ====
     let itemsText = '';
     items.forEach(item => {
         const optionText = item.option ? `: ${item.option}` : '';
@@ -272,7 +272,7 @@ app.post('/api/order', async (req, res) => {
     const notesText = notes && notes !== 'Нет' ? notes : 'Нет';
     const bonusDisplay = useBonuses ? bonusText : 'Нет';
 
-    // ==== УВЕДОМЛЕНИЕ ВЛАДЕЛЬЦУ (Вам) ====
+    // ==== УВЕДОМЛЕНИЕ ВЛАДЕЛЬЦУ ====
     const ownerMessage =
         `🛒 Оформлен новый заказ!\n\n` +
         `👤 Клиент: ${username ? '@' + username : userId} (${userId})\n` +
@@ -288,7 +288,7 @@ app.post('/api/order', async (req, res) => {
     console.log(ownerMessage);
     console.log('-------------------');
 
-    // ==== УВЕДОМЛЕНИЕ КЛИЕНТУ (через основного бота) ====
+    // ==== УВЕДОМЛЕНИЕ КЛИЕНТУ ====
     const clientMessage =
         `🛍 Магазин Piff&Puff - Ваш заказ\n\n` +
         `📅 Вы оформили заказ:\n\n` +
@@ -301,7 +301,7 @@ app.post('/api/order', async (req, res) => {
         `📝 Дополнительные пожелания: ${notesText}\n` +
         `🎯 Оплата бонусами: ${bonusDisplay}`;
 
-    // ==== ОТПРАВКА УВЕДОМЛЕНИЙ ====
+    // ==== ОТПРАВКА ====
     try {
         await notifyBot.telegram.sendMessage(CHAT_ID, ownerMessage);
         console.log('✅ Уведомление владельцу отправлено');

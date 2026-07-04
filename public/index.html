@@ -14,7 +14,7 @@
             --purple-glow: rgba(155, 89, 182, 0.25);
             --dark-bg: #0a0a0f;
             --card-bg: rgba(20, 20, 30, 0.85);
-            --bg-image: url('https://i.ibb.co.com/9kKFVNqS/Chat-GPT-Image-3-2026-05-58-07.png'); /* ← СЮДА ВСТАВЛЯЙ ССЫЛКУ НА КАРТИНКУ */
+            --bg-image: url('https://i.ibb.co.com/9kKFVNqS/Chat-GPT-Image-3-2026-05-58-07.png');
         }
 
         * {
@@ -37,7 +37,6 @@
             overflow-x: hidden;
         }
 
-        /* ===== ГЛАВНЫЙ ЭКРАН ===== */
         .main-screen {
             max-width: 420px;
             margin: 0 auto;
@@ -48,7 +47,6 @@
             position: relative;
         }
 
-        /* ===== ВЕРХНЯЯ ПАНЕЛЬ ===== */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -57,7 +55,6 @@
             border-bottom: 1px solid rgba(255,255,255,0.04);
         }
 
-        /* ===== КНОПКА КЭШБЭКА (слева) ===== */
         .cashback-btn-top {
             background: transparent;
             border: 1.5px solid rgba(57, 255, 20, 0.25);
@@ -90,7 +87,6 @@
             line-height: 1.2;
         }
 
-        /* ===== ЛОГОТИП СПРАВА ===== */
         .top-logo-right {
             text-align: right;
             flex-shrink: 0;
@@ -105,7 +101,6 @@
             color: var(--neon-green);
         }
 
-        /* ===== БАННЕР ===== */
         .banner-section {
             margin: 14px 0 16px;
             border-radius: 16px;
@@ -157,7 +152,6 @@
             transform: scale(1.2);
         }
 
-        /* ===== КАТЕГОРИИ (вертикально, по центру) ===== */
         .categories-vertical {
             display: flex;
             flex-direction: column;
@@ -199,7 +193,6 @@
             box-shadow: 0 0 30px rgba(57, 255, 20, 0.05);
         }
 
-        /* ===== СТРАНИЦА ТОВАРОВ ===== */
         .products-page {
             display: none;
             padding: 0 0 20px;
@@ -236,11 +229,19 @@
         .product-card:active {
             transform: scale(0.96);
         }
-        .product-card .emoji {
-            font-size: 36px;
+
+        /* ===== СТИЛИ ДЛЯ КАРТИНОК ТОВАРОВ ===== */
+        .product-card .product-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin: 0 auto 8px;
             display: block;
-            margin-bottom: 4px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.04);
         }
+
         .product-card h3 {
             font-size: 13px;
             color: rgba(255,255,255,0.85);
@@ -301,7 +302,6 @@
             border-color: transparent;
         }
 
-        /* ===== КНОПКА КОРЗИНЫ (снизу справа) ===== */
         .cart-fab {
             position: fixed;
             bottom: 24px;
@@ -345,7 +345,6 @@
             display: none !important;
         }
 
-        /* ===== ТОСТ ===== */
         .toast {
             position: fixed;
             bottom: 100px;
@@ -377,7 +376,6 @@
             grid-column: 1/-1;
         }
 
-        /* ===== БЛОКИРОВКА ПОДПИСКИ ===== */
         #subscription-required {
             display: none;
             text-align: center;
@@ -432,7 +430,6 @@
             background: rgba(255,255,255,0.08);
         }
 
-        /* ===== МОДАЛКИ ===== */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -645,7 +642,6 @@
             text-align: right;
         }
 
-        /* ===== АНИМАЦИЯ СМЕНЫ СТРАНИЦ ===== */
         .page-transition {
             transition: opacity 0.25s ease;
         }
@@ -715,7 +711,6 @@
 
             <!-- ===== СТРАНИЦА ТОВАРОВ ===== -->
             <div id="productsPage" class="page-hidden page-transition">
-                <!-- Кнопка Назад с инлайн-стилями -->
                 <button 
                     class="back-btn" 
                     onclick="closeCategory()"
@@ -850,7 +845,6 @@
             'https://i.ibb.co/7J7VvL3/background.png'
         ];
 
-        // ===== ПЕРЕМЕННЫЕ =====
         let products = [];
         let cart = [];
         let currentCategory = '';
@@ -858,7 +852,6 @@
         let currentBanner = 0;
         let bannerInterval = null;
 
-        // ===== ПРОВЕРКА ПОДПИСКИ =====
         async function checkSubscription() {
             const userId = getUserId();
             const storeContent = document.getElementById('store-content');
@@ -891,7 +884,6 @@
             }
         }
 
-        // ===== БАННЕРЫ =====
         function initBanners() {
             const track = document.getElementById('bannerTrack');
             const dots = document.getElementById('bannerDots');
@@ -936,7 +928,6 @@
             }
         }
 
-        // Свайп для баннера
         let touchStartX = 0, touchEndX = 0;
         document.addEventListener('DOMContentLoaded', () => {
             const section = document.getElementById('bannerSection');
@@ -957,7 +948,6 @@
             }, { passive: true });
         });
 
-        // ===== НАВИГАЦИЯ =====
         function openCategory(category) {
             currentCategory = category;
             document.getElementById('mainPage').classList.remove('page-visible');
@@ -975,7 +965,6 @@
             document.getElementById('mainPage').classList.add('page-visible');
         }
 
-        // ===== ЗАГРУЗКА ТОВАРОВ =====
         async function loadProducts() {
             try {
                 const response = await fetch('/api/products');
@@ -1011,9 +1000,14 @@
                 
                 const isDisabled = hasOptions ? 'disabled' : '';
                 
+                // Если есть картинка — показываем её, иначе заглушку
+                const imageHtml = p.image && p.image !== '' 
+                    ? `<img src="${p.image}" alt="${p.name}" class="product-image">`
+                    : `<div class="product-image" style="display:flex;align-items:center;justify-content:center;font-size:32px;background:rgba(255,255,255,0.03);">📦</div>`;
+                
                 return `
                     <div class="product-card">
-                        <span class="emoji">${p.emoji || '📦'}</span>
+                        ${imageHtml}
                         <h3>${p.name}</h3>
                         <div class="price">${p.price} ₸</div>
                         ${optionsHtml}
@@ -1035,7 +1029,6 @@
             });
         }
 
-        // ===== КОРЗИНА =====
         function addToCart(productId) {
             const product = products.find(p => p.id === productId);
             if (!product) {
@@ -1122,7 +1115,6 @@
             openOrderModal();
         }
 
-        // ===== КЭШБЭК =====
         function getUserId() {
             if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
                 return window.Telegram.WebApp.initDataUnsafe.user.id;
@@ -1159,7 +1151,6 @@
             document.getElementById('cashbackModal').classList.add('hidden');
         }
 
-        // ===== БОНУСЫ В ФОРМЕ =====
         async function loadBonusBalance() {
             const userId = getUserId();
             try {
@@ -1205,7 +1196,6 @@
             bonusDisplay.textContent = canSpend >= 500 ? canSpend : '0 (недостаточно для списания)';
         }
 
-        // ===== ОТКРЫТИЕ МОДАЛКИ =====
         let currentCartTotal = 0;
 
         function openOrderModal() {
@@ -1246,7 +1236,6 @@
             if (e.target === this) closeOrderModal();
         });
 
-        // ===== ОТПРАВКА ЗАКАЗА =====
         async function submitOrder() {
             const submitBtn = document.querySelector('.modal-submit-btn');
             if (submitBtn.disabled) return;
@@ -1334,7 +1323,6 @@
             }
         }
 
-        // ===== ЗАПУСК =====
         checkSubscription();
     </script>
 
