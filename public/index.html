@@ -566,13 +566,6 @@
             margin-top: 6px;
             padding-left: 26px;
         }
-        .bonus-hint {
-            font-size: 12px;
-            color: rgba(255,255,255,0.25);
-            background: rgba(255,255,255,0.02);
-            padding: 4px 12px;
-            border-radius: 8px;
-        }
         .order-summary {
             background: rgba(255,255,255,0.02);
             padding: 16px;
@@ -688,34 +681,8 @@
             </div>
 
             <div id="productsPage" class="page-hidden page-transition">
-                <!-- КНОПКА НАЗАД С ИНЛАЙН-СТИЛЯМИ -->
-                <button 
-                    class="back-btn" 
-                    onclick="closeCategory()"
-                    style="
-                        display: inline-flex !important;
-                        align-items: center !important;
-                        gap: 8px !important;
-                        background: transparent !important;
-                        border: 1.5px solid rgba(57, 255, 20, 0.25) !important;
-                        border-radius: 30px !important;
-                        padding: 8px 18px !important;
-                        color: #39FF14 !important;
-                        font-size: 14px !important;
-                        font-weight: 600 !important;
-                        cursor: pointer !important;
-                        margin-bottom: 16px !important;
-                        transition: all 0.2s !important;
-                        backdrop-filter: blur(4px) !important;
-                        text-decoration: none !important;
-                        background-color: transparent !important;
-                        box-shadow: none !important;
-                        outline: none !important;
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-                    "
-                >
-                    <span style="font-size: 22px; line-height: 1; color: #39FF14;">←</span> 
-                    Назад
+                <button class="back-btn" onclick="closeCategory()" style="display:inline-flex!important;align-items:center!important;gap:8px!important;background:transparent!important;border:1.5px solid rgba(57,255,20,0.25)!important;border-radius:30px!important;padding:8px 18px!important;color:#39FF14!important;font-size:14px!important;font-weight:600!important;cursor:pointer!important;margin-bottom:16px!important;transition:all .2s!important;backdrop-filter:blur(4px)!important;text-decoration:none!important;background-color:transparent!important;box-shadow:none!important;outline:none!important;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif!important">
+                    <span style="font-size:22px;line-height:1;color:#39FF14">←</span> Назад
                 </button>
                 <div class="category-title" id="categoryTitle">Категория: <span id="categoryNameSpan">Все</span></div>
                 <div class="products" id="productList"></div>
@@ -744,10 +711,21 @@
                 <div class="modal-field"><label>Адрес доставки <span class="required">*</span></label><input type="text" id="orderAddress" placeholder="Улица, дом, подъезд" required><div class="field-error hidden" id="addressError">Пожалуйста, укажите адрес доставки</div></div>
                 <div class="modal-field"><label>Если сумма не ровная — укажите, с какой суммы нужна сдача:</label><input type="text" id="orderChange" placeholder="Например: с 2000 тг"></div>
                 <div class="modal-field"><label>Дополнительные пожелания:</label><textarea id="orderNotes" rows="2"></textarea></div>
+                
                 <div class="modal-field bonus-field">
                     <label class="bonus-checkbox"><input type="checkbox" id="useBonuses" onchange="toggleBonusInfo()"> Потратить бонусы (<span id="bonusBalanceDisplay">0</span> доступно)</label>
-                    <div id="bonusInfo" class="bonus-info hidden"><span class="bonus-hint">Будет списано: <strong id="bonusWillSpend">0</strong> бонусов</span></div>
+                    <div id="bonusInfo" class="bonus-info hidden">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; padding:8px 12px; background:rgba(57,255,20,0.04); border-radius:10px; border:1px solid rgba(57,255,20,0.06);">
+                            <span style="color:rgba(255,255,255,0.4); font-size:13px;">💰 Экономия:</span>
+                            <span style="color:var(--neon-green); font-weight:700; font-size:15px;" id="bonusSavingsDisplay">0 ₸</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px; padding:4px 12px;">
+                            <span style="color:rgba(255,255,255,0.3); font-size:12px;">Списано бонусов:</span>
+                            <span style="color:var(--neon-green); font-weight:600; font-size:13px;" id="bonusWillSpend">0</span>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="order-summary">
                     <div class="order-total-row"><span>Итого с доставкой:</span><span class="order-total-price" id="orderTotalDisplay">0 тг</span></div>
                     <div class="order-delivery-row"><span>Доставка:</span><span id="orderDeliveryDisplay">Бесплатно</span></div>
@@ -759,16 +737,14 @@
         <div class="modal-overlay hidden" id="cashbackModal">
             <div class="modal-content">
                 <div class="modal-header"><h2>💰 Ваш кэшбэк</h2><button class="modal-close" onclick="closeCashback()">✕</button></div>
-                <div style="padding: 8px 0;">
-                    <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.04); color:rgba(255,255,255,0.5);">
-                        <span>Всего:</span><span style="color:var(--neon-green); font-weight:700;" id="cbTotal">0 ₸</span>
+                <div style="padding:8px 0">
+                    <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.04);color:rgba(255,255,255,0.5)">
+                        <span>Всего:</span><span style="color:var(--neon-green);font-weight:700" id="cbTotal">0 ₸</span>
                     </div>
-                    <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.04); color:rgba(255,255,255,0.5);">
-                        <span>Можно потратить:</span><span style="color:var(--neon-green); font-weight:700;" id="cbCanSpend">0 ₸</span>
+                    <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.04);color:rgba(255,255,255,0.5)">
+                        <span>Можно потратить:</span><span style="color:var(--neon-green);font-weight:700" id="cbCanSpend">0 ₸</span>
                     </div>
-                    <div style="margin-top:16px; padding:12px; background:rgba(57,255,20,0.04); border-radius:12px; text-align:center; font-size:13px; color:rgba(255,255,255,0.3); border:1px solid rgba(57,255,20,0.05);">
-                        Получай кэшбэк 10% с каждого заказа!
-                    </div>
+                    <div style="margin-top:16px;padding:12px;background:rgba(57,255,20,0.04);border-radius:12px;text-align:center;font-size:13px;color:rgba(255,255,255,0.3);border:1px solid rgba(57,255,20,0.05)">Получай кэшбэк 10% с каждого заказа!</div>
                 </div>
             </div>
         </div>
@@ -785,11 +761,7 @@
     </div>
 
     <script>
-        const banners = [
-            'https://i.ibb.co.com/hJ4CfPvg/cashback-banner.jpg',
-            'https://i.ibb.co/7J7VvL3/background.png',
-            'https://i.ibb.co/7J7VvL3/background.png'
-        ];
+        const banners = ['https://i.ibb.co.com/hJ4CfPvg/cashback-banner.jpg','https://i.ibb.co/7J7VvL3/background.png','https://i.ibb.co/7J7VvL3/background.png'];
         let products = [], cart = [], currentCategory = '', userBonusBalance = 0, currentBanner = 0, bannerInterval = null;
 
         async function checkSubscription() {
@@ -823,8 +795,8 @@
         function initBanners() {
             const track = document.getElementById('bannerTrack'), dots = document.getElementById('bannerDots');
             if (!track || banners.length === 0) return;
-            track.innerHTML = banners.map(url => `<div class="banner-slide" style="background-image: url('${url}');"></div>`).join('');
-            dots.innerHTML = banners.map((_, i) => `<span class="banner-dot ${i === 0 ? 'active' : ''}" onclick="goToBanner(${i})"></span>`).join('');
+            track.innerHTML = banners.map(url => `<div class="banner-slide" style="background-image:url('${url}')"></div>`).join('');
+            dots.innerHTML = banners.map((_, i) => `<span class="banner-dot ${i===0?'active':''}" onclick="goToBanner(${i})"></span>`).join('');
             if (banners.length > 1) startAutoScroll();
         }
 
@@ -832,7 +804,7 @@
             const track = document.getElementById('bannerTrack'), dots = document.querySelectorAll('.banner-dot');
             if (!track || !dots.length) return;
             currentBanner = index;
-            track.style.transform = `translateX(-${index * 100}%)`;
+            track.style.transform = `translateX(-${index*100}%)`;
             dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
             resetAutoScroll();
         }
@@ -1017,21 +989,62 @@
         function toggleBonusInfo() {
             const checkbox = document.getElementById('useBonuses');
             const info = document.getElementById('bonusInfo');
-            if (checkbox.checked) { info.classList.remove('hidden'); calculateBonusSpend(); } 
-            else { info.classList.add('hidden'); }
+            if (checkbox.checked) {
+                info.classList.remove('hidden');
+                calculateBonusSpend();
+                updateOrderTotalWithBonus();
+            } else {
+                info.classList.add('hidden');
+                const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+                const delivery = subtotal < 9000 ? 1000 : 0;
+                const total = subtotal + delivery;
+                document.getElementById('orderTotalDisplay').innerHTML = `<span style="color:var(--neon-green);font-weight:700;font-size:20px;">${total} тг</span>`;
+            }
         }
 
         function calculateBonusSpend() {
             const checkbox = document.getElementById('useBonuses');
             const bonusDisplay = document.getElementById('bonusWillSpend');
-            if (!checkbox.checked) { bonusDisplay.textContent = '0'; return; }
+            const savingsDisplay = document.getElementById('bonusSavingsDisplay');
+            if (!checkbox.checked) {
+                bonusDisplay.textContent = '0';
+                savingsDisplay.textContent = '0 ₸';
+                return;
+            }
             const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
             const delivery = subtotal < 9000 ? 1000 : 0;
             const total = subtotal + delivery;
             const available = userBonusBalance || 0;
             let canSpend = Math.floor(available / 500) * 500;
             if (canSpend > total) canSpend = Math.floor(total / 500) * 500;
-            bonusDisplay.textContent = canSpend >= 500 ? canSpend : '0 (недостаточно для списания)';
+            if (canSpend >= 500) {
+                bonusDisplay.textContent = canSpend;
+                savingsDisplay.textContent = canSpend + ' ₸';
+                updateOrderTotalWithBonus();
+            } else {
+                bonusDisplay.textContent = '0 (недостаточно для списания)';
+                savingsDisplay.textContent = '0 ₸';
+                document.getElementById('orderTotalDisplay').innerHTML = `<span style="color:var(--neon-green);font-weight:700;font-size:20px;">${total} тг</span>`;
+            }
+        }
+
+        function updateOrderTotalWithBonus() {
+            const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+            const delivery = subtotal < 9000 ? 1000 : 0;
+            const total = subtotal + delivery;
+            const available = userBonusBalance || 0;
+            let canSpend = Math.floor(available / 500) * 500;
+            if (canSpend > total) canSpend = Math.floor(total / 500) * 500;
+            const finalTotal = Math.max(total - canSpend, 0);
+            const displayElement = document.getElementById('orderTotalDisplay');
+            if (canSpend >= 500) {
+                displayElement.innerHTML = `
+                    <span style="text-decoration:line-through;color:rgba(255,255,255,0.25);font-weight:400;font-size:16px;margin-right:8px;">${total} тг</span>
+                    <span style="color:var(--neon-green);font-weight:700;font-size:20px;">${finalTotal} тг</span>
+                `;
+            } else {
+                displayElement.innerHTML = `<span style="color:var(--neon-green);font-weight:700;font-size:20px;">${total} тг</span>`;
+            }
         }
 
         let currentCartTotal = 0;
@@ -1041,7 +1054,7 @@
             const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
             const delivery = subtotal < 9000 ? 1000 : 0;
             currentCartTotal = subtotal + delivery;
-            document.getElementById('orderTotalDisplay').textContent = currentCartTotal + ' тг';
+            document.getElementById('orderTotalDisplay').innerHTML = `<span style="color:var(--neon-green);font-weight:700;font-size:20px;">${currentCartTotal} тг</span>`;
             document.getElementById('orderDeliveryDisplay').textContent = delivery === 0 ? 'Бесплатно' : delivery + ' тг';
             document.getElementById('orderPhone').value = '';
             document.getElementById('orderAddress').value = '';
@@ -1053,6 +1066,7 @@
             document.getElementById('useBonuses').checked = false;
             document.getElementById('bonusInfo').classList.add('hidden');
             document.getElementById('bonusWillSpend').textContent = '0';
+            document.getElementById('bonusSavingsDisplay').textContent = '0 ₸';
             document.getElementById('orderModal').classList.remove('hidden');
         }
 
@@ -1078,7 +1092,13 @@
             const useBonuses = document.getElementById('useBonuses').checked;
             const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
             const delivery = subtotal < 9000 ? 1000 : 0;
-            const total = subtotal + delivery;
+            let total = subtotal + delivery;
+            if (useBonuses) {
+                const available = userBonusBalance || 0;
+                let canSpend = Math.floor(available / 500) * 500;
+                if (canSpend > total) canSpend = Math.floor(total / 500) * 500;
+                if (canSpend >= 500) total = Math.max(total - canSpend, 0);
+            }
             const userId = getUserId();
             const username = getUsername();
             const itemsText = cart.map(item => `${item.name}${item.selectedOption ? ' (' + item.selectedOption + ')' : ''} x1`).join('\n');
