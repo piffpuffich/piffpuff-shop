@@ -94,7 +94,7 @@ async function loadProductsFromGoogle() {
                     name: row.name,
                     price: parseInt(row.price) || 0,
                     category: row.category || 'Другое',
-                    image: row.image || '', // ← вместо emoji
+                    image: row.image || '',
                     description: row.description || '',
                     options: options
                 });

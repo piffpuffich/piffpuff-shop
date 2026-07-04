@@ -996,7 +996,7 @@
             } else {
                 info.classList.add('hidden');
                 const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-                const delivery = subtotal < 9000 ? 1000 : 0;
+                const delivery = subtotal < 10000 ? 1000 : 0;
                 const total = subtotal + delivery;
                 document.getElementById('orderTotalDisplay').innerHTML = `<span style="color:var(--neon-green);font-weight:700;font-size:20px;">${total} тг</span>`;
             }
@@ -1012,7 +1012,7 @@
                 return;
             }
             const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-            const delivery = subtotal < 9000 ? 1000 : 0;
+            const delivery = subtotal < 10000 ? 1000 : 0;
             const total = subtotal + delivery;
             const available = userBonusBalance || 0;
             let canSpend = Math.floor(available / 500) * 500;
@@ -1030,7 +1030,7 @@
 
         function updateOrderTotalWithBonus() {
             const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-            const delivery = subtotal < 9000 ? 1000 : 0;
+            const delivery = subtotal < 10000 ? 1000 : 0;
             const total = subtotal + delivery;
             const available = userBonusBalance || 0;
             let canSpend = Math.floor(available / 500) * 500;
@@ -1052,7 +1052,7 @@
         function openOrderModal() {
             if (cart.length === 0) { showToast('🛒 Корзина пуста'); return; }
             const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-            const delivery = subtotal < 9000 ? 1000 : 0;
+            const delivery = subtotal < 10000 ? 1000 : 0;
             currentCartTotal = subtotal + delivery;
             document.getElementById('orderTotalDisplay').innerHTML = `<span style="color:var(--neon-green);font-weight:700;font-size:20px;">${currentCartTotal} тг</span>`;
             document.getElementById('orderDeliveryDisplay').textContent = delivery === 0 ? 'Бесплатно' : delivery + ' тг';
@@ -1091,7 +1091,7 @@
             const notes = document.getElementById('orderNotes').value.trim();
             const useBonuses = document.getElementById('useBonuses').checked;
             const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-            const delivery = subtotal < 9000 ? 1000 : 0;
+            const delivery = subtotal < 10000 ? 1000 : 0;
             let total = subtotal + delivery;
             if (useBonuses) {
                 const available = userBonusBalance || 0;
