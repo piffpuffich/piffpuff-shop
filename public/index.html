@@ -240,7 +240,7 @@
         .product-card .product-price {
             font-size: 16px;
             font-weight: 700;
-            color: var(--neon-green);
+            color: #fff;
             margin-top: 2px;
         }
         .product-modal {
@@ -339,7 +339,7 @@
         .product-modal-price {
             font-size: 24px;
             font-weight: 700;
-            color: var(--neon-green);
+            color: #fff;
             margin: 8px 0 12px;
         }
         .product-modal select {
@@ -611,7 +611,7 @@
             font-weight: 700;
             color: #fff;
         }
-        .order-total-price { color: var(--neon-green); }
+        .order-total-price { color: #fff; }
         .order-delivery-row {
             display: flex;
             justify-content: space-between;
@@ -667,7 +667,7 @@
             font-size: 22px;
             font-weight: 700;
             margin: 16px 0;
-            color: var(--neon-green);
+            color: #fff;
             text-align: right;
         }
         .page-transition { transition: opacity 0.25s ease; }
@@ -713,7 +713,6 @@
             </div>
 
             <div id="productsPage" class="page-hidden page-transition">
-                <!-- Кнопка Назад с градиентом -->
                 <button class="back-btn" onclick="closeCategory()" style="display:inline-flex!important;align-items:center!important;gap:8px!important;background:linear-gradient(135deg,#8B00FF,#4B0082)!important;border:none!important;border-radius:30px!important;padding:8px 18px!important;color:#fff!important;font-size:14px!important;font-weight:600!important;cursor:pointer!important;margin-bottom:16px!important;transition:all .2s!important;backdrop-filter:blur(4px)!important;text-decoration:none!important;box-shadow:0 4px 20px rgba(139,0,255,0.3)!important;outline:none!important;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif!important">
                     <span style="font-size:22px;line-height:1;color:#fff">←</span> Назад
                 </button>
@@ -1059,7 +1058,7 @@
                 const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
                 const delivery = subtotal < 10000 ? 1000 : 0;
                 const total = subtotal + delivery;
-                document.getElementById('orderTotalDisplay').innerHTML = `<span style="color:var(--neon-green);font-weight:700;font-size:20px;">${total} тг</span>`;
+                document.getElementById('orderTotalDisplay').innerHTML = `<span style="color:#fff;font-weight:700;font-size:20px;">${total} тг</span>`;
                 updateGiftBanner();
             }
         }
@@ -1086,7 +1085,7 @@
             } else {
                 bonusDisplay.textContent = '0 (недостаточно для списания)';
                 savingsDisplay.textContent = '0 ₸';
-                document.getElementById('orderTotalDisplay').innerHTML = `<span style="color:var(--neon-green);font-weight:700;font-size:20px;">${total} тг</span>`;
+                document.getElementById('orderTotalDisplay').innerHTML = `<span style="color:#fff;font-weight:700;font-size:20px;">${total} тг</span>`;
             }
         }
 
@@ -1102,10 +1101,10 @@
             if (canSpend >= 500) {
                 displayElement.innerHTML = `
                     <span style="text-decoration:line-through;color:rgba(255,255,255,0.25);font-weight:400;font-size:16px;margin-right:8px;">${total} тг</span>
-                    <span style="color:var(--neon-green);font-weight:700;font-size:20px;">${finalTotal} тг</span>
+                    <span style="color:#fff;font-weight:700;font-size:20px;">${finalTotal} тг</span>
                 `;
             } else {
-                displayElement.innerHTML = `<span style="color:var(--neon-green);font-weight:700;font-size:20px;">${total} тг</span>`;
+                displayElement.innerHTML = `<span style="color:#fff;font-weight:700;font-size:20px;">${total} тг</span>`;
             }
         }
 
@@ -1116,7 +1115,7 @@
             const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
             const delivery = subtotal < 10000 ? 1000 : 0;
             currentCartTotal = subtotal + delivery;
-            document.getElementById('orderTotalDisplay').innerHTML = `<span style="color:var(--neon-green);font-weight:700;font-size:20px;">${currentCartTotal} тг</span>`;
+            document.getElementById('orderTotalDisplay').innerHTML = `<span style="color:#fff;font-weight:700;font-size:20px;">${currentCartTotal} тг</span>`;
             document.getElementById('orderDeliveryDisplay').textContent = delivery === 0 ? 'Бесплатно' : delivery + ' тг';
             document.getElementById('orderPhone').value = '';
             document.getElementById('orderAddress').value = '';
@@ -1129,7 +1128,7 @@
             document.getElementById('bonusInfo').classList.add('hidden');
             document.getElementById('bonusWillSpend').textContent = '0';
             document.getElementById('bonusSavingsDisplay').textContent = '0 ₸';
-            updateGiftBanner(); // обновляем плашку при открытии
+            updateGiftBanner();
             document.getElementById('orderModal').classList.remove('hidden');
         }
 
