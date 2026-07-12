@@ -807,13 +807,6 @@
         const banners = ['https://i.ibb.co.com/VcnRqFqN/cashback1-banner.jpg','https://i.ibb.co.com/9k3Xd4tR/dostavka-banner.png','https://i.ibb.co.com/Df8FnQw8/podarok-energy-banner.jpg'];
         let products = [], cart = [], currentCategory = '', userBonusBalance = 0, currentBanner = 0, bannerInterval = null;
 
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
         // ===== ИСПРАВЛЕНО: работаем и в браузере, и в Telegram =====
         function getUserId() {
             try {
@@ -975,11 +968,13 @@
             const imageHtml = product.image && product.image !== '' ? `<img src="${product.image}" alt="${product.name}" class="product-modal-image">` : `<div class="product-modal-image-placeholder">📦</div>`;
             const optionsHtml = cleanOptions.length > 0 ? `<select id="modal-option-select"><option value="">Выбери вкус</option>${cleanOptions.map(opt => `<option value="${opt}">${opt}</option>`).join('')}</select>` : '';
             
+            // ===== ОПИСАНИЕ ПОКАЗЫВАЕТСЯ ПОЛНОСТЬЮ =====
             let descriptionText = product.description || 'Описание отсутствует';
             descriptionText = descriptionText.replace(/^"|"$/g, '').trim();
-            const safeDescription = escapeHtml(descriptionText);
+            // Заменяем \n на <br> для переносов
+            const descHtml = descriptionText.replace(/\n/g, '<br>');
             
-            const descriptionHtml = `<div class="product-modal-description">${safeDescription}</div>`;
+            const descriptionHtml = `<div class="product-modal-description">${descHtml}</div>`;
             
             content.innerHTML = `${imageHtml}<div class="product-modal-brand">${product.category || ''}</div><div class="product-modal-name">${product.name}</div>${descriptionHtml}<div class="product-modal-price">${product.price} ₸</div>${optionsHtml}<button class="add-to-cart-btn" onclick="addToCartFromModal(${product.id})">➕ Добавить в корзину</button>`;
             modal.classList.add('open');
