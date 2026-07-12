@@ -807,6 +807,14 @@
         const banners = ['https://i.ibb.co.com/VcnRqFqN/cashback1-banner.jpg','https://i.ibb.co.com/9k3Xd4tR/dostavka-banner.png','https://i.ibb.co.com/Df8FnQw8/podarok-energy-banner.jpg'];
         let products = [], cart = [], currentCategory = '', userBonusBalance = 0, currentBanner = 0, bannerInterval = null;
 
+        // ===== ФУНКЦИЯ ДЛЯ ЭКРАНИРОВАНИЯ HTML =====
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         async function checkSubscription() {
             const userId = getUserId();
             const storeContent = document.getElementById('store-content');
@@ -896,6 +904,9 @@
                 const response = await fetch('/api/products');
                 products = await response.json();
                 console.log('📦 Загружено товаров:', products.length);
+                // Лог для отладки — показывает все товары в категории POD-системы
+                const podProducts = products.filter(p => p.category && p.category.toLowerCase() === 'pod-системы');
+                console.log('📋 Товары в POD-системы:', podProducts.map(p => ({ id: p.id, name: p.name })));
             } catch (error) { console.error('Ошибка загрузки:', error); }
         }
 
@@ -929,11 +940,13 @@
             const imageHtml = product.image && product.image !== '' ? `<img src="${product.image}" alt="${product.name}" class="product-modal-image">` : `<div class="product-modal-image-placeholder">📦</div>`;
             const optionsHtml = cleanOptions.length > 0 ? `<select id="modal-option-select"><option value="">Выбери вкус</option>${cleanOptions.map(opt => `<option value="${opt}">${opt}</option>`).join('')}</select>` : '';
             
-            // Описание показывается полностью, даже если оно длинное
+            // ===== ИСПРАВЛЕНО: экранируем HTML в описании =====
             let descriptionText = product.description || 'Описание отсутствует';
             descriptionText = descriptionText.replace(/^"|"$/g, '').trim();
+            // Экранируем HTML-теги, чтобы они отображались как текст
+            const safeDescription = escapeHtml(descriptionText);
             
-            const descriptionHtml = `<div class="product-modal-description">${descriptionText}</div>`;
+            const descriptionHtml = `<div class="product-modal-description">${safeDescription}</div>`;
             
             content.innerHTML = `${imageHtml}<div class="product-modal-brand">${product.category || ''}</div><div class="product-modal-name">${product.name}</div>${descriptionHtml}<div class="product-modal-price">${product.price} ₸</div>${optionsHtml}<button class="add-to-cart-btn" onclick="addToCartFromModal(${product.id})">➕ Добавить в корзину</button>`;
             modal.classList.add('open');
@@ -964,6 +977,8 @@
             const list = document.getElementById('productList');
             // Поиск без учёта регистра
             const filtered = products.filter(p => p.category && p.category.toLowerCase() === category.toLowerCase());
+            
+            console.log(`🔍 Категория: "${category}", найдено: ${filtered.length}`);
             
             if (filtered.length === 0) { 
                 list.innerHTML = `<div class="empty-state"><span style="font-size:48px;display:block;margin-bottom:8px;">🔍</span><p>Нет товаров в этой категории</p></div>`; 
