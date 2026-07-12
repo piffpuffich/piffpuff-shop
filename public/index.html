@@ -807,7 +807,11 @@
         const banners = ['https://i.ibb.co.com/VcnRqFqN/cashback1-banner.jpg','https://i.ibb.co.com/9k3Xd4tR/dostavka-banner.png','https://i.ibb.co.com/Df8FnQw8/podarok-energy-banner.jpg'];
         let products = [], cart = [], currentCategory = '', userBonusBalance = 0, currentBanner = 0, bannerInterval = null;
 
-        // ===== РАБОТАЕТ В БРАУЗЕРЕ =====
+        // ===== ПРОВЕРКА — МЫ В БРАУЗЕРЕ ИЛИ В TELEGRAM? =====
+        function isBrowser() {
+            return !window.Telegram || !window.Telegram.WebApp;
+        }
+
         function getUserId() {
             try {
                 if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
@@ -832,11 +836,12 @@
         }
 
         async function checkSubscription() {
-            const isBrowser = !window.Telegram?.WebApp;
             const storeContent = document.getElementById('store-content');
             const subscriptionRequired = document.getElementById('subscription-required');
 
-            if (isBrowser) {
+            // Если браузер — сразу показываем магазин
+            if (isBrowser()) {
+                console.log('🌐 Браузер — показываем магазин без проверки');
                 storeContent.style.display = 'block';
                 subscriptionRequired.style.display = 'none';
                 if (products.length === 0) loadProducts();
@@ -845,10 +850,12 @@
                 return;
             }
 
+            // Telegram — проверяем подписку
             try {
                 const userId = getUserId();
                 const response = await fetch(`/api/check-subscription/${userId}`);
                 const data = await response.json();
+                console.log('🔍 Статус подписки:', data);
                 if (data.subscribed) {
                     storeContent.style.display = 'block';
                     subscriptionRequired.style.display = 'none';
@@ -860,6 +867,7 @@
                     subscriptionRequired.style.display = 'block';
                 }
             } catch (error) {
+                console.error('❌ Ошибка проверки:', error);
                 storeContent.style.display = 'block';
                 subscriptionRequired.style.display = 'none';
                 loadProducts();
@@ -929,8 +937,6 @@
                 const response = await fetch('/api/products');
                 products = await response.json();
                 console.log('📦 Загружено товаров:', products.length);
-                
-                // Проверяем POD-системы
                 const pod = products.filter(p => p.category && p.category.toLowerCase() === 'pod-системы');
                 console.log('📋 POD-системы:', pod.map(p => p.name));
                 console.log('📋 Всего в POD:', pod.length);
