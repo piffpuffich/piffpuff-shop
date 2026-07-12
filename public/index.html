@@ -925,7 +925,14 @@
             if (hasOptions) cleanOptions = product.options.map(opt => opt.replace(/^"|"$/g, '').trim());
             const imageHtml = product.image && product.image !== '' ? `<img src="${product.image}" alt="${product.name}" class="product-modal-image">` : `<div class="product-modal-image-placeholder">📦</div>`;
             const optionsHtml = cleanOptions.length > 0 ? `<select id="modal-option-select"><option value="">Выбери вкус</option>${cleanOptions.map(opt => `<option value="${opt}">${opt}</option>`).join('')}</select>` : '';
-            content.innerHTML = `${imageHtml}<div class="product-modal-brand">${product.category || ''}</div><div class="product-modal-name">${product.name}</div>${product.description ? `<div class="product-modal-description">${product.description}</div>` : ''}<div class="product-modal-price">${product.price} ₸</div>${optionsHtml}<button class="add-to-cart-btn" onclick="addToCartFromModal(${product.id})">➕ Добавить в корзину</button>`;
+            
+            // ===== ИСПРАВЛЕНО: описание показывается ВСЕГДА =====
+            // Если description есть — показываем его, иначе показываем заглушку
+            const descriptionHtml = product.description && product.description.trim() !== '' 
+                ? `<div class="product-modal-description">${product.description}</div>` 
+                : `<div class="product-modal-description" style="color:rgba(255,255,255,0.15);font-style:italic;">Описание отсутствует</div>`;
+            
+            content.innerHTML = `${imageHtml}<div class="product-modal-brand">${product.category || ''}</div><div class="product-modal-name">${product.name}</div>${descriptionHtml}<div class="product-modal-price">${product.price} ₸</div>${optionsHtml}<button class="add-to-cart-btn" onclick="addToCartFromModal(${product.id})">➕ Добавить в корзину</button>`;
             modal.classList.add('open');
         }
 
@@ -953,7 +960,15 @@
         function renderProducts(category) {
             const list = document.getElementById('productList');
             const filtered = products.filter(p => p.category === category);
-            if (filtered.length === 0) { list.innerHTML = `<div class="empty-state"><span style="font-size:48px;display:block;margin-bottom:8px;">🔍</span><p>Нет товаров в этой категории</p></div>`; return; }
+            
+            // ===== ДОБАВЛЯЕМ ЛОГ ДЛЯ ОТЛАДКИ =====
+            console.log(`🔍 Категория: ${category}, найдено товаров: ${filtered.length}`);
+            console.log('📋 Список товаров:', filtered.map(p => p.name));
+            
+            if (filtered.length === 0) { 
+                list.innerHTML = `<div class="empty-state"><span style="font-size:48px;display:block;margin-bottom:8px;">🔍</span><p>Нет товаров в этой категории</p></div>`; 
+                return; 
+            }
             list.innerHTML = filtered.map(p => {
                 const imageHtml = p.image && p.image !== '' ? `<img src="${p.image}" alt="${p.name}" class="product-image" loading="lazy">` : `<div class="product-image-placeholder">📦</div>`;
                 return `<div class="product-card" onclick="openProductModal(${p.id})">${imageHtml}<div class="product-brand">${p.category || ''}</div><div class="product-name">${p.name}</div><div class="product-price">${p.price} ₸</div></div>`;
@@ -1052,7 +1067,7 @@
                 info.classList.remove('hidden');
                 calculateBonusSpend();
                 updateOrderTotalWithBonus();
-                updateGiftBanner(); // обновляем плашку (без учёта бонусов)
+                updateGiftBanner();
             } else {
                 info.classList.add('hidden');
                 const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
