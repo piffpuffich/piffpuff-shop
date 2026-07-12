@@ -243,7 +243,7 @@
             color: #fff;
             margin-top: 2px;
         }
-        /* ===== ИСПРАВЛЕНО: модалка теперь показывает всё описание ===== */
+        /* ===== МОДАЛКА С ПОЛНЫМ ОПИСАНИЕМ ===== */
         .product-modal {
             position: fixed;
             top: 0;
@@ -331,17 +331,20 @@
             margin: 2px 0 4px;
             line-height: 1.2;
         }
+        /* ===== ОПИСАНИЕ — БЕЗ ОГРАНИЧЕНИЙ ===== */
         .product-modal-description {
             font-size: 14px;
-            color: rgba(255,255,255,0.6);
-            line-height: 1.6;
+            color: rgba(255,255,255,0.75);
+            line-height: 1.7;
             margin: 8px 0 14px;
-            padding: 10px 12px;
-            background: rgba(255,255,255,0.02);
+            padding: 12px 14px;
+            background: rgba(255,255,255,0.03);
             border-radius: 10px;
-            border-left: 2px solid var(--neon-green);
+            border-left: 3px solid var(--neon-green);
             word-wrap: break-word;
             white-space: pre-wrap;
+            max-height: none;
+            overflow: visible;
         }
         .product-modal-price {
             font-size: 24px;
@@ -574,8 +577,6 @@
             margin-top: 6px;
             padding-left: 26px;
         }
-
-        /* ===== ПЛАШКА ПОДАРКА ===== */
         .gift-field {
             margin-bottom: 12px;
         }
@@ -604,7 +605,6 @@
             color: var(--neon-green);
             font-weight: 700;
         }
-
         .order-summary {
             background: rgba(255,255,255,0.02);
             padding: 16px;
@@ -680,9 +680,31 @@
         .page-transition { transition: opacity 0.25s ease; }
         .page-hidden { display: none; }
         .page-visible { display: block; }
+        
+        /* ===== ДОБАВЛЯЕМ ОТЛАДОЧНУЮ ПАНЕЛЬ ===== */
+        #debugPanel {
+            position: fixed;
+            bottom: 80px;
+            left: 10px;
+            background: rgba(0,0,0,0.9);
+            color: var(--neon-green);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-family: monospace;
+            z-index: 9999;
+            max-width: 200px;
+            border: 1px solid rgba(57,255,20,0.2);
+            pointer-events: none;
+            display: none;
+        }
+        #debugPanel.show { display: block; }
     </style>
 </head>
 <body>
+
+    <!-- ===== ОТЛАДОЧНАЯ ПАНЕЛЬ ===== -->
+    <div id="debugPanel"></div>
 
     <!-- ===== СТРАНИЦА БЛОКИРОВКИ ===== -->
     <div id="subscription-required">
@@ -751,7 +773,6 @@
                 <div class="modal-field"><label>Если сумма не ровная — укажите, с какой суммы нужна сдача:</label><input type="text" id="orderChange" placeholder="Например: с 2000 тг"></div>
                 <div class="modal-field"><label>Дополнительные пожелания:</label><textarea id="orderNotes" rows="2"></textarea></div>
                 
-                <!-- Плашка с подарком -->
                 <div class="modal-field gift-field">
                     <div class="gift-banner" id="giftBanner">
                         <span id="giftText">Ещё 0 тг до подарка GORILLA ENERGY 🎁</span>
@@ -809,6 +830,14 @@
     <script>
         const banners = ['https://i.ibb.co.com/VcnRqFqN/cashback1-banner.jpg','https://i.ibb.co.com/9k3Xd4tR/dostavka-banner.png','https://i.ibb.co.com/Df8FnQw8/podarok-energy-banner.jpg'];
         let products = [], cart = [], currentCategory = '', userBonusBalance = 0, currentBanner = 0, bannerInterval = null;
+
+        // ===== ОТЛАДКА =====
+        function showDebug(msg) {
+            const panel = document.getElementById('debugPanel');
+            panel.textContent = msg;
+            panel.classList.add('show');
+            setTimeout(() => panel.classList.remove('show'), 8000);
+        }
 
         async function checkSubscription() {
             const userId = getUserId();
@@ -900,10 +929,17 @@
                 products = await response.json();
                 console.log('📦 Загружено товаров:', products.length);
                 console.log('📋 Все товары:', products.map(p => ({ id: p.id, name: p.name, category: p.category })));
-            } catch (error) { console.error('Ошибка загрузки:', error); }
+                
+                // ===== ПРОВЕРЯЕМ КАТЕГОРИИ НА РАЗНЫЙ РЕГИСТР =====
+                const categories = [...new Set(products.map(p => p.category))];
+                console.log('🏷️ Категории в БД:', categories);
+                showDebug(`Загружено ${products.length} товаров, категории: ${categories.join(', ')}`);
+            } catch (error) { 
+                console.error('Ошибка загрузки:', error);
+                showDebug('❌ Ошибка загрузки товаров');
+            }
         }
 
-        // ===== ПЛАШКА ПОДАРКА =====
         function updateGiftBanner() {
             const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
             const delivery = subtotal < 10000 ? 1000 : 0;
@@ -934,10 +970,12 @@
             const imageHtml = product.image && product.image !== '' ? `<img src="${product.image}" alt="${product.name}" class="product-modal-image">` : `<div class="product-modal-image-placeholder">📦</div>`;
             const optionsHtml = cleanOptions.length > 0 ? `<select id="modal-option-select"><option value="">Выбери вкус</option>${cleanOptions.map(opt => `<option value="${opt}">${opt}</option>`).join('')}</select>` : '';
             
-            // ===== ОПИСАНИЕ ПОКАЗЫВАЕТСЯ ПОЛНОСТЬЮ =====
-            const descriptionHtml = product.description && product.description.trim() !== '' 
-                ? `<div class="product-modal-description">${product.description}</div>` 
-                : `<div class="product-modal-description" style="color:rgba(255,255,255,0.15);font-style:italic;">Описание отсутствует</div>`;
+            // ===== ОПИСАНИЕ — ПОЛНОСТЬЮ, БЕЗ ОБРЕЗАНИЯ =====
+            let descriptionText = product.description || 'Описание отсутствует';
+            // Убираем лишние кавычки, если они есть
+            descriptionText = descriptionText.replace(/^"|"$/g, '').trim();
+            
+            const descriptionHtml = `<div class="product-modal-description">${descriptionText}</div>`;
             
             content.innerHTML = `${imageHtml}<div class="product-modal-brand">${product.category || ''}</div><div class="product-modal-name">${product.name}</div>${descriptionHtml}<div class="product-modal-price">${product.price} ₸</div>${optionsHtml}<button class="add-to-cart-btn" onclick="addToCartFromModal(${product.id})">➕ Добавить в корзину</button>`;
             modal.classList.add('open');
@@ -966,26 +1004,29 @@
 
         function renderProducts(category) {
             const list = document.getElementById('productList');
-            const filtered = products.filter(p => p.category === category);
             
-            // ===== РАСШИРЕННЫЙ ЛОГ ДЛЯ ОТЛАДКИ =====
+            // ===== ПОИСК С ИГНОРИРОВАНИЕМ РЕГИСТРА =====
+            const filtered = products.filter(p => p.category && p.category.toLowerCase() === category.toLowerCase());
+            
             console.log(`🔍 Категория: "${category}"`);
-            console.log(`📦 Найдено товаров: ${filtered.length}`);
+            console.log(`📦 Найдено товаров (с учётом регистра): ${filtered.length}`);
             console.log('📋 Список ID и названий:');
             filtered.forEach((p, i) => console.log(`  ${i+1}. ID:${p.id} "${p.name}"`));
             
+            // ===== ПОКАЗЫВАЕМ ВСЕ ТОВАРЫ =====
             if (filtered.length === 0) { 
-                list.innerHTML = `<div class="empty-state"><span style="font-size:48px;display:block;margin-bottom:8px;">🔍</span><p>Нет товаров в этой категории</p></div>`; 
+                list.innerHTML = `<div class="empty-state"><span style="font-size:48px;display:block;margin-bottom:8px;">🔍</span><p>Нет товаров в категории "${category}"</p></div>`; 
+                showDebug(`❌ В категории "${category}" нет товаров`);
                 return; 
             }
             
-            // ===== ПРИНУДИТЕЛЬНО ПОКАЗЫВАЕМ ВСЕ ТОВАРЫ =====
             list.innerHTML = filtered.map(p => {
                 const imageHtml = p.image && p.image !== '' ? `<img src="${p.image}" alt="${p.name}" class="product-image" loading="lazy">` : `<div class="product-image-placeholder">📦</div>`;
                 return `<div class="product-card" onclick="openProductModal(${p.id})">${imageHtml}<div class="product-brand">${p.category || ''}</div><div class="product-name">${p.name}</div><div class="product-price">${p.price} ₸</div></div>`;
             }).join('');
             
             console.log(`✅ Отрисовано ${filtered.length} карточек`);
+            showDebug(`✅ ${filtered.length} товаров в "${category}"`);
         }
 
         function addToCart(productId) {
@@ -1191,7 +1232,6 @@
             }
             const userId = getUserId();
             const username = getUsername();
-            const itemsText = cart.map(item => `${item.name}${item.selectedOption ? ' (' + item.selectedOption + ')' : ''} x1`).join('\n');
             const orderData = {
                 items: cart.map(item => ({ name: item.name, price: item.price, option: item.selectedOption || '' })),
                 subtotal, delivery, total, phone, address,
