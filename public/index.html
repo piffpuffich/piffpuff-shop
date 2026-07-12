@@ -807,7 +807,6 @@
         const banners = ['https://i.ibb.co.com/VcnRqFqN/cashback1-banner.jpg','https://i.ibb.co.com/9k3Xd4tR/dostavka-banner.png','https://i.ibb.co.com/Df8FnQw8/podarok-energy-banner.jpg'];
         let products = [], cart = [], currentCategory = '', userBonusBalance = 0, currentBanner = 0, bannerInterval = null;
 
-        // ===== ФУНКЦИЯ ДЛЯ ЭКРАНИРОВАНИЯ HTML =====
         function escapeHtml(text) {
             if (!text) return '';
             const div = document.createElement('div');
@@ -815,10 +814,47 @@
             return div.innerHTML;
         }
 
+        // ===== ИСПРАВЛЕНО: работаем и в браузере, и в Telegram =====
+        function getUserId() {
+            try {
+                if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
+                    return window.Telegram.WebApp.initDataUnsafe.user.id;
+                }
+            } catch (e) {}
+            let userId = localStorage.getItem('piffpuff_user_id');
+            if (!userId) {
+                userId = 'browser_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+                localStorage.setItem('piffpuff_user_id', userId);
+            }
+            return userId;
+        }
+
+        function getUsername() {
+            try {
+                if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
+                    return window.Telegram.WebApp.initDataUnsafe.user.username || 'user';
+                }
+            } catch (e) {}
+            return 'browser_user';
+        }
+
         async function checkSubscription() {
             const userId = getUserId();
             const storeContent = document.getElementById('store-content');
             const subscriptionRequired = document.getElementById('subscription-required');
+            
+            // Если мы в браузере — сразу показываем магазин без проверки
+            const isBrowser = !window.Telegram?.WebApp;
+            if (isBrowser) {
+                console.log('🌐 Режим браузера — показываем магазин без проверки подписки');
+                storeContent.style.display = 'block';
+                subscriptionRequired.style.display = 'none';
+                if (products.length === 0) loadProducts();
+                loadCashback();
+                initBanners();
+                return;
+            }
+            
             try {
                 const response = await fetch(`/api/check-subscription/${userId}`);
                 const data = await response.json();
@@ -904,9 +940,8 @@
                 const response = await fetch('/api/products');
                 products = await response.json();
                 console.log('📦 Загружено товаров:', products.length);
-                // Лог для отладки — показывает все товары в категории POD-системы
                 const podProducts = products.filter(p => p.category && p.category.toLowerCase() === 'pod-системы');
-                console.log('📋 Товары в POD-системы:', podProducts.map(p => ({ id: p.id, name: p.name })));
+                console.log('📋 Товары в POD-системы:', podProducts.map(p => ({ id: p.id, name: p.name, desc: p.description ? p.description.substring(0, 50) + '...' : 'нет' })));
             } catch (error) { console.error('Ошибка загрузки:', error); }
         }
 
@@ -940,10 +975,8 @@
             const imageHtml = product.image && product.image !== '' ? `<img src="${product.image}" alt="${product.name}" class="product-modal-image">` : `<div class="product-modal-image-placeholder">📦</div>`;
             const optionsHtml = cleanOptions.length > 0 ? `<select id="modal-option-select"><option value="">Выбери вкус</option>${cleanOptions.map(opt => `<option value="${opt}">${opt}</option>`).join('')}</select>` : '';
             
-            // ===== ИСПРАВЛЕНО: экранируем HTML в описании =====
             let descriptionText = product.description || 'Описание отсутствует';
             descriptionText = descriptionText.replace(/^"|"$/g, '').trim();
-            // Экранируем HTML-теги, чтобы они отображались как текст
             const safeDescription = escapeHtml(descriptionText);
             
             const descriptionHtml = `<div class="product-modal-description">${safeDescription}</div>`;
@@ -975,7 +1008,6 @@
 
         function renderProducts(category) {
             const list = document.getElementById('productList');
-            // Поиск без учёта регистра
             const filtered = products.filter(p => p.category && p.category.toLowerCase() === category.toLowerCase());
             
             console.log(`🔍 Категория: "${category}", найдено: ${filtered.length}`);
@@ -1036,16 +1068,6 @@
         }
 
         async function checkout() { openOrderModal(); }
-
-        function getUserId() {
-            if (window.Telegram?.WebApp?.initDataUnsafe?.user) return window.Telegram.WebApp.initDataUnsafe.user.id;
-            return 'test_user_' + Date.now();
-        }
-
-        function getUsername() {
-            if (window.Telegram?.WebApp?.initDataUnsafe?.user) return window.Telegram.WebApp.initDataUnsafe.user.username || 'user';
-            return 'test_user';
-        }
 
         async function loadCashback() {
             const userId = getUserId();
