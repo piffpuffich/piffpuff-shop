@@ -23,6 +23,35 @@ const CHANNEL_ID = '-1003640998264';
 const notifyBot = new Telegraf(NOTIFY_BOT_TOKEN);
 const mainBot = new Telegraf(MAIN_BOT_TOKEN);
 
+// ===== ОБРАБОТЧИКИ КОМАНД БОТА =====
+mainBot.start((ctx) => {
+    console.log(`👤 ${ctx.from.username || ctx.from.id} открыл бота`);
+    ctx.reply(
+        '💨 Добро пожаловать в Piff&Puff Shop!\n\n' +
+        'Нажми на кнопку, чтобы открыть магазин.',
+        {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        { 
+                            text: '🛍 Открыть магазин', 
+                            web_app: { url: 'https://piffpuff.me' } 
+                        }
+                    ]
+                ]
+            }
+        }
+    );
+});
+
+mainBot.command('help', (ctx) => {
+    ctx.reply(
+        '📖 Помощь:\n\n' +
+        '/start - Открыть магазин\n' +
+        '/help - Эта справка'
+    );
+});
+
 console.log('🚀 Запуск Piff&Puff Shop сервера...');
 
 // ========== НАСТРОЙКИ ==========
