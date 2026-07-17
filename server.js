@@ -335,5 +335,18 @@ app.listen(PORT, async () => {
     cashbackCache = await loadCashbackFromGoogle();
     lastUpdateCashback = Date.now();
     console.log(`📦 ${productsCache.length} товаров, ${Object.keys(cashbackCache).length} пользователей в кэше`);
-    console.log('✅ Магазин готов к работе!');
+    
+    // ===== ЗАПУСКАЕМ БОТА =====
+    try {
+        await mainBot.launch();
+        console.log('🤖 Бот успешно запущен и готов принимать команды!');
+    } catch (error) {
+        console.error('❌ Ошибка запуска бота:', error.message);
+    }
+    
+    console.log('✅ Магазин и бот готовы к работе!');
 });
+
+// Обработка завершения работы (чтобы корректно остановить бота)
+process.once('SIGINT', () => mainBot.stop('SIGINT'));
+process.once('SIGTERM', () => mainBot.stop('SIGTERM'));
