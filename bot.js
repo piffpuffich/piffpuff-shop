@@ -17,7 +17,7 @@ bot.start((ctx) => {
                     [
                         { 
                             text: '🛍 Открыть магазин', 
-                            web_app: { url: 'https://piffpuff-shop.onrender.com' } 
+                            web_app: { url: 'https://piffpuff.me' } 
                         }
                     ]
                 ]
