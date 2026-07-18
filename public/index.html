@@ -1186,57 +1186,59 @@
         document.getElementById('orderModal')?.addEventListener('click', function(e) { if (e.target === this) closeOrderModal(); });
 
         async function submitOrder() {
-            const submitBtn = document.querySelector('.modal-submit-btn');
-            if (submitBtn.disabled) return;
-            const phone = document.getElementById('orderPhone').value.trim();
-            const address = document.getElementById('orderAddress').value.trim();
-            let isValid = true;
-            if (!phone) { document.getElementById('phoneError').classList.remove('hidden'); isValid = false; } 
-            else { document.getElementById('phoneError').classList.add('hidden'); }
-            if (!address) { document.getElementById('addressError').classList.remove('hidden'); isValid = false; } 
-            else { document.getElementById('addressError').classList.add('hidden'); }
-            if (!isValid) return;
-            submitBtn.disabled = true;
-            submitBtn.textContent = '⏳ Отправка...';
-            const change = document.getElementById('orderChange').value.trim();
-            const notes = document.getElementById('orderNotes').value.trim();
-            const useBonuses = document.getElementById('useBonuses').checked;
-            const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-            const delivery = subtotal < 10000 ? 1000 : 0;
-            let total = subtotal + delivery;
-            if (useBonuses) {
-                const available = userBonusBalance || 0;
-                let canSpend = Math.floor(available / 500) * 500;
-                if (canSpend > total) canSpend = Math.floor(total / 500) * 500;
-                if (canSpend >= 500) total = Math.max(total - canSpend, 0);
-            }
-            const userId = getUserId();
-            const username = getUsername();
-            const orderData = {
-                items: cart.map(item => ({ name: item.name, price: item.price, option: item.selectedOption || '' })),
-                subtotal, delivery, total, phone, address,
-                change: change || 'Не требуется',
-                notes: notes || 'Нет',
-                userId, username,
-                useBonuses
-            };
-            try {
-                const response = await fetch('/api/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
-                await response.json();
-                showToast(`✅ Заказ оформлен! Итого: ${total} тг`);
-                cart = [];
-                updateCartCount();
-                closeCart();
-                closeOrderModal();
-                renderProducts(currentCategory);
-            } catch (error) {
-                showToast('❌ Ошибка при оформлении заказа');
-                console.error(error);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = '✅ Оформить заказ';
-            }
-        }
+    const submitBtn = document.querySelector('.modal-submit-btn');
+    if (submitBtn.disabled) return;
+    const phone = document.getElementById('orderPhone').value.trim();
+    const address = document.getElementById('orderAddress').value.trim();
+    let isValid = true;
+    if (!phone) { document.getElementById('phoneError').classList.remove('hidden'); isValid = false; } 
+    else { document.getElementById('phoneError').classList.add('hidden'); }
+    if (!address) { document.getElementById('addressError').classList.remove('hidden'); isValid = false; } 
+    else { document.getElementById('addressError').classList.add('hidden'); }
+    if (!isValid) return;
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ Отправка...';
+    const change = document.getElementById('orderChange').value.trim();
+    const notes = document.getElementById('orderNotes').value.trim();
+    const useBonuses = document.getElementById('useBonuses').checked;
+    const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+    const delivery = subtotal < 10000 ? 1000 : 0;
+    let total = subtotal + delivery;
+    if (useBonuses) {
+        const available = userBonusBalance || 0;
+        let canSpend = Math.floor(available / 500) * 500;
+        if (canSpend > total) canSpend = Math.floor(total / 500) * 500;
+        if (canSpend >= 500) total = Math.max(total - canSpend, 0);
+    }
+    const userId = getUserId();
+    const username = getUsername();
+    const orderData = {
+        items: cart.map(item => ({ name: item.name, price: item.price, option: item.selectedOption || '' })),
+        subtotal, delivery, total, phone, address,
+        change: change || 'Не требуется',
+        notes: notes || 'Нет',
+        userId, username,
+        useBonuses
+    };
+    try {
+        const response = await fetch('/api/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
+        const result = await response.json();
+        // Показываем номер заказа в тосте
+        const orderNumber = result.order?.number || 'неизвестен';
+        showToast(`✅ Заказ №${orderNumber} оформлен! Итого: ${total} тг`);
+        cart = [];
+        updateCartCount();
+        closeCart();
+        closeOrderModal();
+        renderProducts(currentCategory);
+    } catch (error) {
+        showToast('❌ Ошибка при оформлении заказа');
+        console.error(error);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '✅ Оформить заказ';
+    }
+}
 
         checkSubscription();
     </script>

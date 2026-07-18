@@ -23,6 +23,19 @@ const CHANNEL_ID = '-1003640998264';
 const notifyBot = new Telegraf(NOTIFY_BOT_TOKEN);
 const mainBot = new Telegraf(MAIN_BOT_TOKEN);
 
+// ===== ГЕНЕРАТОР НОМЕРОВ ЗАКАЗОВ =====
+let orderCounter = 0;
+
+// Загружаем последний номер из памяти (если сервер перезапустится — начнёт с 1)
+// Можно сохранять в файл или базу данных, но для простоты оставим в памяти
+
+function generateOrderNumber() {
+    orderCounter++;
+    // Формат: P&P-001, P&P-002 и т.д.
+    const padded = String(orderCounter).padStart(3, '0');
+    return `P&P-${padded}`;
+}
+
 // ===== ОБРАБОТЧИКИ КОМАНД БОТА =====
 mainBot.start((ctx) => {
     console.log(`👤 ${ctx.from.username || ctx.from.id} открыл бота`);
@@ -255,6 +268,9 @@ app.post('/api/order', async (req, res) => {
         useBonuses
     } = req.body;
 
+    // Генерируем номер заказа
+    const orderNumber = generateOrderNumber();
+
     // Итоговая сумма уже пришла с фронтенда (с учётом бонусов)
     let finalTotal = total;
     let bonusText = 'Нет';
@@ -269,20 +285,16 @@ app.post('/api/order', async (req, res) => {
 
         const userData = cashbackCache[userId];
         if (userData && userData.balance > 0) {
-            // Считаем, сколько бонусов можно списать
             let available = userData.balance;
             let canSpend = Math.floor(available / 500) * 500;
             
-            // Не больше суммы заказа
             if (canSpend > total) {
                 canSpend = Math.floor(total / 500) * 500;
             }
 
             if (canSpend >= 500) {
-                // СПИСЫВАЕМ БОНУСЫ
                 userData.balance -= canSpend;
                 bonusText = `Да (${canSpend} бонусов)`;
-                // НЕ вычитаем из finalTotal, потому что фронтенд уже сделал это!
             } else {
                 bonusText = 'Нет (недостаточно для списания)';
             }
@@ -306,6 +318,7 @@ app.post('/api/order', async (req, res) => {
     // ==== УВЕДОМЛЕНИЕ ВЛАДЕЛЬЦУ ====
     const ownerMessage =
         `🛒 Оформлен новый заказ!\n\n` +
+        `🔢 Номер заказа: ${orderNumber}\n` +
         `👤 Клиент: ${username ? '@' + username : userId} (${userId})\n` +
         `📍 Адрес доставки: ${address}\n` +
         `📞 Контактный телефон: ${phone}\n` +
@@ -322,6 +335,7 @@ app.post('/api/order', async (req, res) => {
     // ==== УВЕДОМЛЕНИЕ КЛИЕНТУ ====
     const clientMessage =
         `🛍 Магазин Piff&Puff - Ваш заказ\n\n` +
+        `🔢 Номер заказа: ${orderNumber}\n` +
         `📅 Вы оформили заказ:\n\n` +
         `${itemsText}\n` +
         `💰 Стоимость с учетом доставки: ${finalTotal} тг\n` +
@@ -350,7 +364,12 @@ app.post('/api/order', async (req, res) => {
     res.json({
         success: true,
         message: 'Заказ принят!',
-        order: { total: finalTotal, phone, address }
+        order: { 
+            number: orderNumber,
+            total: finalTotal, 
+            phone, 
+            address 
+        }
     });
 });
 
@@ -367,7 +386,6 @@ app.listen(PORT, async () => {
     lastUpdateCashback = Date.now();
     console.log(`📦 ${productsCache.length} товаров, ${Object.keys(cashbackCache).length} пользователей в кэше`);
     
-    // ===== ЗАПУСКАЕМ БОТА =====
     try {
         await mainBot.launch();
         console.log('🤖 Бот успешно запущен и готов принимать команды!');
@@ -378,6 +396,5 @@ app.listen(PORT, async () => {
     console.log('✅ Магазин и бот готовы к работе!');
 });
 
-// Обработка завершения работы (чтобы корректно остановить бота)
 process.once('SIGINT', () => mainBot.stop('SIGINT'));
 process.once('SIGTERM', () => mainBot.stop('SIGTERM'));
