@@ -255,8 +255,8 @@ app.post('/api/order', async (req, res) => {
         useBonuses
     } = req.body;
 
+    // Итоговая сумма уже пришла с фронтенда (с учётом бонусов)
     let finalTotal = total;
-    let bonusSpent = 0;
     let bonusText = 'Нет';
 
     // ==== ЕСЛИ КЛИЕНТ ХОЧЕТ ПОТРАТИТЬ БОНУСЫ ====
@@ -269,18 +269,20 @@ app.post('/api/order', async (req, res) => {
 
         const userData = cashbackCache[userId];
         if (userData && userData.balance > 0) {
+            // Считаем, сколько бонусов можно списать
             let available = userData.balance;
             let canSpend = Math.floor(available / 500) * 500;
+            
+            // Не больше суммы заказа
             if (canSpend > total) {
                 canSpend = Math.floor(total / 500) * 500;
             }
 
             if (canSpend >= 500) {
+                // СПИСЫВАЕМ БОНУСЫ
                 userData.balance -= canSpend;
-                bonusSpent = canSpend;
-                finalTotal = total - canSpend;
-                if (finalTotal < 0) finalTotal = 0;
                 bonusText = `Да (${canSpend} бонусов)`;
+                // НЕ вычитаем из finalTotal, потому что фронтенд уже сделал это!
             } else {
                 bonusText = 'Нет (недостаточно для списания)';
             }
