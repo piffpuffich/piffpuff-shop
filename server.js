@@ -10,13 +10,13 @@ app.use(express.json());
 const { Telegraf } = require('telegraf');
 
 // ТОКЕН БОТА ДЛЯ УВЕДОМЛЕНИЙ
-const NOTIFY_BOT_TOKEN = '8917717243:AAGa2gUGpPXHuEE-ZDhpNdfHOZ0k_a9zSUA';
+const NOTIFY_BOT_TOKEN = '8662750003:AAE95BpkXnQe1LaeAzGfM-KH_O1NvSJ2nsY';
 
 // ID чата (твой Telegram ID)
 const CHAT_ID = '8395485499';
 
 // ТОКЕН БОТА-МАГАЗИНА (основного, через который клиент открывает магазин)
-const MAIN_BOT_TOKEN = '8704731828:AAHc8SWFVq0o8GIjovL4HjlPOZJ91rBuN0w';
+const MAIN_BOT_TOKEN = '8217198143:AAFJdhLgVDkoprilrb7-P35hG4TSxGaI8Lo';
 
 // ID КАНАЛА
 const CHANNEL_ID = '-1003640998264';
@@ -24,6 +24,24 @@ const CHANNEL_ID = '-1003640998264';
 // Создаём ботов
 const notifyBot = new Telegraf(NOTIFY_BOT_TOKEN);
 const mainBot = new Telegraf(MAIN_BOT_TOKEN);
+
+// ===== УБИРАЕМ КНОПКИ МЕНЮ И КОМАНДЫ =====
+(async () => {
+    try {
+        // Убираем кнопку меню (внизу слева)
+        await mainBot.telegram.setChatMenuButton({
+            chat_id: null,
+            menu_button: { type: 'default' }
+        });
+        console.log('✅ Кнопка меню убрана');
+        
+        // Очищаем список команд
+        await mainBot.telegram.setMyCommands([]);
+        console.log('✅ Команды очищены');
+    } catch (error) {
+        console.error('❌ Ошибка при удалении кнопок:', error.message);
+    }
+})();
 
 // ===== ГЕНЕРАТОР НОМЕРОВ ЗАКАЗОВ (СОХРАНЕНИЕ В ФАЙЛ) =====
 const COUNTER_FILE = path.join(__dirname, 'order-counter.json');
