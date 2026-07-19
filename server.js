@@ -35,7 +35,7 @@ const mainBot = new Telegraf(MAIN_BOT_TOKEN);
         });
         console.log('✅ Кнопка меню убрана');
         
-        // Очищаем список команд
+        // Очищаем список команд (это убирает подсказки)
         await mainBot.telegram.setMyCommands([]);
         console.log('✅ Команды очищены');
     } catch (error) {
@@ -46,7 +46,6 @@ const mainBot = new Telegraf(MAIN_BOT_TOKEN);
 // ===== ГЕНЕРАТОР НОМЕРОВ ЗАКАЗОВ (СОХРАНЕНИЕ В ФАЙЛ) =====
 const COUNTER_FILE = path.join(__dirname, 'order-counter.json');
 
-// Функция для чтения счётчика из файла
 function readCounter() {
     try {
         if (fs.existsSync(COUNTER_FILE)) {
@@ -60,7 +59,6 @@ function readCounter() {
     return 699;
 }
 
-// Функция для сохранения счётчика в файл
 function saveCounter(value) {
     try {
         fs.writeFileSync(COUNTER_FILE, JSON.stringify({ lastOrderNumber: value }), 'utf8');
@@ -69,7 +67,6 @@ function saveCounter(value) {
     }
 }
 
-// Инициализируем счётчик
 let orderCounter = readCounter();
 
 function generateOrderNumber() {
@@ -79,6 +76,7 @@ function generateOrderNumber() {
 }
 
 // ===== ОБРАБОТЧИКИ КОМАНД БОТА =====
+// Только /start — с кнопкой открыть магазин
 mainBot.start((ctx) => {
     console.log(`👤 ${ctx.from.username || ctx.from.id} открыл бота`);
     ctx.reply(
@@ -96,14 +94,6 @@ mainBot.start((ctx) => {
                 ]
             }
         }
-    );
-});
-
-mainBot.command('help', (ctx) => {
-    ctx.reply(
-        '📖 Помощь:\n\n' +
-        '/start - Открыть магазин\n' +
-        '/help - Эта справка'
     );
 });
 
@@ -310,14 +300,11 @@ app.post('/api/order', async (req, res) => {
         useBonuses
     } = req.body;
 
-    // Генерируем номер заказа
     const orderNumber = generateOrderNumber();
 
-    // Итоговая сумма уже пришла с фронтенда (с учётом бонусов)
     let finalTotal = total;
     let bonusText = 'Нет';
 
-    // ==== ЕСЛИ КЛИЕНТ ХОЧЕТ ПОТРАТИТЬ БОНУСЫ ====
     if (useBonuses) {
         const now = Date.now();
         if (now - lastUpdateCashback > CACHE_TIME || Object.keys(cashbackCache).length === 0) {
@@ -345,7 +332,6 @@ app.post('/api/order', async (req, res) => {
         }
     }
 
-    // ==== ФОРМИРУЕМ СПИСОК ТОВАРОВ ====
     let itemsText = '';
     items.forEach(item => {
         const optionText = item.option ? `: ${item.option}` : '';
@@ -357,7 +343,6 @@ app.post('/api/order', async (req, res) => {
     const notesText = notes && notes !== 'Нет' ? notes : 'Нет';
     const bonusDisplay = useBonuses ? bonusText : 'Нет';
 
-    // ==== УВЕДОМЛЕНИЕ ВЛАДЕЛЬЦУ ====
     const ownerMessage =
         `🛒 Оформлен новый заказ ${orderNumber}\n\n` +
         `👤 Клиент: ${username ? '@' + username : userId} (${userId})\n` +
@@ -373,7 +358,6 @@ app.post('/api/order', async (req, res) => {
     console.log(ownerMessage);
     console.log('-------------------');
 
-    // ==== УВЕДОМЛЕНИЕ КЛИЕНТУ ====
     const clientMessage =
         `🛍 Магазин Piff&Puff - Ваш заказ ${orderNumber}\n\n` +
         `📅 Вы оформили заказ:\n\n` +
@@ -386,7 +370,6 @@ app.post('/api/order', async (req, res) => {
         `📝 Дополнительные пожелания: ${notesText}\n` +
         `🎯 Оплата бонусами: ${bonusDisplay}`;
 
-    // ==== ОТПРАВКА ====
     try {
         await notifyBot.telegram.sendMessage(CHAT_ID, ownerMessage);
         console.log('✅ Уведомление владельцу отправлено');
