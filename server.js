@@ -24,16 +24,11 @@ const notifyBot = new Telegraf(NOTIFY_BOT_TOKEN);
 const mainBot = new Telegraf(MAIN_BOT_TOKEN);
 
 // ===== ГЕНЕРАТОР НОМЕРОВ ЗАКАЗОВ =====
-let orderCounter = 0;
-
-// Загружаем последний номер из памяти (если сервер перезапустится — начнёт с 1)
-// Можно сохранять в файл или базу данных, но для простоты оставим в памяти
+let orderCounter = 699; // Начинаем с 699, чтобы первый был 700
 
 function generateOrderNumber() {
     orderCounter++;
-    // Формат: P&P-001, P&P-002 и т.д.
-    const padded = String(orderCounter).padStart(3, '0');
-    return `P&P-${padded}`;
+    return `№ ${orderCounter}`;
 }
 
 // ===== ОБРАБОТЧИКИ КОМАНД БОТА =====
@@ -317,8 +312,7 @@ app.post('/api/order', async (req, res) => {
 
     // ==== УВЕДОМЛЕНИЕ ВЛАДЕЛЬЦУ ====
     const ownerMessage =
-        `🛒 Оформлен новый заказ!\n\n` +
-        `🔢 Номер заказа: ${orderNumber}\n` +
+        `🛒 Оформлен новый заказ ${orderNumber}\n\n` +
         `👤 Клиент: ${username ? '@' + username : userId} (${userId})\n` +
         `📍 Адрес доставки: ${address}\n` +
         `📞 Контактный телефон: ${phone}\n` +
@@ -334,8 +328,7 @@ app.post('/api/order', async (req, res) => {
 
     // ==== УВЕДОМЛЕНИЕ КЛИЕНТУ ====
     const clientMessage =
-        `🛍 Магазин Piff&Puff - Ваш заказ\n\n` +
-        `🔢 Номер заказа: ${orderNumber}\n` +
+        `🛍 Магазин Piff&Puff - Ваш заказ ${orderNumber}\n\n` +
         `📅 Вы оформили заказ:\n\n` +
         `${itemsText}\n` +
         `💰 Стоимость с учетом доставки: ${finalTotal} тг\n` +
