@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 app.use(cors());
@@ -23,11 +25,38 @@ const CHANNEL_ID = '-1003640998264';
 const notifyBot = new Telegraf(NOTIFY_BOT_TOKEN);
 const mainBot = new Telegraf(MAIN_BOT_TOKEN);
 
-// ===== ГЕНЕРАТОР НОМЕРОВ ЗАКАЗОВ =====
-let orderCounter = 699; // Начинаем с 699, чтобы первый был 700
+// ===== ГЕНЕРАТОР НОМЕРОВ ЗАКАЗОВ (СОХРАНЕНИЕ В ФАЙЛ) =====
+const COUNTER_FILE = path.join(__dirname, 'order-counter.json');
+
+// Функция для чтения счётчика из файла
+function readCounter() {
+    try {
+        if (fs.existsSync(COUNTER_FILE)) {
+            const data = fs.readFileSync(COUNTER_FILE, 'utf8');
+            const json = JSON.parse(data);
+            return json.lastOrderNumber || 699;
+        }
+    } catch (error) {
+        console.error('❌ Ошибка чтения счётчика:', error.message);
+    }
+    return 699;
+}
+
+// Функция для сохранения счётчика в файл
+function saveCounter(value) {
+    try {
+        fs.writeFileSync(COUNTER_FILE, JSON.stringify({ lastOrderNumber: value }), 'utf8');
+    } catch (error) {
+        console.error('❌ Ошибка сохранения счётчика:', error.message);
+    }
+}
+
+// Инициализируем счётчик
+let orderCounter = readCounter();
 
 function generateOrderNumber() {
     orderCounter++;
+    saveCounter(orderCounter);
     return `№ ${orderCounter}`;
 }
 
@@ -373,6 +402,7 @@ app.use(express.static('public'));
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
     console.log(`🟢 Сервер запущен на http://localhost:${PORT}`);
+    console.log(`📋 Текущий счётчик заказов: ${orderCounter}`);
     productsCache = await loadProductsFromGoogle();
     lastUpdateProducts = Date.now();
     cashbackCache = await loadCashbackFromGoogle();
