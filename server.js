@@ -16,7 +16,7 @@ const NOTIFY_BOT_TOKEN = '8662750003:AAE95BpkXnQe1LaeAzGfM-KH_O1NvSJ2nsY';
 const CHAT_ID = '8395485499';
 
 // ТОКЕН БОТА-МАГАЗИНА (основного, через который клиент открывает магазин)
-const MAIN_BOT_TOKEN = '8217198143:AAFJdhLgVDkoprilrb7-P35hG4TSxGaI8Lo';
+const MAIN_BOT_TOKEN = '8217198143:AAEoJZQyk1BlJ1jj7iWNHn7oVdN4sQxS0IY';
 
 // ID КАНАЛА
 const CHANNEL_ID = '-1003640998264';
