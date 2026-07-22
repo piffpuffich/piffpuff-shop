@@ -16,7 +16,7 @@ const NOTIFY_BOT_TOKEN = '8662750003:AAE95BpkXnQe1LaeAzGfM-KH_O1NvSJ2nsY';
 const CHAT_ID = '8395485499';
 
 // ТОКЕН БОТА-МАГАЗИНА (основного, через который клиент открывает магазин)
-const MAIN_BOT_TOKEN = '8217198143:AAEoJZQyk1BlJ1jj7iWNHn7oVdN4sQxS0IY';
+const MAIN_BOT_TOKEN = '8937739336:AAEu8NEvHIP7CrPIHpY7hTAMfMMkpj_cR2Y';
 
 // ID КАНАЛА
 const CHANNEL_ID = '-1003640998264';
@@ -24,75 +24,6 @@ const CHANNEL_ID = '-1003640998264';
 // Создаём ботов
 const notifyBot = new Telegraf(NOTIFY_BOT_TOKEN);
 const mainBot = new Telegraf(MAIN_BOT_TOKEN);
-
-// ===== ФОРСИРОВАННОЕ УДАЛЕНИЕ КНОПОК (через прямой запрос к API) =====
-async function removeAllButtons() {
-    try {
-        // 1. Убираем кнопку меню для всех пользователей
-        const url1 = `https://api.telegram.org/bot${MAIN_BOT_TOKEN}/setChatMenuButton`;
-        await fetch(url1, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ menu_button: { type: 'default' } })
-        });
-        console.log('✅ 1. Кнопка меню убрана (глобально)');
-
-        // 2. Убираем кнопку меню для твоего чата (чтобы сбросить кэш)
-        const url2 = `https://api.telegram.org/bot${MAIN_BOT_TOKEN}/setChatMenuButton`;
-        await fetch(url2, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                chat_id: CHAT_ID,
-                menu_button: { type: 'default' }
-            })
-        });
-        console.log(`✅ 2. Кнопка меню убрана для чата ${CHAT_ID}`);
-
-        // 3. Очищаем список команд
-        const url3 = `https://api.telegram.org/bot${MAIN_BOT_TOKEN}/setMyCommands`;
-        await fetch(url3, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ commands: [] })
-        });
-        console.log('✅ 3. Команды очищены');
-
-        // 4. Убираем описание бота
-        const url4 = `https://api.telegram.org/bot${MAIN_BOT_TOKEN}/setMyDescription`;
-        await fetch(url4, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ description: '' })
-        });
-        console.log('✅ 4. Описание очищено');
-
-        // 5. Убираем имя бота (сбрасываем)
-        const url5 = `https://api.telegram.org/bot${MAIN_BOT_TOKEN}/setMyName`;
-        await fetch(url5, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: 'Piff&Puff BOT' })
-        });
-        console.log('✅ 5. Имя бота сброшено');
-
-        // 6. Убираем WebApp (если был привязан)
-        const url6 = `https://api.telegram.org/bot${MAIN_BOT_TOKEN}/setWebhook`;
-        await fetch(url6, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: 'https://piffpuff.me' })
-        });
-        console.log('✅ 6. WebApp сброшен');
-
-        console.log('🎉 ВСЕ КНОПКИ УБРАНЫ!');
-    } catch (error) {
-        console.error('❌ Ошибка при удалении кнопок:', error.message);
-    }
-}
-
-// Запускаем удаление кнопок ПЕРЕД запуском бота
-removeAllButtons();
 
 // ===== ГЕНЕРАТОР НОМЕРОВ ЗАКАЗОВ (СОХРАНЕНИЕ В ФАЙЛ) =====
 const COUNTER_FILE = path.join(__dirname, 'order-counter.json');
@@ -127,7 +58,6 @@ function generateOrderNumber() {
 }
 
 // ===== ОБРАБОТЧИКИ КОМАНД БОТА =====
-// Только /start — с кнопкой открыть магазин (в сообщении)
 mainBot.start((ctx) => {
     console.log(`👤 ${ctx.from.username || ctx.from.id} открыл бота`);
     ctx.reply(
