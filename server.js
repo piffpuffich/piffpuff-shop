@@ -392,7 +392,9 @@ app.listen(PORT, async () => {
     console.log(`📦 ${productsCache.length} товаров, ${Object.keys(cashbackCache).length} пользователей в кэше`);
     
     try {
-        await mainBot.launch();
+        await mainBot.launch({
+            dropPendingUpdates: true
+        });
         console.log('🤖 Бот успешно запущен и готов принимать команды!');
     } catch (error) {
         console.error('❌ Ошибка запуска бота:', error.message);
