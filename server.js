@@ -279,7 +279,8 @@ app.post('/api/order', async (req, res) => {
         userId,
         username,
         useBonuses,
-        paymentMethod
+        paymentMethod,
+        kaspiFee  // ← ДОБАВЛЕНО
     } = req.body;
 
     const orderNumber = generateOrderNumber();
@@ -324,7 +325,12 @@ app.post('/api/order', async (req, res) => {
     const changeText = change && change !== 'Не требуется' ? change : 'Не требуется';
     const notesText = notes && notes !== 'Нет' ? notes : 'Нет';
     const bonusDisplay = useBonuses ? bonusText : 'Нет';
-    const paymentDisplay = paymentMethod === 'kaspi' ? 'Kaspi' : 'Наличные';
+    
+    // Отображение оплаты с комиссией
+    let paymentDisplay = 'Наличные';
+    if (paymentMethod === 'kaspi') {
+        paymentDisplay = kaspiFee ? `Kaspi (+${kaspiFee} тг)` : 'Kaspi';
+    }
 
     // ===== УВЕДОМЛЕНИЕ ВЛАДЕЛЬЦУ =====
     const ownerMessage =

@@ -988,10 +988,23 @@
             } catch (error) { console.error('Ошибка загрузки:', error); }
         }
 
-        function updateGiftBanner() {
+        // ===== ФУНКЦИЯ ДЛЯ РАСЧЁТА СУММЫ С УЧЁТОМ KASPI =====
+        function calculateTotals() {
             const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-            const delivery = subtotal < 10000 ? 1000 : 0;
-            const total = subtotal + delivery;
+            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'cash';
+            let finalSubtotal = subtotal;
+            let kaspiFee = 0;
+            if (paymentMethod === 'kaspi') {
+                finalSubtotal = Math.round(subtotal * 1.05);
+                kaspiFee = finalSubtotal - subtotal;
+            }
+            const delivery = finalSubtotal < 10000 ? 1000 : 0;
+            const total = finalSubtotal + delivery;
+            return { subtotal, finalSubtotal, delivery, total, kaspiFee, paymentMethod };
+        }
+
+        function updateGiftBanner() {
+            const { finalSubtotal, delivery, total } = calculateTotals();
             const giftThreshold = 10000;
             
             const banner = document.getElementById('giftBanner');
@@ -1136,6 +1149,8 @@
             } catch (error) { console.error('Ошибка загрузки бонусов:', error); }
         }
 
+        // ===== ОБНОВЛЁННЫЕ ФУНКЦИИ С УЧЁТОМ KASPI =====
+
         function toggleBonusInfo() {
             const checkbox = document.getElementById('useBonuses');
             const info = document.getElementById('bonusInfo');
@@ -1146,9 +1161,7 @@
                 updateGiftBanner();
             } else {
                 info.classList.add('hidden');
-                const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-                const delivery = subtotal < 10000 ? 1000 : 0;
-                const total = subtotal + delivery;
+                const { finalSubtotal, delivery, total } = calculateTotals();
                 document.getElementById('orderTotalDisplay').innerHTML = `<span style="color:#fff;font-weight:700;font-size:20px;">${total} тг</span>`;
                 updateGiftBanner();
             }
@@ -1163,9 +1176,7 @@
                 savingsDisplay.textContent = '0 ₸';
                 return;
             }
-            const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-            const delivery = subtotal < 10000 ? 1000 : 0;
-            const total = subtotal + delivery;
+            const { finalSubtotal, delivery, total } = calculateTotals();
             const available = userBonusBalance || 0;
             let canSpend = Math.floor(available / 500) * 500;
             if (canSpend > total) canSpend = Math.floor(total / 500) * 500;
@@ -1181,9 +1192,7 @@
         }
 
         function updateOrderTotalWithBonus() {
-            const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-            const delivery = subtotal < 10000 ? 1000 : 0;
-            const total = subtotal + delivery;
+            const { finalSubtotal, delivery, total } = calculateTotals();
             const available = userBonusBalance || 0;
             let canSpend = Math.floor(available / 500) * 500;
             if (canSpend > total) canSpend = Math.floor(total / 500) * 500;
@@ -1203,10 +1212,9 @@
 
         function openOrderModal() {
             if (cart.length === 0) { showToast('🛒 Корзина пуста'); return; }
-            const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-            const delivery = subtotal < 10000 ? 1000 : 0;
-            currentCartTotal = subtotal + delivery;
-            document.getElementById('orderTotalDisplay').innerHTML = `<span style="color:#fff;font-weight:700;font-size:20px;">${currentCartTotal} тг</span>`;
+            const { finalSubtotal, delivery, total } = calculateTotals();
+            currentCartTotal = total;
+            document.getElementById('orderTotalDisplay').innerHTML = `<span style="color:#fff;font-weight:700;font-size:20px;">${total} тг</span>`;
             document.getElementById('orderDeliveryDisplay').textContent = delivery === 0 ? 'Бесплатно' : delivery + ' тг';
             document.getElementById('orderPhone').value = '';
             document.getElementById('orderAddress').value = '';
@@ -1221,6 +1229,19 @@
             document.getElementById('bonusSavingsDisplay').textContent = '0 ₸';
             updateGiftBanner();
             document.getElementById('orderModal').classList.remove('hidden');
+
+            // Добавляем обработчик изменения способа оплаты
+            document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const { total: newTotal } = calculateTotals();
+                    document.getElementById('orderTotalDisplay').innerHTML = `<span style="color:#fff;font-weight:700;font-size:20px;">${newTotal} тг</span>`;
+                    updateGiftBanner();
+                    if (document.getElementById('useBonuses').checked) {
+                        calculateBonusSpend();
+                        updateOrderTotalWithBonus();
+                    }
+                });
+            });
         }
 
         function closeOrderModal() { document.getElementById('orderModal').classList.add('hidden'); }
@@ -1245,31 +1266,39 @@
             const change = document.getElementById('orderChange').value.trim();
             const notes = document.getElementById('orderNotes').value.trim();
             const useBonuses = document.getElementById('useBonuses').checked;
-            const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-            const delivery = subtotal < 10000 ? 1000 : 0;
-            let total = subtotal + delivery;
+            
+            const { subtotal, finalSubtotal, delivery, total, kaspiFee } = calculateTotals();
+            
+            let finalTotal = total;
             if (useBonuses) {
                 const available = userBonusBalance || 0;
                 let canSpend = Math.floor(available / 500) * 500;
-                if (canSpend > total) canSpend = Math.floor(total / 500) * 500;
-                if (canSpend >= 500) total = Math.max(total - canSpend, 0);
+                if (canSpend > finalTotal) canSpend = Math.floor(finalTotal / 500) * 500;
+                if (canSpend >= 500) finalTotal = Math.max(finalTotal - canSpend, 0);
             }
+            
             const userId = getUserId();
             const username = getUsername();
             const orderData = {
                 items: cart.map(item => ({ name: item.name, price: item.price, option: item.selectedOption || '' })),
-                subtotal, delivery, total, phone, address,
+                subtotal: finalSubtotal,
+                delivery: delivery,
+                total: finalTotal,
+                phone: phone,
+                address: address,
                 change: change || 'Не требуется',
                 notes: notes || 'Нет',
-                userId, username,
-                useBonuses,
-                paymentMethod: paymentMethod
+                userId: userId,
+                username: username,
+                useBonuses: useBonuses,
+                paymentMethod: paymentMethod,
+                kaspiFee: kaspiFee
             };
             try {
                 const response = await fetch('/api/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
                 const result = await response.json();
                 const orderNumber = result.order?.number || 'неизвестен';
-                showToast(`✅ Заказ №${orderNumber} оформлен! Итого: ${total} тг`);
+                showToast(`✅ Заказ №${orderNumber} оформлен! Итого: ${finalTotal} тг`);
                 cart = [];
                 updateCartCount();
                 closeCart();
