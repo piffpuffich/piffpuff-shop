@@ -526,6 +526,43 @@
             color: rgba(255,255,255,0.25);
             padding: 0 8px;
         }
+
+        /* ===== ВЫБОР СПОСОБА ОПЛАТЫ ===== */
+        .payment-options {
+            display: flex;
+            gap: 12px;
+            margin-top: 4px;
+        }
+        .payment-option {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 10px;
+            border: 1.5px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.02);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+        }
+        .payment-option:has(input:checked) {
+            border-color: var(--neon-green);
+            background: rgba(57, 255, 20, 0.06);
+            color: #fff;
+        }
+        .payment-option input[type="radio"] {
+            display: none;
+        }
+        .payment-label {
+            font-weight: 500;
+        }
+        .payment-option .payment-icon {
+            font-size: 18px;
+        }
+
         .modal-field { margin-bottom: 16px; }
         .modal-field label {
             display: block;
@@ -737,9 +774,28 @@
             </div>
         </div>
 
+        <!-- ===== МОДАЛКА ОФОРМЛЕНИЯ ЗАКАЗА ===== -->
         <div class="modal-overlay hidden" id="orderModal">
             <div class="modal-content">
                 <div class="modal-header"><h2>📋 Оформление заказа</h2><button class="modal-close" onclick="closeOrderModal()">✕</button></div>
+                
+                <!-- ВЫБОР СПОСОБА ОПЛАТЫ -->
+                <div class="modal-field">
+                    <label>Способ оплаты <span class="required">*</span></label>
+                    <div class="payment-options">
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="cash" checked>
+                            <span class="payment-icon">💵</span>
+                            <span class="payment-label">Наличные</span>
+                        </label>
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="kaspi">
+                            <span class="payment-icon">🏦</span>
+                            <span class="payment-label">Kaspi</span>
+                        </label>
+                    </div>
+                </div>
+                
                 <div class="modal-field"><label>Контактный телефон <span class="required">*</span></label><input type="tel" id="orderPhone" placeholder="+7 777 123 45 67" required><div class="field-error hidden" id="phoneError">Пожалуйста, укажите контактный телефон</div></div>
                 <div class="modal-field"><label>Адрес доставки <span class="required">*</span></label><input type="text" id="orderAddress" placeholder="Улица, дом, подъезд" required><div class="field-error hidden" id="addressError">Пожалуйста, укажите адрес доставки</div></div>
                 <div class="modal-field"><label>Если сумма не ровная — укажите, с какой суммы нужна сдача:</label><input type="text" id="orderChange" placeholder="Например: с 2000 тг"></div>
@@ -835,7 +891,6 @@
             const storeContent = document.getElementById('store-content');
             const subscriptionRequired = document.getElementById('subscription-required');
 
-            // Если браузер — сразу показываем магазин
             if (isBrowser()) {
                 console.log('🌐 Браузер — показываем магазин без проверки');
                 storeContent.style.display = 'block';
@@ -846,7 +901,6 @@
                 return;
             }
 
-            // Telegram — проверяем подписку
             try {
                 const userId = getUserId();
                 const response = await fetch(`/api/check-subscription/${userId}`);
@@ -933,9 +987,6 @@
                 const response = await fetch('/api/products');
                 products = await response.json();
                 console.log('📦 Загружено товаров:', products.length);
-                const pod = products.filter(p => p.category && p.category.toLowerCase() === 'pod-системы');
-                console.log('📋 POD-системы:', pod.map(p => p.name));
-                console.log('📋 Всего в POD:', pod.length);
             } catch (error) { console.error('Ошибка загрузки:', error); }
         }
 
@@ -1001,8 +1052,6 @@
         function renderProducts(category) {
             const list = document.getElementById('productList');
             const filtered = products.filter(p => p.category && p.category.toLowerCase() === category.toLowerCase());
-            
-            console.log(`🔍 Категория: "${category}", найдено: ${filtered.length}`);
             
             if (filtered.length === 0) { 
                 list.innerHTML = `<div class="empty-state"><span style="font-size:48px;display:block;margin-bottom:8px;">🔍</span><p>Нет товаров в этой категории</p></div>`; 
@@ -1193,6 +1242,8 @@
             if (!isValid) return;
             submitBtn.disabled = true;
             submitBtn.textContent = '⏳ Отправка...';
+            
+            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'cash';
             const change = document.getElementById('orderChange').value.trim();
             const notes = document.getElementById('orderNotes').value.trim();
             const useBonuses = document.getElementById('useBonuses').checked;
@@ -1213,7 +1264,8 @@
                 change: change || 'Не требуется',
                 notes: notes || 'Нет',
                 userId, username,
-                useBonuses
+                useBonuses,
+                paymentMethod: paymentMethod
             };
             try {
                 const response = await fetch('/api/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
