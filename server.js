@@ -278,9 +278,7 @@ app.post('/api/order', async (req, res) => {
         notes,
         userId,
         username,
-        useBonuses,
-        paymentMethod,
-        kaspiFee  // ← ДОБАВЛЕНО
+        useBonuses
     } = req.body;
 
     const orderNumber = generateOrderNumber();
@@ -325,14 +323,7 @@ app.post('/api/order', async (req, res) => {
     const changeText = change && change !== 'Не требуется' ? change : 'Не требуется';
     const notesText = notes && notes !== 'Нет' ? notes : 'Нет';
     const bonusDisplay = useBonuses ? bonusText : 'Нет';
-    
-    // Отображение оплаты с комиссией
-    let paymentDisplay = 'Наличные';
-    if (paymentMethod === 'kaspi') {
-        paymentDisplay = kaspiFee ? `Kaspi (+${kaspiFee} тг)` : 'Kaspi';
-    }
 
-    // ===== УВЕДОМЛЕНИЕ ВЛАДЕЛЬЦУ =====
     const ownerMessage =
         `🛒 Оформлен новый заказ ${orderNumber}\n\n` +
         `👤 Клиент: ${username ? '@' + username : userId} (${userId})\n` +
@@ -340,8 +331,7 @@ app.post('/api/order', async (req, res) => {
         `📞 Контактный телефон: ${phone}\n` +
         `🔄 Сдача с: ${changeText}\n` +
         `📝 Дополнительные пожелания: ${notesText}\n` +
-        `🎯 Оплата бонусами: ${bonusText}\n` +
-        `💳 Оплата: ${paymentDisplay}\n\n` +
+        `🎯 Оплата бонусами: ${bonusText}\n\n` +
         `📦 Товары:\n${itemsText}\n` +
         `📦 Итого: ${finalTotal} тг`;
 
@@ -349,12 +339,10 @@ app.post('/api/order', async (req, res) => {
     console.log(ownerMessage);
     console.log('-------------------');
 
-    // ===== УВЕДОМЛЕНИЕ КЛИЕНТУ =====
     const clientMessage =
         `🛍 Магазин Piff&Puff - Ваш заказ ${orderNumber}\n\n` +
         `📅 Вы оформили заказ:\n\n` +
         `${itemsText}\n` +
-        `💳 Оплата: ${paymentDisplay}\n` +
         `💰 Стоимость с учетом доставки: ${finalTotal} тг\n` +
         `🚚 Доставка: ${deliveryText}\n\n` +
         `📍 Адрес доставки: ${address}\n` +
