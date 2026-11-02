@@ -33,12 +33,12 @@ function readCounter() {
         if (fs.existsSync(COUNTER_FILE)) {
             const data = fs.readFileSync(COUNTER_FILE, 'utf8');
             const json = JSON.parse(data);
-            return json.lastOrderNumber || 699;
+            return json.lastOrderNumber || 1620;
         }
     } catch (error) {
         console.error('❌ Ошибка чтения счётчика:', error.message);
     }
-    return 699;
+    return 1620;
 }
 
 function saveCounter(value) {
