@@ -439,6 +439,25 @@
             color: rgba(255,255,255,0.2);
             grid-column: 1/-1;
         }
+        .loading-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255,255,255,0.4);
+            grid-column: 1/-1;
+        }
+        .loading-state .spinner {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(57, 255, 20, 0.2);
+            border-top-color: var(--neon-green);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 12px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
         #subscription-required {
             display: none;
             text-align: center;
@@ -802,6 +821,7 @@
     <script>
         const banners = ['https://i.ibb.co.com/VcnRqFqN/cashback1-banner.jpg','https://i.ibb.co.com/9k3Xd4tR/dostavka-banner.png','https://i.ibb.co.com/Df8FnQw8/podarok-energy-banner.jpg'];
         let products = [], cart = [], currentCategory = '', userBonusBalance = 0, currentBanner = 0, bannerInterval = null;
+        let isLoadingProducts = false;
 
         // ===== ПРОВЕРКА — МЫ В БРАУЗЕРЕ ИЛИ В TELEGRAM? =====
         function isBrowser() {
@@ -835,18 +855,16 @@
             const storeContent = document.getElementById('store-content');
             const subscriptionRequired = document.getElementById('subscription-required');
 
-            // Если браузер — сразу показываем магазин
             if (isBrowser()) {
                 console.log('🌐 Браузер — показываем магазин без проверки');
                 storeContent.style.display = 'block';
                 subscriptionRequired.style.display = 'none';
-                if (products.length === 0) loadProducts();
+                await loadProductsWithRetry();
                 loadCashback();
                 initBanners();
                 return;
             }
 
-            // Telegram — проверяем подписку
             try {
                 const userId = getUserId();
                 const response = await fetch(`/api/check-subscription/${userId}`);
@@ -855,7 +873,7 @@
                 if (data.subscribed) {
                     storeContent.style.display = 'block';
                     subscriptionRequired.style.display = 'none';
-                    if (products.length === 0) loadProducts();
+                    await loadProductsWithRetry();
                     loadCashback();
                     initBanners();
                 } else {
@@ -866,10 +884,40 @@
                 console.error('❌ Ошибка проверки:', error);
                 storeContent.style.display = 'block';
                 subscriptionRequired.style.display = 'none';
-                loadProducts();
+                await loadProductsWithRetry();
                 loadCashback();
                 initBanners();
             }
+        }
+
+        // ===== ЗАГРУЗКА ТОВАРОВ С ПОВТОРНЫМИ ПОПЫТКАМИ =====
+        async function loadProductsWithRetry(maxAttempts = 3) {
+            if (isLoadingProducts) return;
+            isLoadingProducts = true;
+            
+            for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+                try {
+                    console.log(`📦 Попытка загрузки товаров ${attempt}/${maxAttempts}...`);
+                    const response = await fetch('/api/products');
+                    const data = await response.json();
+                    
+                    if (data && data.length > 0) {
+                        products = data;
+                        console.log(`✅ Загружено товаров: ${products.length}`);
+                        isLoadingProducts = false;
+                        return;
+                    }
+                    
+                    console.log(`⚠️ Товаров нет (попытка ${attempt}), ждём...`);
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                } catch (error) {
+                    console.error(`❌ Ошибка загрузки (попытка ${attempt}):`, error);
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                }
+            }
+            
+            console.warn('⚠️ Не удалось загрузить товары после всех попыток');
+            isLoadingProducts = false;
         }
 
         function initBanners() {
@@ -911,13 +959,20 @@
             }, { passive: true });
         });
 
-        function openCategory(category) {
+        async function openCategory(category) {
             currentCategory = category;
             document.getElementById('mainPage').classList.remove('page-visible');
             document.getElementById('mainPage').classList.add('page-hidden');
             document.getElementById('productsPage').classList.remove('page-hidden');
             document.getElementById('productsPage').classList.add('page-visible');
             document.getElementById('categoryNameSpan').textContent = category;
+            
+            // Если товаров нет — пробуем загрузить
+            if (products.length === 0) {
+                document.getElementById('productList').innerHTML = `<div class="loading-state"><div class="spinner"></div><p>Загружаем товары...</p></div>`;
+                await loadProductsWithRetry();
+            }
+            
             renderProducts(category);
         }
 
@@ -926,17 +981,6 @@
             document.getElementById('productsPage').classList.add('page-hidden');
             document.getElementById('mainPage').classList.remove('page-hidden');
             document.getElementById('mainPage').classList.add('page-visible');
-        }
-
-        async function loadProducts() {
-            try {
-                const response = await fetch('/api/products');
-                products = await response.json();
-                console.log('📦 Загружено товаров:', products.length);
-                const pod = products.filter(p => p.category && p.category.toLowerCase() === 'pod-системы');
-                console.log('📋 POD-системы:', pod.map(p => p.name));
-                console.log('📋 Всего в POD:', pod.length);
-            } catch (error) { console.error('Ошибка загрузки:', error); }
         }
 
         function updateGiftBanner() {
@@ -1005,7 +1049,16 @@
             console.log(`🔍 Категория: "${category}", найдено: ${filtered.length}`);
             
             if (filtered.length === 0) { 
-                list.innerHTML = `<div class="empty-state"><span style="font-size:48px;display:block;margin-bottom:8px;">🔍</span><p>Нет товаров в этой категории</p></div>`; 
+                // Если товаров нет — показываем спиннер и пробуем загрузить
+                list.innerHTML = `<div class="loading-state"><div class="spinner"></div><p>Загружаем товары...</p></div>`;
+                loadProductsWithRetry().then(() => {
+                    const retryFiltered = products.filter(p => p.category && p.category.toLowerCase() === category.toLowerCase());
+                    if (retryFiltered.length > 0) {
+                        renderProducts(category);
+                    } else {
+                        list.innerHTML = `<div class="empty-state"><span style="font-size:48px;display:block;margin-bottom:8px;">🔍</span><p>Нет товаров в этой категории</p></div>`;
+                    }
+                });
                 return; 
             }
             list.innerHTML = filtered.map(p => {
@@ -1224,7 +1277,7 @@
                 updateCartCount();
                 closeCart();
                 closeOrderModal();
-                renderProducts(currentCategory);
+                if (currentCategory) renderProducts(currentCategory);
             } catch (error) {
                 showToast('❌ Ошибка при оформлении заказа');
                 console.error(error);

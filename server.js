@@ -91,6 +91,10 @@ let lastUpdateProducts = 0;
 let lastUpdateCashback = 0;
 const CACHE_TIME = 60000;
 
+// ===== БЛОКИРОВКИ ДЛЯ ПРЕДОТВРАЩЕНИЯ ГОНОК =====
+let isLoadingProducts = false;
+let isLoadingCashback = false;
+
 // ========== ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ ПАРСИНГА CSV ==========
 function parseCSVLine(line) {
     const result = [];
@@ -114,6 +118,16 @@ function parseCSVLine(line) {
 
 // ========== ЗАГРУЗКА ТОВАРОВ ==========
 async function loadProductsFromGoogle() {
+    if (isLoadingProducts) {
+        console.log('⏳ Товары уже загружаются, ждём...');
+        // Ждём завершения текущей загрузки
+        while (isLoadingProducts) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        return productsCache;
+    }
+
+    isLoadingProducts = true;
     try {
         console.log('📊 Загружаем товары...');
         const response = await fetch(CSV_URL);
@@ -121,7 +135,11 @@ async function loadProductsFromGoogle() {
         const csvText = await response.text();
         
         const lines = csvText.split('\n').filter(line => line.trim() !== '');
-        if (lines.length < 2) return [];
+        if (lines.length < 2) {
+            console.log('⚠️ Таблица пустая или содержит только заголовки');
+            isLoadingProducts = false;
+            return [];
+        }
         
         const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
         console.log('📋 Заголовки таблицы:', headers);
@@ -165,22 +183,35 @@ async function loadProductsFromGoogle() {
         const withImages = products.filter(p => p.image && p.image !== '');
         console.log(`🖼️ Товаров с картинками: ${withImages.length}`);
         
+        isLoadingProducts = false;
         return products;
     } catch (error) {
         console.error('❌ Ошибка загрузки товаров:', error.message);
-        return productsCache;
+        isLoadingProducts = false;
+        return productsCache; // Возвращаем старый кэш при ошибке
     }
 }
 
 // ========== ЗАГРУЗКА КЭШБЭКА ==========
 async function loadCashbackFromGoogle() {
+    if (isLoadingCashback) {
+        while (isLoadingCashback) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        return cashbackCache;
+    }
+
+    isLoadingCashback = true;
     try {
         console.log('💰 Загружаем кэшбэк...');
         const response = await fetch(CASHBACK_URL);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const csvText = await response.text();
         const lines = csvText.split('\n').filter(line => line.trim() !== '');
-        if (lines.length < 2) return {};
+        if (lines.length < 2) {
+            isLoadingCashback = false;
+            return {};
+        }
         
         const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
         const cashback = {};
@@ -196,9 +227,11 @@ async function loadCashbackFromGoogle() {
             }
         }
         console.log(`✅ Загружено ${Object.keys(cashback).length} пользователей`);
+        isLoadingCashback = false;
         return cashback;
     } catch (error) {
         console.error('❌ Ошибка загрузки кэшбэка:', error.message);
+        isLoadingCashback = false;
         return cashbackCache;
     }
 }
@@ -207,27 +240,45 @@ async function loadCashbackFromGoogle() {
 
 // Получить товары
 app.get('/api/products', async (req, res) => {
-    const now = Date.now();
-    if (now - lastUpdateProducts > CACHE_TIME || productsCache.length === 0) {
-        productsCache = await loadProductsFromGoogle();
-        lastUpdateProducts = now;
+    try {
+        const now = Date.now();
+        if (now - lastUpdateProducts > CACHE_TIME || productsCache.length === 0) {
+            productsCache = await loadProductsFromGoogle();
+            lastUpdateProducts = now;
+        }
+        
+        // Если кэш пуст — пробуем ещё раз
+        if (productsCache.length === 0) {
+            console.log('⚠️ Кэш пуст, повторная загрузка...');
+            productsCache = await loadProductsFromGoogle();
+            lastUpdateProducts = Date.now();
+        }
+        
+        res.json(productsCache);
+    } catch (error) {
+        console.error('❌ Ошибка в /api/products:', error.message);
+        res.status(500).json({ error: 'Ошибка загрузки товаров' });
     }
-    res.json(productsCache);
 });
 
 // Получить баланс кэшбэка
 app.get('/api/cashback/:userId', async (req, res) => {
     const userId = req.params.userId;
-    const now = Date.now();
-    if (now - lastUpdateCashback > CACHE_TIME || Object.keys(cashbackCache).length === 0) {
-        cashbackCache = await loadCashbackFromGoogle();
-        lastUpdateCashback = now;
+    try {
+        const now = Date.now();
+        if (now - lastUpdateCashback > CACHE_TIME || Object.keys(cashbackCache).length === 0) {
+            cashbackCache = await loadCashbackFromGoogle();
+            lastUpdateCashback = now;
+        }
+        const userData = cashbackCache[userId] || { balance: 0, username: '' };
+        res.json({
+            balance: userData.balance || 0,
+            username: userData.username || ''
+        });
+    } catch (error) {
+        console.error('❌ Ошибка в /api/cashback:', error.message);
+        res.json({ balance: 0, username: '' });
     }
-    const userData = cashbackCache[userId] || { balance: 0, username: '' };
-    res.json({
-        balance: userData.balance || 0,
-        username: userData.username || ''
-    });
 });
 
 // ===== ПРОВЕРКА ПОДПИСКИ =====
