@@ -822,6 +822,7 @@
         const banners = ['https://i.ibb.co.com/VcnRqFqN/cashback1-banner.jpg','https://i.ibb.co.com/9k3Xd4tR/dostavka-banner.png','https://i.ibb.co.com/Df8FnQw8/podarok-energy-banner.jpg'];
         let products = [], cart = [], currentCategory = '', userBonusBalance = 0, currentBanner = 0, bannerInterval = null;
         let isLoadingProducts = false;
+        let productsLoaded = false;
 
         // ===== ПРОВЕРКА — МЫ В БРАУЗЕРЕ ИЛИ В TELEGRAM? =====
         function isBrowser() {
@@ -903,6 +904,7 @@
                     
                     if (data && data.length > 0) {
                         products = data;
+                        productsLoaded = true;
                         console.log(`✅ Загружено товаров: ${products.length}`);
                         isLoadingProducts = false;
                         return;
@@ -967,9 +969,11 @@
             document.getElementById('productsPage').classList.add('page-visible');
             document.getElementById('categoryNameSpan').textContent = category;
             
-            // Если товаров нет — пробуем загрузить
+            const list = document.getElementById('productList');
+            
+            // Если товаров нет — показываем спиннер и загружаем
             if (products.length === 0) {
-                document.getElementById('productList').innerHTML = `<div class="loading-state"><div class="spinner"></div><p>Загружаем товары...</p></div>`;
+                list.innerHTML = `<div class="loading-state"><div class="spinner"></div><p>Загружаем товары...</p></div>`;
                 await loadProductsWithRetry();
             }
             
@@ -1046,19 +1050,19 @@
             const list = document.getElementById('productList');
             const filtered = products.filter(p => p.category && p.category.toLowerCase() === category.toLowerCase());
             
-            console.log(`🔍 Категория: "${category}", найдено: ${filtered.length}`);
+            console.log(`🔍 Категория: "${category}", всего товаров: ${products.length}, найдено: ${filtered.length}`);
             
             if (filtered.length === 0) { 
-                // Если товаров нет — показываем спиннер и пробуем загрузить
-                list.innerHTML = `<div class="loading-state"><div class="spinner"></div><p>Загружаем товары...</p></div>`;
-                loadProductsWithRetry().then(() => {
-                    const retryFiltered = products.filter(p => p.category && p.category.toLowerCase() === category.toLowerCase());
-                    if (retryFiltered.length > 0) {
+                // Если товаров в категории нет, но товары вообще есть — значит, категория пустая
+                if (products.length > 0) {
+                    list.innerHTML = `<div class="empty-state"><span style="font-size:48px;display:block;margin-bottom:8px;">🔍</span><p>Нет товаров в этой категории</p></div>`;
+                } else {
+                    // Товаров нет вообще — пробуем загрузить ещё раз
+                    list.innerHTML = `<div class="loading-state"><div class="spinner"></div><p>Загружаем товары...</p></div>`;
+                    loadProductsWithRetry().then(() => {
                         renderProducts(category);
-                    } else {
-                        list.innerHTML = `<div class="empty-state"><span style="font-size:48px;display:block;margin-bottom:8px;">🔍</span><p>Нет товаров в этой категории</p></div>`;
-                    }
-                });
+                    });
+                }
                 return; 
             }
             list.innerHTML = filtered.map(p => {
