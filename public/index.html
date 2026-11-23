@@ -26,9 +26,10 @@
             min-height: 100vh;
             padding: 0;
             overflow-x: hidden;
+            position: relative;
         }
         
-        /* ===== НОВОГОДНИЙ СНЕГ ===== */
+        /* ===== НОВОГОДНИЙ СНЕГ (НА ЗАДНЕМ ФОНЕ) ===== */
         #snow-container {
             position: fixed;
             top: 0;
@@ -36,7 +37,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 9998;
+            z-index: 0; /* Снег на самом дне, под контентом */
             overflow: hidden;
         }
         .snowflake {
@@ -58,8 +59,8 @@
             margin: 0 auto;
             padding: 16px 14px 100px;
             min-height: 100vh;
-            background: rgba(10, 10, 15, 0.85);
-            backdrop-filter: blur(8px);
+            /* Сделали фон прозрачным, чтобы снег было видно */
+            background: transparent; 
             position: relative;
             z-index: 1;
         }
@@ -109,8 +110,10 @@
             font-weight: 800;
             color: #fff;
             letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
         .top-logo-right .brand .puff { color: var(--neon-green); }
+        
         .banner-section {
             margin: 14px 0 16px;
             border-radius: 16px;
@@ -161,6 +164,7 @@
             box-shadow: 0 0 12px rgba(57, 255, 20, 0.4);
             transform: scale(1.2);
         }
+        
         .categories-vertical {
             display: flex;
             flex-direction: column;
@@ -177,7 +181,8 @@
             padding: 16px 20px;
             border: 1px solid rgba(255,255,255,0.06);
             border-radius: 16px;
-            background: rgba(255,255,255,0.02);
+            background: rgba(20, 20, 30, 0.85); /* Вернули плотный фон для читаемости */
+            backdrop-filter: blur(4px);
             color: rgba(255,255,255,0.5);
             font-size: 16px;
             font-weight: 700;
@@ -186,6 +191,7 @@
             text-align: center;
             letter-spacing: 0.5px;
             text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         .category-btn-vertical:active { transform: scale(0.96); }
         .category-btn-vertical .arrow {
@@ -199,6 +205,7 @@
             color: var(--neon-green);
             box-shadow: 0 0 30px rgba(57, 255, 20, 0.05);
         }
+        
         .products-page {
             display: none;
             padding: 0 0 20px;
@@ -211,8 +218,10 @@
             font-weight: 700;
             margin-bottom: 16px;
             letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
         .products-page .category-title span { color: var(--neon-green); }
+        
         .products {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -228,6 +237,7 @@
             transition: all 0.2s;
             cursor: pointer;
             backdrop-filter: blur(4px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         .product-card:active { transform: scale(0.96); }
         .product-card .product-image {
@@ -270,6 +280,7 @@
             color: #fff;
             margin-top: 2px;
         }
+        
         .product-modal {
             position: fixed;
             top: 0;
@@ -404,6 +415,7 @@
         }
         .product-modal .add-to-cart-btn:active { transform: scale(0.96); opacity: 0.8; }
         .product-modal .add-to-cart-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+        
         .cart-fab {
             position: fixed;
             bottom: 24px;
