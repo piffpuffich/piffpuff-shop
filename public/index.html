@@ -802,7 +802,8 @@
                     <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.04);color:rgba(255,255,255,0.5)">
                         <span>Можно потратить:</span><span style="color:var(--neon-green);font-weight:700" id="cbCanSpend">0 ₸</span>
                     </div>
-                    <div style="margin-top:16px;padding:12px;background:rgba(57,255,20,0.04);border-radius:12px;text-align:center;font-size:13px;color:rgba(255,255,255,0.3);border:1px solid rgba(57,255,20,0.05)">Получай кэшбэк 10% с каждого заказа!</div>
+                    <!-- ИЗМЕНЕНО ТУТ: 10% на 5% -->
+                    <div style="margin-top:16px;padding:12px;background:rgba(57,255,20,0.04);border-radius:12px;text-align:center;font-size:13px;color:rgba(255,255,255,0.3);border:1px solid rgba(57,255,20,0.05)">Получай кэшбэк 5% с каждого заказа!</div>
                 </div>
             </div>
         </div>
@@ -1053,11 +1054,9 @@
             console.log(`🔍 Категория: "${category}", всего товаров: ${products.length}, найдено: ${filtered.length}`);
             
             if (filtered.length === 0) { 
-                // Если товаров в категории нет, но товары вообще есть — значит, категория пустая
                 if (products.length > 0) {
                     list.innerHTML = `<div class="empty-state"><span style="font-size:48px;display:block;margin-bottom:8px;">🔍</span><p>Нет товаров в этой категории</p></div>`;
                 } else {
-                    // Товаров нет вообще — пробуем загрузить ещё раз
                     list.innerHTML = `<div class="loading-state"><div class="spinner"></div><p>Загружаем товары...</p></div>`;
                     loadProductsWithRetry().then(() => {
                         renderProducts(category);
