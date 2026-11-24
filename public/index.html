@@ -213,7 +213,7 @@
             flex-direction: column;
             align-items: center;
             gap: 12px;
-            margin-top: 10px; /* Уменьшил отступ, так как сверху теперь кнопки */
+            margin-top: 10px;
             padding: 0 10px;
             position: relative;
             z-index: 1;
@@ -776,6 +776,57 @@
         .page-transition { transition: opacity 0.25s ease; }
         .page-hidden { display: none; }
         .page-visible { display: block; }
+
+        /* ===== СТИЛИ ДЛЯ РОЗЫГРЫША ===== */
+        .giveaway-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.85);
+        }
+        .giveaway-content h3 {
+            color: var(--neon-green);
+            margin-bottom: 12px;
+            font-size: 16px;
+            text-align: center;
+        }
+        .giveaway-content .highlight-text {
+            color: var(--neon-green);
+            font-weight: 700;
+        }
+        .giveaway-content .gift-block {
+            margin: 16px 0;
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .giveaway-content .gift-title {
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .giveaway-content ul {
+            list-style-type: none;
+            padding-left: 5px;
+        }
+        .giveaway-content li {
+            margin-bottom: 4px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .giveaway-content li::before {
+            content: '✨';
+            position: absolute;
+            left: 0;
+            font-size: 12px;
+        }
+        .giveaway-content .footer-text {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 500;
+            color: var(--neon-green);
+        }
     </style>
 </head>
 <body>
@@ -900,6 +951,58 @@
             </div>
         </div>
 
+        <!-- ===== МОДАЛКА РОЗЫГРЫШ ===== -->
+        <div class="modal-overlay hidden" id="giveawayModal">
+            <div class="modal-content" style="padding-bottom: 30px;">
+                <div class="modal-header">
+                    <h2>🎄 Новогодние подарки</h2>
+                    <button class="modal-close" onclick="closeGiveaway()">✕</button>
+                </div>
+                <div class="giveaway-content">
+                    <h3>🎄 НОВОГОДНИЕ ПОДАРКИ ОТ PIFF&PUFF! ❤️</h3>
+                    <p>С 1 по 31 декабря 2026 года каждый заказ в Piff&Puff будет сопровождаться приятными новогодними сюрпризами! Мы подготовили подарки для каждого клиента 🎁</p>
+                    
+                    <p style="margin-top: 12px; font-weight: 700; color: #fff;">Что получишь в подарок?</p>
+
+                    <div class="gift-block">
+                        <span class="gift-title">🎅 При заказе до 5 000 ₸:</span>
+                        <ul>
+                            <li>Новогодняя упаковка 🎄</li>
+                            <li>Рождественские леденцы 🍭</li>
+                            <li>Конфеты «Угадай вкус» 🍬</li>
+                        </ul>
+                    </div>
+
+                    <div class="gift-block">
+                        <span class="gift-title">🎅 При заказе от 5 000 до 10 000 ₸:</span>
+                        <ul>
+                            <li>Новогодняя упаковка 🎄</li>
+                            <li>Рождественские леденцы 🍭</li>
+                            <li>Конфеты «Угадай вкус» 🍬</li>
+                            <li>Лимитированный праздничный напиток 🥤</li>
+                        </ul>
+                    </div>
+
+                    <div class="gift-block">
+                        <span class="gift-title">🎅 При заказе от 10 000 ₸ и выше:</span>
+                        <ul>
+                            <li>Новогодняя упаковка 🎄</li>
+                            <li>Рождественские леденцы 🍭</li>
+                            <li>Конфеты «Угадай вкус» 🍬</li>
+                            <li>Лимитированный праздничный напиток 🥤</li>
+                            <li>Никотиновые пластинки WAKA 🎁</li>
+                        </ul>
+                    </div>
+
+                    <p style="margin-top: 12px; font-weight: 700; color: #fff;">Как принять участие?</p>
+                    <p>Всё очень просто: оформляй заказ на нужную сумму, а мы самостоятельно позаботимся о том, чтобы в нём оказались все положенные подарки. Никаких промокодов и дополнительных действий!</p>
+                    
+                    <p class="footer-text">Пусть декабрь будет наполнен приятными сюрпризами, а Новый год начнётся с подарков!<br><br>❤️ С любовью, Piff&Puff. С наступающим Новым годом! 🎄</p>
+                </div>
+            </div>
+        </div>
+        <!-- ====================================== -->
+
         <div class="toast" id="toast">✅ Товар добавлен</div>
     </div>
 
@@ -948,13 +1051,19 @@
         }
         // ======================================
 
-        // ===== ЗАГЛУШКИ ДЛЯ НОВЫХ КНОПОК =====
+        // ===== ФУНКЦИИ ДЛЯ НОВЫХ КНОПОК =====
         function openGiveaway() {
-            showToast('🎁 Раздел "Розыгрыш" в разработке');
+            document.getElementById('giveawayModal').classList.remove('hidden');
+        }
+        function closeGiveaway() {
+            document.getElementById('giveawayModal').classList.add('hidden');
         }
         function openPromo() {
             showToast('🔥 Раздел "Акция" в разработке');
         }
+        document.getElementById('giveawayModal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeGiveaway();
+        });
         // ======================================
 
         // ===== ПРОВЕРКА — МЫ В БРАУЗЕРЕ ИЛИ В TELEGRAM? =====
