@@ -27,14 +27,40 @@
             padding: 0;
             overflow-x: hidden;
         }
+        
+        /* ===== НОВОГОДНИЙ СНЕГ (НА ЗАДНЕМ ФОНЕ) ===== */
+        #snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: #fff;
+            font-size: 1.2em;
+            opacity: 0.8;
+            animation: fall linear infinite;
+            text-shadow: 0 0 8px rgba(255,255,255,0.9);
+        }
+        @keyframes fall {
+            to { transform: translateY(105vh); }
+        }
+        /* ========================== */
+
         .main-screen {
             max-width: 420px;
             margin: 0 auto;
             padding: 16px 14px 100px;
             min-height: 100vh;
-            background: rgba(10, 10, 15, 0.85);
-            backdrop-filter: blur(8px);
+            background: transparent;
             position: relative;
+            z-index: 1;
         }
         .top-bar {
             display: flex;
@@ -42,6 +68,10 @@
             align-items: center;
             padding: 4px 0 12px;
             border-bottom: 1px solid rgba(255,255,255,0.04);
+            background: rgba(10, 10, 15, 0.6);
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 10px;
         }
         .cashback-btn-top {
             background: linear-gradient(135deg, #8B00FF, #4B0082);
@@ -82,18 +112,22 @@
             font-weight: 800;
             color: #fff;
             letter-spacing: -0.5px;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.8);
         }
         .top-logo-right .brand .puff { color: var(--neon-green); }
+        
         .banner-section {
             margin: 14px 0 16px;
             border-radius: 16px;
             overflow: hidden;
             position: relative;
-            background: rgba(255,255,255,0.02);
+            background: rgba(20, 20, 30, 0.85);
+            backdrop-filter: blur(8px);
             aspect-ratio: 16 / 6;
             min-height: 110px;
-            border: 1px solid rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
             z-index: 1;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
         .banner-track {
             display: flex;
@@ -115,7 +149,7 @@
             transform: translateX(-50%);
             display: flex;
             gap: 6px;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.6);
             backdrop-filter: blur(4px);
             padding: 4px 10px;
             border-radius: 20px;
@@ -134,12 +168,52 @@
             box-shadow: 0 0 12px rgba(57, 255, 20, 0.4);
             transform: scale(1.2);
         }
+
+        /* ===== НОВЫЕ КНОПКИ (РОЗЫГРЫШ И АКЦИЯ) ===== */
+        .promo-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 0 10px;
+            margin-bottom: 20px;
+        }
+        .promo-btn {
+            padding: 16px 10px;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            background: rgba(20, 20, 30, 0.85);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s;
+            text-align: center;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .promo-btn:active { transform: scale(0.96); }
+        .promo-btn.giveaway {
+            color: var(--neon-green);
+            border-color: rgba(57, 255, 20, 0.3);
+        }
+        .promo-btn.promo {
+            color: #ff4d4d; /* Красный цвет для акции */
+            border-color: rgba(255, 77, 77, 0.3);
+        }
+        /* ========================================= */
+
         .categories-vertical {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 12px;
-            margin-top: 30px;
+            margin-top: 10px; /* Уменьшил отступ, так как сверху теперь кнопки */
             padding: 0 10px;
             position: relative;
             z-index: 1;
@@ -148,10 +222,11 @@
             width: 100%;
             max-width: 280px;
             padding: 16px 20px;
-            border: 1px solid rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: 16px;
-            background: rgba(255,255,255,0.02);
-            color: rgba(255,255,255,0.5);
+            background: rgba(20, 20, 30, 0.85);
+            backdrop-filter: blur(8px);
+            color: rgba(255,255,255,0.7);
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
@@ -159,19 +234,21 @@
             text-align: center;
             letter-spacing: 0.5px;
             text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
         .category-btn-vertical:active { transform: scale(0.96); }
         .category-btn-vertical .arrow {
             float: right;
-            color: rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.3);
             font-size: 18px;
         }
         .category-btn-vertical.active {
-            background: rgba(57, 255, 20, 0.06);
+            background: rgba(57, 255, 20, 0.1);
             border-color: var(--neon-green);
             color: var(--neon-green);
-            box-shadow: 0 0 30px rgba(57, 255, 20, 0.05);
+            box-shadow: 0 0 30px rgba(57, 255, 20, 0.15);
         }
+        
         .products-page {
             display: none;
             padding: 0 0 20px;
@@ -184,8 +261,10 @@
             font-weight: 700;
             margin-bottom: 16px;
             letter-spacing: 0.5px;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.8);
         }
         .products-page .category-title span { color: var(--neon-green); }
+        
         .products {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -194,13 +273,14 @@
         }
         .product-card {
             background: var(--card-bg);
-            border: 1px solid rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
             border-radius: 16px;
             padding: 12px 10px 14px;
             text-align: center;
             transition: all 0.2s;
             cursor: pointer;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
         .product-card:active { transform: scale(0.96); }
         .product-card .product-image {
@@ -224,7 +304,7 @@
         }
         .product-card .product-brand {
             font-size: 9px;
-            color: rgba(255,255,255,0.25);
+            color: rgba(255,255,255,0.3);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 600;
@@ -243,6 +323,7 @@
             color: #fff;
             margin-top: 2px;
         }
+        
         .product-modal {
             position: fixed;
             top: 0;
@@ -268,7 +349,7 @@
             to { transform: translateY(0); opacity: 1; }
         }
         .product-modal-content {
-            background: var(--card-bg);
+            background: #14141e;
             border: 1px solid rgba(255,255,255,0.04);
             border-radius: 24px;
             max-width: 380px;
@@ -277,7 +358,7 @@
             overflow-y: auto;
             padding: 20px 18px 24px;
             animation: slideUpModal 0.3s ease;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
         }
         .product-modal-content::-webkit-scrollbar { width: 4px; }
         .product-modal-content::-webkit-scrollbar-track { background: transparent; }
@@ -377,6 +458,7 @@
         }
         .product-modal .add-to-cart-btn:active { transform: scale(0.96); opacity: 0.8; }
         .product-modal .add-to-cart-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+        
         .cart-fab {
             position: fixed;
             bottom: 24px;
@@ -499,6 +581,7 @@
             margin-top: 8px;
         }
         .check-subscribe-btn:active { background: rgba(255,255,255,0.08); }
+        
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -697,6 +780,9 @@
 </head>
 <body>
 
+    <!-- ===== НОВОГОДНИЙ СНЕГ ===== -->
+    <div id="snow-container"></div>
+
     <!-- ===== СТРАНИЦА БЛОКИРОВКИ ===== -->
     <div id="subscription-required">
         <span class="lock-icon">🔒</span>
@@ -723,6 +809,13 @@
             </div>
 
             <div id="mainPage" class="page-visible page-transition">
+                
+                <!-- НОВЫЕ КНОПКИ РОЗЫГРЫШ И АКЦИЯ -->
+                <div class="promo-buttons">
+                    <button class="promo-btn giveaway" onclick="openGiveaway()">🎁 РОЗЫГРЫШ</button>
+                    <button class="promo-btn promo" onclick="openPromo()">🔥 АКЦИЯ</button>
+                </div>
+
                 <div class="categories-vertical">
                     <button class="category-btn-vertical" onclick="openCategory('Одноразки')">Одноразки <span class="arrow">›</span></button>
                     <button class="category-btn-vertical" onclick="openCategory('Жидкости')">Жидкости <span class="arrow">›</span></button>
@@ -802,7 +895,7 @@
                     <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.04);color:rgba(255,255,255,0.5)">
                         <span>Можно потратить:</span><span style="color:var(--neon-green);font-weight:700" id="cbCanSpend">0 ₸</span>
                     </div>
-                    <div style="margin-top:16px;padding:12px;background:rgba(57,255,20,0.04);border-radius:12px;text-align:center;font-size:13px;color:rgba(255,255,255,0.3);border:1px solid rgba(57,255,20,0.05)">Получай кэшбэк 10% с каждого заказа!</div>
+                    <div style="margin-top:16px;padding:12px;background:rgba(57,255,20,0.04);border-radius:12px;text-align:center;font-size:13px;color:rgba(255,255,255,0.3);border:1px solid rgba(57,255,20,0.05)">Получай кэшбэк 5% с каждого заказа!</div>
                 </div>
             </div>
         </div>
@@ -823,6 +916,46 @@
         let products = [], cart = [], currentCategory = '', userBonusBalance = 0, currentBanner = 0, bannerInterval = null;
         let isLoadingProducts = false;
         let productsLoaded = false;
+
+        // ===== НОВОГОДНИЙ СНЕГ (ГЕНЕРАЦИЯ) =====
+        function createSnow() {
+            const container = document.getElementById('snow-container');
+            if (!container) return;
+            const snowflakeCount = 40;
+
+            for (let i = 0; i < snowflakeCount; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.classList.add('snowflake');
+                snowflake.innerHTML = '❅';
+                
+                const leftPosition = Math.random() * 100;
+                const animationDuration = 3 + Math.random() * 4;
+                const animationDelay = Math.random() * 5;
+                const fontSize = 0.8 + Math.random() * 0.8;
+                const opacity = 0.3 + Math.random() * 0.5;
+
+                snowflake.style.left = leftPosition + 'vw';
+                snowflake.style.animationDuration = animationDuration + 's';
+                snowflake.style.animationDelay = animationDelay + 's';
+                snowflake.style.fontSize = fontSize + 'em';
+                snowflake.style.opacity = opacity;
+                
+                const sway = (Math.random() - 0.5) * 20; 
+                snowflake.style.transform = `translateX(${sway}px)`;
+
+                container.appendChild(snowflake);
+            }
+        }
+        // ======================================
+
+        // ===== ЗАГЛУШКИ ДЛЯ НОВЫХ КНОПОК =====
+        function openGiveaway() {
+            showToast('🎁 Раздел "Розыгрыш" в разработке');
+        }
+        function openPromo() {
+            showToast('🔥 Раздел "Акция" в разработке');
+        }
+        // ======================================
 
         // ===== ПРОВЕРКА — МЫ В БРАУЗЕРЕ ИЛИ В TELEGRAM? =====
         function isBrowser() {
@@ -971,7 +1104,6 @@
             
             const list = document.getElementById('productList');
             
-            // Если товаров нет — показываем спиннер и загружаем
             if (products.length === 0) {
                 list.innerHTML = `<div class="loading-state"><div class="spinner"></div><p>Загружаем товары...</p></div>`;
                 await loadProductsWithRetry();
@@ -1053,11 +1185,9 @@
             console.log(`🔍 Категория: "${category}", всего товаров: ${products.length}, найдено: ${filtered.length}`);
             
             if (filtered.length === 0) { 
-                // Если товаров в категории нет, но товары вообще есть — значит, категория пустая
                 if (products.length > 0) {
                     list.innerHTML = `<div class="empty-state"><span style="font-size:48px;display:block;margin-bottom:8px;">🔍</span><p>Нет товаров в этой категории</p></div>`;
                 } else {
-                    // Товаров нет вообще — пробуем загрузить ещё раз
                     list.innerHTML = `<div class="loading-state"><div class="spinner"></div><p>Загружаем товары...</p></div>`;
                     loadProductsWithRetry().then(() => {
                         renderProducts(category);
@@ -1292,6 +1422,7 @@
         }
 
         checkSubscription();
+        createSnow();
     </script>
 </body>
 </html>
