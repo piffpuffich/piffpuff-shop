@@ -823,6 +823,57 @@
             font-weight: 500;
             color: #ff4d4d;
         }
+
+        /* ===== СТИЛИ ДЛЯ РОЗЫГРЫША ===== */
+        .giveaway-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.85);
+        }
+        .giveaway-content h3 {
+            color: var(--neon-green);
+            margin-bottom: 12px;
+            font-size: 16px;
+            text-align: center;
+        }
+        .giveaway-content .highlight-text {
+            color: var(--neon-green);
+            font-weight: 700;
+        }
+        .giveaway-content .gift-block {
+            margin: 16px 0;
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .giveaway-content .gift-title {
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .giveaway-content ul {
+            list-style-type: none;
+            padding-left: 5px;
+        }
+        .giveaway-content li {
+            margin-bottom: 4px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .giveaway-content li::before {
+            content: '🏆';
+            position: absolute;
+            left: 0;
+            font-size: 12px;
+        }
+        .giveaway-content .footer-text {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 500;
+            color: var(--neon-green);
+        }
     </style>
 </head>
 <body>
@@ -951,6 +1002,7 @@
         <div class="modal-overlay hidden" id="promoModal">
             <div class="modal-content" style="padding-bottom: 30px;">
                 <div class="modal-header">
+                    <h2 style="color: #ff4d4d;">🎄 Новогодняя акция</h2>
                     <button class="modal-close" onclick="closePromo()">✕</button>
                 </div>
                 <div class="promo-content">
@@ -984,6 +1036,62 @@
                     <p>Всё очень просто: оформляй заказ на нужную сумму, а мы самостоятельно позаботимся о том, чтобы в нём оказались все положенные подарки.</p>
                     
                     <p class="footer-text">Пусть декабрь будет наполнен приятными сюрпризами, а Новый год начнётся с подарков!<br><br>❤️ С любовью, Piff&Puff. С наступающим Новым ГОДОМ! 🎄</p>
+                </div>
+            </div>
+        </div>
+        <!-- ====================================== -->
+
+        <!-- ===== МОДАЛКА РОЗЫГРЫШ ===== -->
+        <div class="modal-overlay hidden" id="giveawayModal">
+            <div class="modal-content" style="padding-bottom: 30px;">
+                <div class="modal-header">
+                    <h2 style="color: var(--neon-green);">🎁 Новогодний розыгрыш</h2>
+                    <button class="modal-close" onclick="closeGiveaway()">✕</button>
+                </div>
+                <div class="giveaway-content">
+                    <h3>🎄 PIFF&PUFF ЗАПУСКАЕТ САМЫЙ МАСШТАБНЫЙ НОВОГОДНИЙ РОЗЫГРЫШ! 🎁</h3>
+                    
+                    <p style="text-align: center; font-size: 18px; font-weight: 800; color: var(--neon-green); margin: 16px 0;">
+                        🏆 ПРИЗОВОЙ ФОНД - 500 000 ₸!
+                    </p>
+                    
+                    <p>В этом году мы решили устроить настоящий праздник и подготовили целых 10 призовых мест!</p>
+
+                    <div class="gift-block">
+                        <span class="gift-title">🏆 СПИСОК ПРИЗОВ:</span>
+                        <ul>
+                            <li style="font-weight: 700; color: #FFD700;">🥇 1 МЕСТО - Apple Watch SE</li>
+                            <li style="font-weight: 700; color: #C0C0C0;">🥈 2 МЕСТО - Apple AirPods Pro</li>
+                            <li style="font-weight: 700; color: #CD7F32;">🥉 3 МЕСТО - подарочный набор от Piff&Puff на сумму 100 000 ₸</li>
+                            <li>🎁 4 МЕСТО - подарочный набор от Piff&Puff на сумму 50 000 ₸</li>
+                            <li>🎁 5 МЕСТО - подарочный набор от Piff&Puff на сумму 30 000 ₸</li>
+                            <li>💰 6 МЕСТО - 15 000 ₸ на баланс в боте</li>
+                            <li>💰 7 МЕСТО - 15 000 ₸ на баланс в боте</li>
+                            <li>💰 8 МЕСТО - 10 000 ₸ на баланс в боте</li>
+                            <li>💰 9 МЕСТО - 10 000 ₸ на баланс в боте</li>
+                            <li>💰 10 МЕСТО - 10 000 ₸ на баланс в боте</li>
+                        </ul>
+                    </div>
+
+                    <p style="margin-top: 12px; font-weight: 700; color: #fff;">📋 УСЛОВИЯ РОЗЫГРЫША</p>
+                    <ul>
+                        <li>В розыгрыше участвуют клиенты, оформившие заказ на сумму от 13 000 ₸.</li>
+                        <li>После получения заказа менеджер отправит вам индивидуальный номер билета.</li>
+                        <li>Чем больше заказов - тем больше билетов и шансов оказаться среди победителей!</li>
+                    </ul>
+
+                    <p style="margin-top: 12px; font-weight: 700; color: #fff;">🎲 КАК БУДУТ ОПРЕДЕЛЯТЬСЯ ПОБЕДИТЕЛИ?</p>
+                    <p>Все победившие номера билетов будут опубликованы в итогах розыгрыша.</p>
+                    <p>Победители будут определены случайным образом с помощью сервиса генерации случайных чисел. Всё прозрачно и честно!</p>
+
+                    <p style="margin-top: 12px; font-weight: 700; color: #fff;">📅 ДАТЫ ПРОВЕДЕНИЯ</p>
+                    <ul>
+                        <li>Начало розыгрыша: 1 декабря 2026 года</li>
+                        <li>Завершение: 31 декабря 2026 года</li>
+                        <li>Объявление результатов: 1 января 2027 года</li>
+                    </ul>
+
+                    <p class="footer-text">❤️ PIFF&PUFF желает всем удачи!<br>Пусть Новый год начнётся с приятных подарков, крутых эмоций и больших побед!<br><br>С НАСТУПАЮЩИМ НОВЫМ ГОДОМ! 🎄</p>
                 </div>
             </div>
         </div>
@@ -1039,7 +1147,10 @@
 
         // ===== ФУНКЦИИ ДЛЯ НОВЫХ КНОПОК =====
         function openGiveaway() {
-            showToast('🎁 Раздел "Розыгрыш" в разработке');
+            document.getElementById('giveawayModal').classList.remove('hidden');
+        }
+        function closeGiveaway() {
+            document.getElementById('giveawayModal').classList.add('hidden');
         }
         function openPromo() {
             document.getElementById('promoModal').classList.remove('hidden');
@@ -1047,6 +1158,9 @@
         function closePromo() {
             document.getElementById('promoModal').classList.add('hidden');
         }
+        document.getElementById('giveawayModal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeGiveaway();
+        });
         document.getElementById('promoModal')?.addEventListener('click', function(e) {
             if (e.target === this) closePromo();
         });
