@@ -118,7 +118,6 @@ function parseCSVLine(line) {
 
 // ========== ЗАГРУЗКА ТОВАРОВ ==========
 async function loadProductsFromGoogle() {
-    // Если уже идёт загрузка — возвращаем тот же промис
     if (productsLoadPromise) {
         console.log('⏳ Товары уже загружаются, ждём...');
         return productsLoadPromise;
@@ -181,7 +180,7 @@ async function loadProductsFromGoogle() {
             return products;
         } catch (error) {
             console.error('❌ Ошибка загрузки товаров:', error.message);
-            return productsCache; // Возвращаем старый кэш при ошибке
+            return productsCache;
         } finally {
             productsLoadPromise = null;
         }
@@ -324,6 +323,7 @@ app.post('/api/order', async (req, res) => {
 
     let finalTotal = total;
     let bonusText = 'Нет';
+    let spentBonus = 0;
 
     if (useBonuses) {
         const now = Date.now();
@@ -342,7 +342,7 @@ app.post('/api/order', async (req, res) => {
             }
 
             if (canSpend >= 500) {
-                userData.balance -= canSpend;
+                spentBonus = canSpend;
                 bonusText = `Да (${canSpend} бонусов)`;
             } else {
                 bonusText = 'Нет (недостаточно для списания)';
