@@ -701,20 +701,53 @@
             color: var(--neon-green);
             font-weight: 700;
         }
+        /* ===== НОВАЯ КНОПКА "НА ГЛАВНУЮ" ===== */
+        .gift-home-btn {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px 16px;
+            border: 1px solid rgba(139, 0, 255, 0.45);
+            border-radius: 12px;
+            background: linear-gradient(135deg, #8B00FF, #4B0082);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 16px rgba(139, 0, 255, 0.28);
+            font-family: inherit;
+        }
+        .gift-home-btn:active { transform: scale(0.96); opacity: 0.85; }
+        /* ===================================== */
         .order-summary {
             background: rgba(255,255,255,0.02);
             padding: 16px;
             border-radius: 12px;
             margin: 16px 0;
         }
+        /* ===== ИСПРАВЛЕНО: строка итога не переносится ===== */
         .order-total-row {
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 12px;
             font-size: 18px;
             font-weight: 700;
             color: #fff;
         }
-        .order-total-price { color: #fff; }
+        .order-total-row > span:first-child {
+            flex-shrink: 0;
+        }
+        .order-total-price {
+            color: #fff;
+            white-space: nowrap;
+            flex-shrink: 0;
+            text-align: right;
+        }
         .order-delivery-row {
             display: flex;
             justify-content: space-between;
@@ -958,6 +991,7 @@
                 <div class="modal-field gift-field">
                     <div class="gift-banner" id="giftBanner">
                         <span id="giftText">Загрузка...</span>
+                        <button class="gift-home-btn" onclick="goHomeFromOrder()">На главную</button>
                     </div>
                 </div>
 
@@ -1326,6 +1360,30 @@
             document.getElementById('mainPage').classList.add('page-visible');
         }
 
+        // ===== НОВАЯ ФУНКЦИЯ: НА ГЛАВНУЮ ИЗ ОКНА ЗАКАЗА =====
+        function goHomeFromOrder() {
+            // Закрываем все модалки
+            document.getElementById('orderModal')?.classList.add('hidden');
+            document.getElementById('cartModal')?.classList.add('hidden');
+            document.getElementById('cashbackModal')?.classList.add('hidden');
+            document.getElementById('promoModal')?.classList.add('hidden');
+            document.getElementById('giveawayModal')?.classList.add('hidden');
+            document.getElementById('productModal')?.classList.remove('open');
+
+            // Возвращаемся на главную страницу с категориями
+            document.getElementById('productsPage')?.classList.remove('page-visible');
+            document.getElementById('productsPage')?.classList.add('page-hidden');
+            document.getElementById('mainPage')?.classList.remove('page-hidden');
+            document.getElementById('mainPage')?.classList.add('page-visible');
+
+            currentCategory = '';
+
+            if (window.Telegram?.WebApp?.HapticFeedback) {
+                window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+            }
+        }
+        // ======================================================
+
         // ===== ОБНОВЛЕННЫЙ БАННЕР ПОДАРКОВ =====
         function updateGiftBanner() {
             const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
@@ -1552,6 +1610,7 @@
             }
         }
 
+        // ===== ИСПРАВЛЕНО: сумма и "тг" не переносятся =====
         function updateOrderTotalWithBonus() {
             const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
             const delivery = subtotal < 10000 ? 1000 : 0;
@@ -1563,11 +1622,13 @@
             const displayElement = document.getElementById('orderTotalDisplay');
             if (canSpend >= 500) {
                 displayElement.innerHTML = `
-                    <span style="text-decoration:line-through;color:rgba(255,255,255,0.25);font-weight:400;font-size:16px;margin-right:8px;">${total} тг</span>
-                    <span style="color:#fff;font-weight:700;font-size:20px;">${finalTotal} тг</span>
+                    <span style="display:inline-flex; align-items:baseline; gap:8px; white-space:nowrap; flex-wrap:nowrap;">
+                        <span style="text-decoration:line-through;color:rgba(255,255,255,0.25);font-weight:400;font-size:16px;">${total} тг</span>
+                        <span style="color:#fff;font-weight:700;font-size:20px;">${finalTotal} тг</span>
+                    </span>
                 `;
             } else {
-                displayElement.innerHTML = `<span style="color:#fff;font-weight:700;font-size:20px;">${total} тг</span>`;
+                displayElement.innerHTML = `<span style="color:#fff;font-weight:700;font-size:20px;white-space:nowrap;">${total} тг</span>`;
             }
         }
 
@@ -1578,7 +1639,7 @@
             const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
             const delivery = subtotal < 10000 ? 1000 : 0;
             currentCartTotal = subtotal + delivery;
-            document.getElementById('orderTotalDisplay').innerHTML = `<span style="color:#fff;font-weight:700;font-size:20px;">${currentCartTotal} тг</span>`;
+            document.getElementById('orderTotalDisplay').innerHTML = `<span style="color:#fff;font-weight:700;font-size:20px;white-space:nowrap;">${currentCartTotal} тг</span>`;
             document.getElementById('orderDeliveryDisplay').textContent = delivery === 0 ? 'Бесплатно' : delivery + ' тг';
             document.getElementById('orderPhone').value = '';
             document.getElementById('orderAddress').value = '';
@@ -1633,8 +1694,8 @@
                 items: cart.map(item => ({ name: item.name, price: item.price, option: item.selectedOption || '' })),
                 subtotal, 
                 delivery, 
-                total: totalBeforeBonus, // ПЕРЕДАЕМ ИЗНАЧАЛЬНУЮ СУММУ
-                bonusesToSpend: bonusesToSpend, // ПЕРЕДАЕМ СКОЛЬКО БОНУСОВ СПИСЫВАЕМ
+                total: totalBeforeBonus,
+                bonusesToSpend: bonusesToSpend,
                 phone, 
                 address,
                 change: change || 'Не требуется',
