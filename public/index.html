@@ -701,7 +701,7 @@
             color: var(--neon-green);
             font-weight: 700;
         }
-        /* ===== НОВАЯ КНОПКА "НА ГЛАВНУЮ" ===== */
+        /* ===== НОВАЯ КНОПКА "ЗАКАЗАТЬ ЕЩЁ" ===== */
         .gift-home-btn {
             display: block;
             width: 100%;
@@ -1021,7 +1021,7 @@
                 <div class="modal-field gift-field">
                     <div class="gift-banner" id="giftBanner">
                         <span id="giftText">Загрузка...</span>
-                        <button class="gift-home-btn" onclick="goHomeFromOrder()">На главную</button>
+                        <button class="gift-home-btn" onclick="goHomeFromOrder()">Заказать ещё</button>
                     </div>
                 </div>
 
@@ -1417,33 +1417,45 @@
         }
         // ======================================================
 
-        // ===== ОБНОВЛЕННЫЙ БАННЕР ПОДАРКОВ =====
+        // ===== БАННЕР ПОДАРКОВ (с учётом списанных бонусов) =====
         function updateGiftBanner() {
             const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
             const delivery = subtotal < 10000 ? 1000 : 0;
             const total = subtotal + delivery;
-            
+
+            // Сколько бонусов реально спишется (если галочка стоит)
+            const useBonuses = document.getElementById('useBonuses')?.checked;
+            let canSpend = 0;
+            if (useBonuses) {
+                const available = userBonusBalance || 0;
+                canSpend = Math.floor(available / 500) * 500;
+                if (canSpend > total) canSpend = Math.floor(total / 500) * 500;
+                if (canSpend < 500) canSpend = 0;
+            }
+            // Итоговая сумма, от которой считаем подарки
+            const effectiveTotal = Math.max(total - canSpend, 0);
+
             const banner = document.getElementById('giftBanner');
             const text = document.getElementById('giftText');
             
             let html = '';
 
-            if (total < 5000) {
-                const remaining = 5000 - total;
+            if (effectiveTotal < 5000) {
+                const remaining = 5000 - effectiveTotal;
                 html = `
                     <div style="margin-bottom: 4px;">Вам доступен подарок <span class="highlight">"Сладости"</span></div>
                     <div style="font-size: 12px; opacity: 0.8;">Ещё <span class="highlight">${remaining} тг</span> до подарка <span class="highlight">"Напиток"</span></div>
                 `;
                 banner.classList.remove('available');
-            } else if (total >= 5000 && total < 10000) {
-                const remaining = 10000 - total;
+            } else if (effectiveTotal >= 5000 && effectiveTotal < 10000) {
+                const remaining = 10000 - effectiveTotal;
                 html = `
                     <div style="margin-bottom: 4px;">Вам доступны подарки <span class="highlight">"Сладости"</span> и <span class="highlight">"Напиток"</span></div>
                     <div style="font-size: 12px; opacity: 0.8;">Ещё <span class="highlight">${remaining} тг</span> до подарка <span class="highlight">"Никотиновые паучи WAKA"</span></div>
                 `;
                 banner.classList.add('available');
-            } else if (total >= 10000 && total < 13000) {
-                const remaining = 13000 - total;
+            } else if (effectiveTotal >= 10000 && effectiveTotal < 13000) {
+                const remaining = 13000 - effectiveTotal;
                 html = `
                     <div style="margin-bottom: 4px;">Вам доступны подарки <span class="highlight">"Сладости"</span>, <span class="highlight">"Напиток"</span> и <span class="highlight">"Никотиновые паучи WAKA"</span></div>
                     <div style="font-size: 12px; opacity: 0.8;">Ещё <span class="highlight">${remaining} тг</span> до участия в розыгрыше</div>
@@ -1596,6 +1608,8 @@
                 const data = await response.json();
                 userBonusBalance = data.balance || 0;
                 document.getElementById('bonusBalanceDisplay').textContent = userBonusBalance;
+                // Пересчитываем баннер, если галочка уже стоит
+                updateGiftBanner();
             } catch (error) { console.error('Ошибка загрузки бонусов:', error); }
         }
 
