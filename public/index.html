@@ -203,10 +203,9 @@
             border-color: rgba(57, 255, 20, 0.3);
         }
         .promo-btn.promo {
-            color: #ff4d4d; /* Красный цвет для акции */
+            color: #ff4d4d;
             border-color: rgba(255, 77, 77, 0.3);
         }
-        /* ========================================= */
 
         .categories-vertical {
             display: flex;
@@ -1600,7 +1599,7 @@
 
         document.getElementById('orderModal')?.addEventListener('click', function(e) { if (e.target === this) closeOrderModal(); });
 
-        async function submitOrder() {
+            async function submitOrder() {
             const submitBtn = document.querySelector('.modal-submit-btn');
             if (submitBtn.disabled) return;
             const phone = document.getElementById('orderPhone').value.trim();
@@ -1618,28 +1617,38 @@
             const useBonuses = document.getElementById('useBonuses').checked;
             const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
             const delivery = subtotal < 10000 ? 1000 : 0;
-            let total = subtotal + delivery;
+            let totalBeforeBonus = subtotal + delivery;
+            let bonusesToSpend = 0;
+            
             if (useBonuses) {
                 const available = userBonusBalance || 0;
                 let canSpend = Math.floor(available / 500) * 500;
-                if (canSpend > total) canSpend = Math.floor(total / 500) * 500;
-                if (canSpend >= 500) total = Math.max(total - canSpend, 0);
+                if (canSpend > totalBeforeBonus) canSpend = Math.floor(totalBeforeBonus / 500) * 500;
+                if (canSpend >= 500) bonusesToSpend = canSpend;
             }
+            
             const userId = getUserId();
             const username = getUsername();
             const orderData = {
                 items: cart.map(item => ({ name: item.name, price: item.price, option: item.selectedOption || '' })),
-                subtotal, delivery, total, phone, address,
+                subtotal, 
+                delivery, 
+                total: totalBeforeBonus, // ПЕРЕДАЕМ ИЗНАЧАЛЬНУЮ СУММУ
+                bonusesToSpend: bonusesToSpend, // ПЕРЕДАЕМ СКОЛЬКО БОНУСОВ СПИСЫВАЕМ
+                phone, 
+                address,
                 change: change || 'Не требуется',
                 notes: notes || 'Нет',
-                userId, username,
+                userId, 
+                username,
                 useBonuses
             };
             try {
                 const response = await fetch('/api/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
                 const result = await response.json();
                 const orderNumber = result.order?.number || 'неизвестен';
-                showToast(`✅ Заказ №${orderNumber} оформлен! Итого: ${total} тг`);
+                const finalTotal = result.order?.total || totalBeforeBonus;
+                showToast(`✅ Заказ №${orderNumber} оформлен! Итого: ${finalTotal} тг`);
                 cart = [];
                 updateCartCount();
                 closeCart();
@@ -1654,8 +1663,39 @@
             }
         }
 
-        checkSubscription();
-        createSnow();
+        // ===== ПРАВИЛЬНАЯ ИНИЦИАЛИЗАЦИЯ ДЛЯ TELEGRAM MINI APP =====
+        function initApp() {
+            console.log("🚀 Инициализация приложения...");
+            
+            if (window.Telegram?.WebApp) {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.expand();
+                console.log("✅ Telegram WebApp готов");
+            }
+
+            createSnow();
+            checkSubscription();
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+
+        // Страховка: если через 1.5 секунды магазин всё ещё скрыт, принудительно показываем его
+        setTimeout(() => {
+            const store = document.getElementById('store-content');
+            if (store && store.style.display === 'none') {
+                console.log("⚠️ Принудительный запуск магазина (страховка)");
+                store.style.display = 'block';
+                document.getElementById('subscription-required').style.display = 'none';
+                loadProductsWithRetry();
+                loadCashback();
+                initBanners();
+            }
+        }, 1500);
+        // ========================================================
     </script>
 </body>
 </html>

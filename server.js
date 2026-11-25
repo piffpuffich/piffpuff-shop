@@ -309,7 +309,8 @@ app.post('/api/order', async (req, res) => {
         items,
         subtotal,
         delivery,
-        total,
+        total, // изначальная сумма заказа (с доставкой), БЕЗ учета бонусов
+        bonusesToSpend, // сколько бонусов клиент хочет списать
         phone,
         address,
         change,
@@ -325,7 +326,7 @@ app.post('/api/order', async (req, res) => {
     let bonusText = 'Нет';
     let spentBonus = 0;
 
-    if (useBonuses) {
+    if (useBonuses && bonusesToSpend > 0) {
         const now = Date.now();
         if (now - lastUpdateCashback > CACHE_TIME || Object.keys(cashbackCache).length === 0) {
             cashbackCache = await loadCashbackFromGoogle();
@@ -341,9 +342,10 @@ app.post('/api/order', async (req, res) => {
                 canSpend = Math.floor(total / 500) * 500;
             }
 
-            if (canSpend >= 500) {
-                spentBonus = canSpend;
-                bonusText = `Да (${canSpend} бонусов)`;
+            if (canSpend >= 500 && canSpend >= bonusesToSpend) {
+                spentBonus = bonusesToSpend;
+                bonusText = `Да (${bonusesToSpend} бонусов)`;
+                finalTotal = total - bonusesToSpend;
             } else {
                 bonusText = 'Нет (недостаточно для списания)';
             }
