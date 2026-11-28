@@ -33,12 +33,12 @@ function readCounter() {
         if (fs.existsSync(COUNTER_FILE)) {
             const data = fs.readFileSync(COUNTER_FILE, 'utf8');
             const json = JSON.parse(data);
-            return json.lastOrderNumber || 2028;
+            return json.lastOrderNumber || 2011;
         }
     } catch (error) {
         console.error('❌ Ошибка чтения счётчика:', error.message);
     }
-    return 2028;
+    return 2011;
 }
 
 function saveCounter(value) {
@@ -118,7 +118,6 @@ function parseCSVLine(line) {
 
 // ========== ЗАГРУЗКА ТОВАРОВ ==========
 async function loadProductsFromGoogle() {
-    // Если уже идёт загрузка — возвращаем тот же промис
     if (productsLoadPromise) {
         console.log('⏳ Товары уже загружаются, ждём...');
         return productsLoadPromise;
@@ -181,7 +180,7 @@ async function loadProductsFromGoogle() {
             return products;
         } catch (error) {
             console.error('❌ Ошибка загрузки товаров:', error.message);
-            return productsCache; // Возвращаем старый кэш при ошибке
+            return productsCache;
         } finally {
             productsLoadPromise = null;
         }
@@ -310,7 +309,8 @@ app.post('/api/order', async (req, res) => {
         items,
         subtotal,
         delivery,
-        total,
+        total, // изначальная сумма заказа (с доставкой), БЕЗ учета бонусов
+        bonusesToSpend, // сколько бонусов клиент хочет списать
         phone,
         address,
         change,
@@ -324,8 +324,9 @@ app.post('/api/order', async (req, res) => {
 
     let finalTotal = total;
     let bonusText = 'Нет';
+    let spentBonus = 0;
 
-    if (useBonuses) {
+    if (useBonuses && bonusesToSpend > 0) {
         const now = Date.now();
         if (now - lastUpdateCashback > CACHE_TIME || Object.keys(cashbackCache).length === 0) {
             cashbackCache = await loadCashbackFromGoogle();
@@ -341,9 +342,10 @@ app.post('/api/order', async (req, res) => {
                 canSpend = Math.floor(total / 500) * 500;
             }
 
-            if (canSpend >= 500) {
-                userData.balance -= canSpend;
-                bonusText = `Да (${canSpend} бонусов)`;
+            if (canSpend >= 500 && canSpend >= bonusesToSpend) {
+                spentBonus = bonusesToSpend;
+                bonusText = `Да (${bonusesToSpend} бонусов)`;
+                finalTotal = total - bonusesToSpend;
             } else {
                 bonusText = 'Нет (недостаточно для списания)';
             }
